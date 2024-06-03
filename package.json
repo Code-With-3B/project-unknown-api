@@ -1,0 +1,39 @@
+{
+  "name": "graph-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "yarn lint && yarn build && yarn start",
+    "start": "node dist/server.js",
+    "build": "rimraf dist && tsc -p ./tsconfig.json",
+    "gql-gen": "graphql-codegen --config codegen.yaml",
+    "lint": "eslint \"src/**/*.ts\" --fix"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.10.4",
+    "@as-integrations/fastify": "^2.1.1",
+    "@fastify/request-context": "^5.1.0",
+    "fastify": "^4.27.0",
+    "fastify-plugin": "^4.5.1",
+    "graphql": "^16.8.1",
+    "pino-pretty": "^11.1.0",
+    "ramda": "^0.30.1"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/typescript": "^4.0.7",
+    "@graphql-codegen/typescript-resolvers": "^4.1.0",
+    "@graphql-tools/merge": "^9.0.4",
+    "@types/node": "^20.14.0",
+    "@types/ramda": "^0.30.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.4",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.0"
+  }
+}
