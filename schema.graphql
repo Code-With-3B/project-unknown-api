@@ -1,0 +1,34 @@
+"""
+Represents a user in the system.
+"""
+type User {
+  """
+  The name of the user.
+  """
+  name: String
+}
+
+"""
+Represents a customer in the system.
+"""
+type Customer {
+  """
+  The name of the customer.
+  """
+  name: String
+}
+
+"""
+The root query type.
+"""
+type Query {
+  """
+  Fetch a user.
+  """
+  user: User
+
+  """
+  Fetch a customer.
+  """
+  customer: Customer
+}
