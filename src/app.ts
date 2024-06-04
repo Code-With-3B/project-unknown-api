@@ -1,7 +1,7 @@
-import {fastifyApolloPlugin} from './plugins/apollo-plugin'
-import {logger} from './config'
+import { fastifyApolloPlugin } from './plugins/apollo-plugin'
+import { logger } from './config'
 
-import fastify, {FastifyBaseLogger, FastifyInstance} from 'fastify'
+import fastify, { FastifyBaseLogger, FastifyInstance } from 'fastify'
 
 export default (): FastifyInstance => {
     const app = async (childInstance: FastifyInstance): Promise<void> => {
@@ -15,5 +15,5 @@ export default (): FastifyInstance => {
         pluginTimeout: 10000
     })
     server.register(app)
-    return server
+    return server;
 }
