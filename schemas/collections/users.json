@@ -1,0 +1,75 @@
+{
+  "type": "object",
+  "title": "Users Collection",
+  "required": ["id", "username"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "'id' must be a string and is required"
+    },
+    "username": {
+      "type": "string",
+      "description": "'name' must be a string and is required"
+    },
+    "fullName": {
+      "type": "string",
+      "description": "'bio' must be a string"
+    },
+    "bio": {
+      "type": "string",
+      "description": "'bio' must be a string"
+    },
+    "verificationStatus": {
+      "type": "string",
+      "description": "'verificationStatus' must be a string"
+    },
+    "preferredGamesId": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string"
+      },
+      "description": "'preferredGamesId' must be a array of strings"
+    },
+    "achievementsId": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string"
+      },
+      "description": "'achievementsId' must be a array of strings"
+    },
+    "skillsId": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string"
+      },
+      "description": "'skillsId' must be a array of strings"
+    },
+    "highlightsId": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string"
+      },
+      "description": "'highlightsId' must be a array of strings"
+    },
+    "teams": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string"
+      },
+      "description": "'teams' must be a array of strings"
+    },
+    "createdAt": {
+      "type": "string",
+      "description": "'bio' must be a string"
+    },
+    "updatedAt": {
+      "type": "string",
+      "description": "'bio' must be a string"
+    }
+  }
+}

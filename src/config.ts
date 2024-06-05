@@ -1,4 +1,4 @@
-import { isNil } from 'ramda'
+import {isNil} from 'ramda'
 import pino from 'pino'
 
 export const parseEnv = <T>(envValue: string | undefined, defaultValue: T, parser: (value: string) => T): T => {
@@ -18,6 +18,8 @@ export const serverConfig = {
     dbUri: parseEnv(process.env.MONGODB_URI, '', stringParser),
     db: parseEnv(process.env.MONGODB_DATABASE, 'sample', stringParser),
     poolSize: parseEnv(process.env.DB_POOL_SIZE, 20, Number),
+    jwtSecreteKey: parseEnv(process.env.JWT_SECRET, 'test', stringParser),
+    jwtExpirationTime: parseEnv(process.env.TOKEN_EXPIRATION, '2h', stringParser)
 }
 
 export const logger = pino({
