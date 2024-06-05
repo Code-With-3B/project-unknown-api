@@ -32,6 +32,18 @@ export interface UsersCollection {
    */
   verificationStatus?: string;
   /**
+   * 'profilePictureUri' must be a string url
+   */
+  profilePictureUri?: string;
+  /**
+   * 'profileBannerUri' must be a string url
+   */
+  profileBannerUri?: string;
+  /**
+   * The status of the access token, which can be either ACTIVE or EXPIRED
+   */
+  authMode?: "EMAIL_PASS" | "PHONE_PASS" | "GOOGLE" | "FACEBOOK" | "APPLE";
+  /**
    * 'preferredGamesId' must be a array of strings
    *
    * @minItems 0

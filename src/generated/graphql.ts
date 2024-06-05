@@ -106,7 +106,6 @@ export type MutationSignInUserArgs = {
 
 
 export type MutationUpdateUserArgs = {
-  id: Scalars['ID']['input'];
   input: UpdateUserInput;
 };
 
@@ -185,7 +184,14 @@ export enum TokenStatus {
 /** Input for updating an existing user. */
 export type UpdateUserInput = {
   bio?: InputMaybe<Scalars['String']['input']>;
-  preferredGames?: InputMaybe<Array<Scalars['String']['input']>>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  fullName?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
+  profileBannerUri?: InputMaybe<Scalars['String']['input']>;
+  profilePictureUri?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Represents a user in the esports community. */
@@ -202,6 +208,8 @@ export type User = {
   password?: Maybe<Scalars['String']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
   preferredGames?: Maybe<Array<Scalars['ID']['output']>>;
+  profileBannerUri?: Maybe<Scalars['String']['output']>;
+  profilePictureUri?: Maybe<Scalars['String']['output']>;
   skills?: Maybe<Array<Scalars['ID']['output']>>;
   teams?: Maybe<Array<Scalars['ID']['output']>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -391,7 +399,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   deleteUser?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   signInUser?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInUserArgs, 'input'>>;
-  updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'id' | 'input'>>;
+  updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -442,6 +450,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   preferredGames?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
+  profileBannerUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profilePictureUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   skills?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;

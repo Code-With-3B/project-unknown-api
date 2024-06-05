@@ -13,10 +13,17 @@ import {
     CreateUserInput,
     SignInInput,
     SignInResponse,
+    UpdateUserInput,
     User,
     UserResponse
 } from '../../generated/graphql'
-import {fetchDocumentByField, fetchDocumentByName, fetchRelationalData, insertDataInDB} from '../db/common'
+import {
+    fetchDocumentByField,
+    fetchDocumentByName,
+    fetchRelationalData,
+    insertDataInDB,
+    updateDataInDB
+} from '../db/common'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
 
 export async function getUsers(context: ResolverContext): Promise<User[] | null> {
@@ -52,12 +59,113 @@ export async function createUser(context: ResolverContext, input: CreateUserInpu
             )
     } else if (!input.email) throw new Error(`Email is required`)
 
+    const user1 = await fetchDocumentByField<UsersCollection>(
+        context.mongodb,
+        MongoCollection.USER,
+        'phone',
+        input.phone
+    )
+    if (user1) throw new Error(`Phone is already used. Please try with another email.`)
+
+    const user2 = await fetchDocumentByField<UsersCollection>(
+        context.mongodb,
+        MongoCollection.USER,
+        'email',
+        input.email
+    )
+    if (user2) throw new Error(`Email is already used. Please try with another email.`)
+
     const userDocument: UsersCollection = {
         id: uuid(),
-        ...input
+        ...input,
+        createdAt: new Date().toISOString().toString()
     }
+    const user3 = await fetchDocumentByName(context.mongodb, MongoCollection.USER, input.username)
+    if (user3) throw new Error(`Username not available`)
+
     const createdUser = await insertDataInDB<UsersCollection, User>(context.mongodb, MongoCollection.USER, userDocument)
     return {success: !!createdUser, user: createdUser}
+}
+
+export async function updateUser(context: ResolverContext, input: UpdateUserInput): Promise<UserResponse> {
+    logger.info(`Updating user with id: ${input.id}`)
+
+    const user = await fetchDocumentByField<User>(context.mongodb, MongoCollection.USER, 'id', input.id)
+    if (!user) {
+        throw new Error(`User not found with id: ${input.id}`)
+    }
+
+    // Validate and prepare the update document
+    const updateFields: Partial<UsersCollection> = {}
+
+    if (input.email) {
+        if (!isEmail(input.email)) throw new Error(`Invalid email format`)
+        const emailExists = await fetchDocumentByField<UsersCollection>(
+            context.mongodb,
+            MongoCollection.USER,
+            'email',
+            input.email
+        )
+        if (emailExists && emailExists.id !== input.id) throw new Error(`Email is already used`)
+        updateFields.email = input.email
+    }
+
+    if (input.phone) {
+        if (!isMobilePhone(input.phone)) throw new Error(`Invalid phone number format`)
+        const phoneExists = await fetchDocumentByField<UsersCollection>(
+            context.mongodb,
+            MongoCollection.USER,
+            'phone',
+            input.phone
+        )
+        if (phoneExists && phoneExists.id !== input.id) throw new Error(`Phone is already used`)
+        updateFields.phone = input.phone
+    }
+
+    if (input.password) {
+        if (!isStrongPassword(input.password)) {
+            throw new Error(
+                `Password is not strong enough. It should have at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.`
+            )
+        }
+        updateFields.password = input.password // Ideally, you should hash the password before storing it
+    }
+
+    if (input.username) {
+        const usernameExists = await fetchDocumentByField<User>(
+            context.mongodb,
+            MongoCollection.USER,
+            'username',
+            input.username
+        )
+        if (usernameExists && usernameExists.id !== input.id) throw new Error(`Username not available`)
+        updateFields.username = input.username
+    }
+
+    if (input.fullName) {
+        updateFields.fullName = input.fullName
+    }
+
+    if (input.bio) {
+        updateFields.bio = input.bio
+    }
+
+    if (input.profilePictureUri) {
+        updateFields.profilePictureUri = input.profilePictureUri
+    }
+
+    if (input.profileBannerUri) {
+        updateFields.profileBannerUri = input.profileBannerUri
+    }
+
+    const updatedUser = await updateDataInDB<UsersCollection, User>(
+        context.mongodb,
+        MongoCollection.USER,
+        user.id,
+        updateFields
+    )
+
+    return {success: !!updatedUser, user: updatedUser}
 }
 
 export async function signInUser(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {

@@ -35,7 +35,7 @@ export async function createOrUpdateAccessToken(db: Db, token: string, document:
             userId: existingToken.userId,
             token,
             status: TokenStatus.Active,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString().toLowerCase()
         }
         await db
             .collection<AccessTokensCollection>(MongoCollection.ACCESS_TOKEN)

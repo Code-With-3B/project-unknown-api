@@ -1,7 +1,7 @@
 import {ResolverContext} from '../../@types/context'
 
 import {CheckDuplicateUserResponse, Resolvers, SignInResponse, User, UserResponse} from '../../generated/graphql'
-import {checkUsernameIsDuplicate, createUser, getUsers, signInUser} from '../services/user.service'
+import {checkUsernameIsDuplicate, createUser, getUsers, signInUser, updateUser} from '../services/user.service'
 
 export const userResolver: Resolvers = {
     Query: {
@@ -18,6 +18,9 @@ export const userResolver: Resolvers = {
         },
         signInUser: (_, {input}, context: ResolverContext): Promise<SignInResponse> => {
             return signInUser(context, input)
+        },
+        updateUser: (_, {input}, context: ResolverContext): Promise<UserResponse> => {
+            return updateUser(context, input)
         }
     }
 }

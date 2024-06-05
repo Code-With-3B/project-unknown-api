@@ -23,6 +23,19 @@
       "type": "string",
       "description": "'verificationStatus' must be a string"
     },
+    "profilePictureUri": {
+      "type": "string",
+      "description": "'profilePictureUri' must be a string url"
+    },
+    "profileBannerUri": {
+      "type": "string",
+      "description": "'profileBannerUri' must be a string url"
+    },
+    "authMode": {
+      "type": "string",
+      "enum": ["EMAIL_PASS", "PHONE_PASS", "GOOGLE", "FACEBOOK", "APPLE"],
+      "description": "The status of the access token, which can be either ACTIVE or EXPIRED"
+    },
     "preferredGamesId": {
       "type": "array",
       "minItems": 0,
