@@ -4,6 +4,7 @@ import {MongoClient} from 'mongodb'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/services/access.token.service'
 import fastifyApollo from '@as-integrations/fastify'
+import {isEmpty} from 'ramda'
 import jwt from 'jsonwebtoken'
 import {readFileSync} from 'fs'
 import {resolvers} from '../core/resolvers/_index'
@@ -47,12 +48,13 @@ export const fastifyApolloPlugin = fp(
 
                 try {
                     const token = req.headers.authorization ?? ''
+                    if (isEmpty(token)) throw Error(`Unauthorized Access`)
                     logger.info(`TOKEN is valid: ${token}`)
                     const isActive = await checkAccessTokenIsValid(mongodb.db(serverConfig.db), token)
                     if (isActive) {
                         logger.info(`TOKEN is valid: ${isActive}`)
                         jwt.verify(token, serverConfig.jwtSecreteKey)
-                    }
+                    } else throw Error(`Unauthorized Access`)
                 } catch (error) {
                     logger.error(`Unauthorized Access`)
                     throw Error(`Unauthorized Access`)

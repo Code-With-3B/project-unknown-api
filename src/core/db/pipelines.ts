@@ -1,5 +1,4 @@
 export const pipelines = {
-    users: [
-        { $match: {} }
-    ]
+    'users': [{$match: {}}],
+    'access-tokens': [{$match: {}}]
 }

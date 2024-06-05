@@ -12,6 +12,6 @@ export async function checkAccessTokenIsValid(db: Db, token: string): Promise<bo
         'token',
         token
     )
-    logger.info(`isActive: ${JSON.stringify(tokenData)}`)
+    logger.info(`checkAccessTokenIsValid: ${JSON.stringify(tokenData)}`)
     return tokenData?.status === TokenStatus.Active
 }
