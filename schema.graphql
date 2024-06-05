@@ -1,34 +1,212 @@
+# Scalars
+scalar DateTime # Represents date and time values.
+# Interfaces
 """
-Represents a user in the system.
+Interface for response payloads containing a success flag.
+"""
+interface ResponsePayload {
+  success: Boolean! # Indicates whether the operation was successful.
+}
+
+# Types
+"""
+Represents an achievement in a particular game.
+"""
+type Achievement {
+  id: ID! # Unique identifier for the achievement.
+  game: String! # Name of the game in which the achievement was earned.
+  title: String! # Title of the achievement.
+  description: String! # Description of the achievement.
+  dateAchieved: DateTime! # Date and time when the achievement was earned.
+}
+
+"""
+Represents a skill in a particular game.
+"""
+type Skill {
+  id: ID! # Unique identifier for the skill.
+  game: String! # Name of the game for which the skill is recorded.
+  skillType: String! # Type or category of the skill.
+  value: Float! # Numeric value representing the skill level.
+}
+
+"""
+Represents a highlight (e.g., screenshot, gameplay clip) in a user's profile.
+"""
+type Highlight {
+  id: ID! # Unique identifier for the highlight.
+  title: String! # Title or description of the highlight.
+  description: String # Additional description for the highlight (optional).
+  mediaURL: String! # URL to access the media content of the highlight.
+  createdAt: DateTime! # Date and time when the highlight was created.
+}
+
+"""
+Enum representing verification status of users or professionals.
+"""
+enum VerificationStatus {
+  UNVERIFIED # User or professional is not yet verified.
+  VERIFIED_PLAYER # User is verified as a player.
+  VERIFIED_COACH # User is verified as a coach.
+  VERIFIED_ESPORTS_PROFESSIONAL # User is verified as an esports professional.
+}
+
+"""
+Enum representing authentication modes.
+"""
+enum AuthMode {
+  EMAIL_PASS # Email and password authentication.
+  PHONE_PASS # Phone number and password authentication.
+  GOOGLE # Google authentication.
+  FACEBOOK # Facebook authentication.
+  APPLE # Apple authentication.
+}
+
+"""
+Represents a team in the esports community.
+"""
+type Team {
+  id: ID! # Unique identifier for the team.
+  name: String! # Name of the team.
+  description: String # Description of the team (optional).
+  members: [User!]! # List of members belonging to the team.
+  createdAt: DateTime! # Date and time when the team was created.
+  updatedAt: DateTime! # Date and time when the team was last updated.
+}
+
+"""
+Represents a user in the esports community.
 """
 type User {
-  """
-  The name of the user.
-  """
-  name: String
+  id: ID! # Unique identifier for the user.
+  username: String! # Username of the user.
+  fullName: String! # Full name of the user.
+  profilePictureUri: String
+  profileBannerUri: String
+  phone: String
+  email: String
+  password: String
+  bio: String # Biography or profile description of the user (optional).
+  authMode: AuthMode! # Authentication mode of the user.
+  verificationStatus: VerificationStatus! # Verification status of the user.
+  preferredGames: [ID!] # List of preferred games for the user.
+  achievements: [ID!] # List of achievements earned by the user.
+  skills: [ID!] # List of skills recorded for the user.
+  highlights: [ID!] # List of highlights in the user's profile.
+  teams: [ID!] # List of teams the user belongs to.
+  createdAt: DateTime # Date and time when the user account was created.
+  updatedAt: DateTime # Date and time when the user account was last updated.
 }
 
 """
-Represents a customer in the system.
+Payload returned by user-related mutations.
 """
-type Customer {
-  """
-  The name of the customer.
-  """
-  name: String
+type UserResponse implements ResponsePayload {
+  success: Boolean! # Indicates whether the user-related mutation was successful.
+  user: User # User object returned by the mutation (optional).
+}
+
+# Inputs
+"""
+Input for creating a new user.
+"""
+input CreateUserInput {
+  fullName: String! # Full name for the new user.
+  username: String! # Username for the new user.
+  phone: String
+  email: String
+  password: String
+  authMode: AuthMode! # Authmode for creating or signing-up the new user.
 }
 
 """
-The root query type.
+Input for updating an existing user.
 """
+input UpdateUserInput {
+  id: String!
+  fullName: String # Full name for the new user.
+  username: String # Username for the new user.
+  phone: String
+  email: String
+  password: String
+  bio: String # Updated biography or profile description for the user (optional).
+  profilePictureUri: String
+  profileBannerUri: String
+}
+
+input CheckDuplicateUserInput {
+  username: String!
+}
+
+type CheckDuplicateUserResponse {
+  isDuplicate: Boolean!
+}
+
+type AccessToken {
+  id: ID!
+  userId: ID!
+  status: TokenStatus!
+  token: String!
+  createdAt: String! # Assuming createdAt is a timestamp or date string
+  expiresAt: String! # Optional: Assuming expiresAt is a timestamp or date string
+  # ipAddress: String # Optional: To track the IP address associated with the token
+  # userAgent: String # Optional: To track the user agent associated with the token
+}
+
+enum TokenStatus {
+  ACTIVE
+  EXPIRED
+}
+
+"""
+Input for signing in a user with email and password.
+"""
+input SignInInput {
+  email: String
+  phone: String
+  password: String
+  authMode: AuthMode!
+}
+
+type SignInResponse implements ResponsePayload {
+  success: Boolean!
+  token: String
+}
+
+# Queries
 type Query {
   """
-  Fetch a user.
+  Retrieve a user by their ID.
   """
-  user: User
+  user(username: String): User
 
   """
-  Fetch a customer.
+  Retrieve a user by their ID.
   """
-  customer: Customer
+  users: [User!]
+
+  """
+  Search for users based on various criteria.
+  """
+  searchUsers(username: String, game: String, skillLevel: Float): [User!]
+  checkDuplicate(input: CheckDuplicateUserInput!): CheckDuplicateUserResponse!
+}
+
+# Mutations
+type Mutation {
+  """
+  Create a new user.
+  """
+  createUser(input: CreateUserInput!): UserResponse!
+  signInUser(input: SignInInput!): SignInResponse
+
+  """
+  Update an existing user.
+  """
+  updateUser(input: UpdateUserInput!): UserResponse!
+
+  """
+  Delete a user by their ID.
+  """
+  deleteUser(id: ID!): ID!
 }
