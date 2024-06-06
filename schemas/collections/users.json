@@ -1,7 +1,7 @@
 {
   "type": "object",
   "title": "Users Collection",
-  "required": ["id", "username"],
+  "required": ["id", "username", "password"],
   "properties": {
     "id": {
       "type": "string",
@@ -16,6 +16,10 @@
       "description": "'bio' must be a string"
     },
     "bio": {
+      "type": "string",
+      "description": "'bio' must be a string"
+    },
+    "password": {
       "type": "string",
       "description": "'bio' must be a string"
     },

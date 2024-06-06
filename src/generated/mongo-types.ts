@@ -28,6 +28,10 @@ export interface UsersCollection {
    */
   bio?: string;
   /**
+   * 'bio' must be a string
+   */
+  password: string;
+  /**
    * 'verificationStatus' must be a string
    */
   verificationStatus?: string;

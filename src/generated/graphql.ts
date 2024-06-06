@@ -152,6 +152,8 @@ export type SignInInput = {
 
 export type SignInResponse = ResponsePayload & {
   __typename?: 'SignInResponse';
+  error?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
   token?: Maybe<Scalars['String']['output']>;
 };
@@ -205,7 +207,7 @@ export type User = {
   fullName: Scalars['String']['output'];
   highlights?: Maybe<Array<Scalars['ID']['output']>>;
   id: Scalars['ID']['output'];
-  password?: Maybe<Scalars['String']['output']>;
+  password: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
   preferredGames?: Maybe<Array<Scalars['ID']['output']>>;
   profileBannerUri?: Maybe<Scalars['String']['output']>;
@@ -415,6 +417,8 @@ export type ResponsePayloadResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type SignInResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['SignInResponse'] = ResolversParentTypes['SignInResponse']> = {
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -447,7 +451,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   highlights?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   preferredGames?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   profileBannerUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
