@@ -19,7 +19,8 @@ export const serverConfig = {
     db: parseEnv(process.env.MONGODB_DATABASE, 'project-unknown', stringParser),
     poolSize: parseEnv(process.env.DB_POOL_SIZE, 20, Number),
     jwtSecreteKey: parseEnv(process.env.JWT_SECRET, '', stringParser),
-    jwtExpirationTime: parseEnv(process.env.TOKEN_EXPIRATION, '1d', stringParser)
+    jwtExpirationTime: parseEnv(process.env.TOKEN_EXPIRATION, '1d', stringParser),
+    defaultPassword: parseEnv(process.env.DEFAULT_PASSWORD, '123', stringParser)
 }
 
 export const logger = pino({

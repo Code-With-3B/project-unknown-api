@@ -7,6 +7,7 @@ export enum ErrorCode {
     DUPLICATE_EMAIL = 'DUPLICATE_EMAIL',
     DUPLICATE_PHONE = 'DUPLICATE_PHONE',
     USERNAME_UNAVAILABLE = 'USERNAME_UNAVAILABLE',
+    INVALID_USERNAME_LENGTH = 'INVALID_USERNAME_LENGTH',
 
     // User update errors
     EMAIL_ALREADY_USED = 'EMAIL_ALREADY_USED',
@@ -19,6 +20,8 @@ export enum ErrorCode {
 
     // Authentication errors
     MISSING_EMAIL = 'MISSING_EMAIL',
+    INCORRECT_EMAIL = 'INCORRECT_EMAIL',
+    INCORRECT_PHONE = 'INCORRECT_PHONE',
     MISSING_PHONE = 'MISSING_PHONE',
     MISSING_PASSWORD = 'MISSING_PASSWORD',
     INVALID_EMAIL_FORMAT = 'INVALID_EMAIL_FORMAT',
@@ -30,37 +33,6 @@ export enum ErrorCode {
     INVALID_TOKEN = 'INVALID_TOKEN'
 }
 
-export const ErrorHttpStatus: Record<ErrorCode, number> = {
-    // General errors
-    [ErrorCode.GENERIC_ERROR]: 500,
-
-    // User creation errors
-    [ErrorCode.DUPLICATE_EMAIL]: 409,
-    [ErrorCode.DUPLICATE_PHONE]: 409,
-    [ErrorCode.USERNAME_UNAVAILABLE]: 409,
-
-    // User update errors
-    [ErrorCode.EMAIL_ALREADY_USED]: 409,
-    [ErrorCode.PHONE_ALREADY_USED]: 409,
-    [ErrorCode.USERNAME_NOT_AVAILABLE]: 409,
-
-    // Sign-in errors
-    [ErrorCode.USER_NOT_FOUND]: 404,
-    [ErrorCode.INCORRECT_PASSWORD]: 401,
-
-    // Authentication errors
-    [ErrorCode.MISSING_EMAIL]: 400,
-    [ErrorCode.MISSING_PHONE]: 400,
-    [ErrorCode.MISSING_PASSWORD]: 400,
-    [ErrorCode.INVALID_EMAIL_FORMAT]: 400,
-    [ErrorCode.INVALID_PHONE_FORMAT]: 400,
-    [ErrorCode.WEAK_PASSWORD]: 400,
-
-    // Token and authentication errors
-    [ErrorCode.NOT_AUTHENTICATED]: 401,
-    [ErrorCode.INVALID_TOKEN]: 401
-}
-
 export const ErrorMessage: Record<ErrorCode, string> = {
     // General errors
     [ErrorCode.GENERIC_ERROR]: 'An error occurred',
@@ -69,6 +41,7 @@ export const ErrorMessage: Record<ErrorCode, string> = {
     [ErrorCode.DUPLICATE_EMAIL]: 'Email already exists',
     [ErrorCode.DUPLICATE_PHONE]: 'Phone number already exists',
     [ErrorCode.USERNAME_UNAVAILABLE]: 'Username is not available',
+    [ErrorCode.INVALID_USERNAME_LENGTH]: 'Username must contain atleast 6 characters',
 
     // User update errors
     [ErrorCode.EMAIL_ALREADY_USED]: 'Email is already in use',
@@ -81,6 +54,8 @@ export const ErrorMessage: Record<ErrorCode, string> = {
 
     // Authentication errors
     [ErrorCode.MISSING_EMAIL]: 'Email is missing',
+    [ErrorCode.INCORRECT_EMAIL]: 'No user found with email',
+    [ErrorCode.INCORRECT_PHONE]: 'No user found with phone',
     [ErrorCode.MISSING_PHONE]: 'Phone number is missing',
     [ErrorCode.MISSING_PASSWORD]: 'Password is missing',
     [ErrorCode.INVALID_EMAIL_FORMAT]: 'Invalid email format',
