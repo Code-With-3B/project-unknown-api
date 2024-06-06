@@ -15,6 +15,14 @@
       "type": "string",
       "description": "'bio' must be a string"
     },
+    "phone": {
+      "type": "string",
+      "description": "'bio' must be a string"
+    },
+    "email": {
+      "type": "string",
+      "description": "'bio' must be a string"
+    },
     "bio": {
       "type": "string",
       "description": "'bio' must be a string"

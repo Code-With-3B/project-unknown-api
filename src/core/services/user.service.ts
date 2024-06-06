@@ -1,8 +1,7 @@
+import {ErrorCode} from '../../constants/errors'
 import {MongoCollection} from '../../@types/collections'
 import {ResolverContext} from '../../@types/context'
-import {TokenInputPayload} from '../../@types/auth'
 import {UsersCollection} from './../../generated/mongo-types'
-import {logger} from '../../config'
 import {v4 as uuid} from 'uuid'
 
 import {
@@ -12,193 +11,273 @@ import {
     CreateUserInput,
     SignInInput,
     SignInResponse,
+    TokenPayloadInput,
     UpdateUserInput,
     User,
     UserResponse
 } from '../../generated/graphql'
-import {bcryptConfig, generateToken} from '../auth/utils'
+import {bcryptConfig, generateToken} from '../../constants/auth/utils'
 import {compare, hash} from 'bcrypt'
-import {
-    fetchDocumentByField,
-    fetchDocumentByName,
-    fetchRelationalData,
-    insertDataInDB,
-    updateDataInDB
-} from '../db/common'
+import {fetchDocumentByField, fetchRelationalData, insertDataInDB, updateDataInDB} from '../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
+import {logger, serverConfig} from '../../config'
 
+/**
+ * Initiates the process of fetching all users from the database.
+ * @param context The resolver context containing the MongoDB database instance.
+ * @returns A Promise that resolves to an array of users, or null if no users are found.
+ */
 export async function getUsers(context: ResolverContext): Promise<User[] | null> {
+    logger.info(`Initiating fetching all users from the database.`)
     return await fetchRelationalData<User>(context.mongodb, MongoCollection.USER)
 }
 
+/**
+ * Checks if the provided username already exists in the database.
+ * @param context The resolver context containing the MongoDB database instance.
+ * @param input The input containing the username to check for duplication.
+ * @returns A Promise that resolves to an object indicating whether the username is a duplicate.
+ */
 export async function checkUsernameIsDuplicate(
     context: ResolverContext,
     input: CheckDuplicateUserInput
 ): Promise<CheckDuplicateUserResponse> {
-    const user = await fetchDocumentByName(context.mongodb, MongoCollection.USER, input.username)
-    logger.info(`Checking duplicate user ${JSON.stringify(user)}`)
+    logger.info(`Checking for duplicate username: ${input.username}`)
+    const user = await fetchDocumentByField<User>(context.mongodb, MongoCollection.USER, 'username', input.username)
+    logger.info(`User fetch result: ${user ? 'User exists' : 'No user found'}`)
     if (user) return {isDuplicate: true}
     return {isDuplicate: false}
 }
 
+/**
+ * Creates a new user in the database.
+ * @param context The resolver context containing the MongoDB database instance.
+ * @param input The input data for creating a new user.
+ * @returns A Promise that resolves to a UserResponse indicating success or failure.
+ */
 export async function createUser(context: ResolverContext, input: CreateUserInput): Promise<UserResponse> {
-    if (input.authMode === AuthMode.EmailPass) {
-        if (!input.email) throw new Error(`Email is required`)
-        if (!input.password) throw Error(`Password is required`)
-        if (!isEmail(input.email)) throw new Error(`Invalid email format`)
-        if (!isStrongPassword(input.password))
-            throw new Error(
-                `Password is not strong enough. It should have at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.`
-            )
-    } else if (input.authMode === AuthMode.PhonePass) {
-        if (!input.phone) throw new Error(`Phone number is required`)
-        if (!input.password) throw Error(`Password is required`)
-        if (!isMobilePhone(input.phone)) throw new Error(`Invalid phone number format`)
-        if (!isStrongPassword(input.password))
-            throw new Error(
-                `Password is not strong enough. It should have at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.`
-            )
-    } else if (!input.email) throw new Error(`Email is required`)
+    logger.info(`Initiating user onboarding with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
+    try {
+        if (!input.password) throw new Error(ErrorCode.MISSING_PASSWORD)
+        if (!isStrongPassword(input.password)) throw new Error(ErrorCode.WEAK_PASSWORD)
 
-    const user1 = await fetchDocumentByField<UsersCollection>(
-        context.mongodb,
-        MongoCollection.USER,
-        'phone',
-        input.phone
-    )
-    if (user1) throw new Error(`Phone is already used. Please try with another email.`)
+        if (input.authMode === AuthMode.EmailPass || !input.authMode) {
+            if (!input.email) throw new Error(ErrorCode.MISSING_EMAIL)
+            if (!isEmail(input.email)) throw new Error(ErrorCode.INVALID_EMAIL_FORMAT)
+        } else if (input.authMode === AuthMode.PhonePass) {
+            if (!input.phone) throw new Error(ErrorCode.MISSING_PHONE)
+            if (!isMobilePhone(input.phone)) throw new Error(ErrorCode.INVALID_PHONE_FORMAT)
+        }
 
-    const user2 = await fetchDocumentByField<UsersCollection>(
-        context.mongodb,
-        MongoCollection.USER,
-        'email',
-        input.email
-    )
-    if (user2) throw new Error(`Email is already used. Please try with another email.`)
+        if (input.email) await checkDuplicateUser(context, 'email', input.email, ErrorCode.DUPLICATE_EMAIL)
+        if (input.phone) await checkDuplicateUser(context, 'phone', input.phone, ErrorCode.DUPLICATE_PHONE)
+        await checkDuplicateUser(context, 'username', input.username, ErrorCode.USERNAME_UNAVAILABLE)
 
-    const userDocument: UsersCollection = {
-        id: uuid(),
-        ...input,
-        password: await hash(input.password ?? '9q$cx?^0BzuF,0(', bcryptConfig.saltRounds),
-        createdAt: new Date().toISOString().toString()
+        const userDocument: UsersCollection = {
+            id: uuid(),
+            ...input,
+            username: input.username?.toLowerCase(),
+            email: input.email?.toLowerCase(),
+            phone: input.phone?.toLowerCase(),
+            password: await hash(input.password ?? serverConfig.defaultPassword, bcryptConfig.saltRounds),
+            createdAt: new Date().toISOString()
+        }
+
+        const createdUser = await insertDataInDB<UsersCollection, User>(
+            context.mongodb,
+            MongoCollection.USER,
+            userDocument
+        )
+        logger.info(`User onboarding ${createdUser ? 'Successful' : 'Failed'}`)
+        return {success: !!createdUser, user: createdUser}
+    } catch (error) {
+        logger.error(`Error creating user: ${error}`)
+        throw error
     }
-    const user3 = await fetchDocumentByName(context.mongodb, MongoCollection.USER, input.username)
-    if (user3) throw new Error(`Username not available`)
-
-    const createdUser = await insertDataInDB<UsersCollection, User>(context.mongodb, MongoCollection.USER, userDocument)
-    return {success: !!createdUser, user: createdUser}
 }
 
 export async function updateUser(context: ResolverContext, input: UpdateUserInput): Promise<UserResponse> {
-    logger.info(`Updating user with id: ${input.id}`)
+    logger.info(`Initiating user update for userID: ${input.id}`)
 
-    const user = await fetchDocumentByField<User>(context.mongodb, MongoCollection.USER, 'id', input.id)
-    if (!user) {
-        throw new Error(`User not found with id: ${input.id}`)
-    }
+    try {
+        const user = await fetchDocumentByField<User>(context.mongodb, MongoCollection.USER, 'id', input.id)
+        if (!user) {
+            logger.error(`User not found with id: ${input.id}`)
+            throw new Error(ErrorCode.USER_NOT_FOUND)
+        }
 
-    // Validate and prepare the update document
-    const updateFields: Partial<UsersCollection> = {}
+        const updateFields: Partial<UsersCollection> = {}
 
-    if (input.email) {
-        if (!isEmail(input.email)) throw new Error(`Invalid email format`)
-        const emailExists = await fetchDocumentByField<UsersCollection>(
+        if (input.password) {
+            if (!isStrongPassword(input.password)) {
+                logger.error(`Weak password provided`)
+                throw new Error(ErrorCode.WEAK_PASSWORD)
+            }
+            updateFields.password = await hash(input.password, bcryptConfig.saltRounds)
+        }
+
+        if (input.email) {
+            if (!isEmail(input.email)) {
+                logger.error(`Invalid email format: ${input.email}`)
+                throw new Error(ErrorCode.INVALID_EMAIL_FORMAT)
+            }
+            if (user.email != input.email)
+                await checkDuplicateUser(context, 'email', input.email, ErrorCode.DUPLICATE_EMAIL)
+            updateFields.email = input.email.toLowerCase()
+        }
+
+        if (input.phone) {
+            if (!isMobilePhone(input.phone)) {
+                logger.error(`Invalid phone number format: ${input.phone}`)
+                throw new Error(ErrorCode.INVALID_PHONE_FORMAT)
+            }
+            if (user.phone != input.phone)
+                await checkDuplicateUser(context, 'phone', input.phone, ErrorCode.DUPLICATE_PHONE)
+            updateFields.phone = input.phone.toLowerCase()
+        }
+
+        if (input.username) {
+            if (input.username.length < 6) {
+                logger.error(`Invalid username length: ${input.username}`)
+                throw new Error(ErrorCode.INVALID_USERNAME_LENGTH)
+            }
+            if (user.username != input.username)
+                await checkDuplicateUser(context, 'username', input.username, ErrorCode.USERNAME_UNAVAILABLE)
+            updateFields.username = input.username
+        }
+
+        if (input.fullName) {
+            updateFields.fullName = input.fullName
+        }
+        if (input.bio) {
+            updateFields.bio = input.bio
+        }
+        if (input.profilePictureUri) {
+            updateFields.profilePictureUri = input.profilePictureUri
+        }
+        if (input.profileBannerUri) {
+            updateFields.profileBannerUri = input.profileBannerUri
+        }
+
+        const updatedUser = await updateDataInDB<UsersCollection, User>(
             context.mongodb,
             MongoCollection.USER,
-            'email',
-            input.email
+            user.id,
+            updateFields
         )
-        if (emailExists && emailExists.id !== input.id) throw new Error(`Email is already used`)
-        updateFields.email = input.email
-    }
 
-    if (input.phone) {
-        if (!isMobilePhone(input.phone)) throw new Error(`Invalid phone number format`)
-        const phoneExists = await fetchDocumentByField<UsersCollection>(
+        logger.info(`User update successful for userID: ${input.id}`)
+        return {success: !!updatedUser, user: updatedUser}
+    } catch (error) {
+        logger.error(`Error updating user with userID: ${input.id} with: ${error}`)
+        throw error
+    }
+}
+
+export async function signInUser(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
+    logger.info(`Initiating user sign-in with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
+    logger.info(`Context ${JSON.stringify(context.mongodb.databaseName)}`)
+
+    if (input.authMode === AuthMode.PhonePass) {
+        if (!input.phone) {
+            logger.error(`Phone number is required for phone-based sign-in`)
+            return {success: false, error: ErrorCode.MISSING_PHONE}
+        }
+        if (!input.password) {
+            logger.error(`Password is required for phone-based sign-in`)
+            return {success: false, error: ErrorCode.MISSING_PASSWORD}
+        }
+        const user = await fetchDocumentByField<UsersCollection>(
             context.mongodb,
             MongoCollection.USER,
             'phone',
             input.phone
         )
-        if (phoneExists && phoneExists.id !== input.id) throw new Error(`Phone is already used`)
-        updateFields.phone = input.phone
-    }
-
-    if (input.password) {
-        if (!isStrongPassword(input.password)) {
-            throw new Error(
-                `Password is not strong enough. It should have at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.`
-            )
+        if (!user) {
+            logger.error(`User not found with phone number: ${input.phone}`)
+            return {success: false, error: ErrorCode.INCORRECT_PHONE}
         }
-        updateFields.password = await hash(input.password, bcryptConfig.saltRounds) // Hash the new password with stronger configuration
-    }
+        const flg = await compare(input.password, user.password)
+        if (!flg) return {success: false, error: ErrorCode.INCORRECT_PASSWORD}
+        const payload: TokenPayloadInput = {
+            id: user.id,
+            createdAt: user.createdAt ?? `${user.createdAt}`
+        }
+        const token = await generateToken(context.mongodb, payload)
+        return {success: !!token, token: token}
+    } else if (input.authMode == AuthMode.EmailPass) {
+        if (!input.email) {
+            logger.error(`Phone number is required for phone-based sign-in`)
+            return {success: false, error: ErrorCode.MISSING_EMAIL}
+        }
+        if (!input.password) {
+            logger.error(`Password is required for phone-based sign-in`)
+            return {success: false, error: ErrorCode.MISSING_PASSWORD}
+        }
 
-    if (input.username) {
-        const usernameExists = await fetchDocumentByField<User>(
+        // if (input.authMode != AuthMode.EmailPass && !input.email) {
+        //     logger.error(`Email is required`)
+        //     throw new Error(ErrorCode.MISSING_EMAIL)
+        // }
+
+        const user = await fetchDocumentByField<UsersCollection>(
             context.mongodb,
             MongoCollection.USER,
-            'username',
-            input.username
+            'email',
+            input.email
         )
-        if (usernameExists && usernameExists.id !== input.id) throw new Error(`Username not available`)
-        updateFields.username = input.username
+        if (!user) throw Error(ErrorCode.INCORRECT_EMAIL)
+        input.email = input.email?.toLowerCase()
+        const flg = await compare(input.password, user.password)
+        if (!flg) return {success: false, error: ErrorCode.INCORRECT_PASSWORD}
+        const payload: TokenPayloadInput = {
+            id: user.id,
+            createdAt: user.createdAt ?? `${user.createdAt}`
+        }
+        const token = await generateToken(context.mongodb, payload)
+        return {success: !!token, token: token}
+    } else {
+        if (!input.email) {
+            logger.error(`Phone number is required for phone-based sign-in`)
+            return {success: false, error: ErrorCode.MISSING_EMAIL}
+        }
+
+        const user = await fetchDocumentByField<UsersCollection>(
+            context.mongodb,
+            MongoCollection.USER,
+            'email',
+            input.email
+        )
+        if (!user) throw Error(ErrorCode.INCORRECT_EMAIL)
+        input.email = input.email?.toLowerCase()
+        const payload: TokenPayloadInput = {
+            id: user.id,
+            createdAt: user.createdAt ?? `${user.createdAt}`
+        }
+        const token = await generateToken(context.mongodb, payload)
+        return {success: !!token, token: token}
     }
-
-    if (input.fullName) {
-        updateFields.fullName = input.fullName
-    }
-
-    if (input.bio) {
-        updateFields.bio = input.bio
-    }
-
-    if (input.profilePictureUri) {
-        updateFields.profilePictureUri = input.profilePictureUri
-    }
-
-    if (input.profileBannerUri) {
-        updateFields.profileBannerUri = input.profileBannerUri
-    }
-
-    const updatedUser = await updateDataInDB<UsersCollection, User>(
-        context.mongodb,
-        MongoCollection.USER,
-        user.id,
-        updateFields
-    )
-
-    return {success: !!updatedUser, user: updatedUser}
 }
 
-export async function signInUser(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
-    logger.info(`Context ${JSON.stringify(context.mongodb.databaseName)}`)
-    if (input.authMode === AuthMode.EmailPass) {
-        if (!input.email) throw new Error(`Email is required`)
-        if (!input.password) throw Error(`Password is required`)
-    } else if (input.authMode === AuthMode.PhonePass) {
-        if (!input.phone) throw new Error(`Phone number is required`)
-        if (!input.password) throw Error(`Password is required`)
-    } else if (!input.email) throw new Error(`Email is required`)
-
-    const user = await fetchDocumentByField<UsersCollection>(
-        context.mongodb,
-        MongoCollection.USER,
-        'email',
-        input.email
-    )
-    if (!user) return {success: false}
-    logger.info(`User details: ${JSON.stringify(user)}`)
-    const newPassword = input.password ?? '9q$cx?^0BzuF,0('
-    logger.info(`New hashed: ${newPassword}`)
-    const flg = await compare(newPassword, user.password)
-    logger.info(`User details password match: ${flg}`)
-    if (!flg) {
-        return {success: false, error: 'Incorrect password'}
+/**
+ * Checks for existing user by a specified field in a case-insensitive manner.
+ * @param context The resolver context containing the MongoDB database instance.
+ * @param field The field to check (e.g., 'email', 'phone', 'username').
+ * @param value The value to check.
+ * @param errorCode The error code to throw if a duplicate is found.
+ * @throws Error if a duplicate is found.
+ */
+async function checkDuplicateUser(
+    context: ResolverContext,
+    field: string,
+    value: string,
+    errorCode: ErrorCode
+): Promise<void> {
+    logger.info(`Checking duplicate field for user with ${field}: ${value}`)
+    if (
+        value &&
+        (await fetchDocumentByField<UsersCollection>(context.mongodb, MongoCollection.USER, field, value.toLowerCase()))
+    ) {
+        throw new Error(errorCode)
     }
-    const payload: TokenInputPayload = {
-        id: user.id,
-        createdAt: user.createdAt ?? `${user.createdAt}`
-    }
-    const token = await generateToken(context.mongodb, payload)
-    return {success: !!token, token: token}
 }

@@ -18,8 +18,10 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
+  JSON: { input: any; output: any; }
 };
 
+/** Represents an access token for authentication. */
 export type AccessToken = {
   __typename?: 'AccessToken';
   createdAt: Scalars['String']['output'];
@@ -49,10 +51,12 @@ export enum AuthMode {
   PhonePass = 'PHONE_PASS'
 }
 
+/** Input for checking if a username is duplicate. */
 export type CheckDuplicateUserInput = {
   username: Scalars['String']['input'];
 };
 
+/** Response for checking if a username is duplicate. */
 export type CheckDuplicateUserResponse = {
   __typename?: 'CheckDuplicateUserResponse';
   isDuplicate: Scalars['Boolean']['output'];
@@ -68,6 +72,12 @@ export type CreateUserInput = {
   username: Scalars['String']['input'];
 };
 
+export type GraphQlRequestBody = {
+  operationName?: InputMaybe<Scalars['String']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  variables?: InputMaybe<Scalars['JSON']['input']>;
+};
+
 /** Represents a highlight (e.g., screenshot, gameplay clip) in a user's profile. */
 export type Highlight = {
   __typename?: 'Highlight';
@@ -80,23 +90,41 @@ export type Highlight = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  /** Create a new user. */
+  /**
+   * Create a new user.
+   *
+   * - `input`: Input data for creating the new user.
+   *   - `fullName`: Full name of the new user (required).
+   *   - `username`: Unique username for the new user (required).
+   *   - `phone`: Phone number for the new user (optional, required if `authMode` is `PHONE_PASS`).
+   *   - `email`: Email address for the new user (optional, required if `authMode` is `EMAIL_PASS`, `GOOGLE`, `FACEBOOK`, or `APPLE`).
+   *   - `password`: Password for the new user (optional, required if `authMode` is `EMAIL_PASS` or `PHONE_PASS`).
+   *   - `authMode`: Authentication mode for creating the new user (required).
+   *
+   *   Authentication mode specifics:
+   *   - If `authMode` is `EMAIL_PASS`:
+   *     - Required fields: `email`, `password`, `username`, `fullName`, `authMode`.
+   *   - If `authMode` is `PHONE_PASS`:
+   *     - Required fields: `phone`, `password`, `username`, `fullName`, `authMode`.
+   *   - If `authMode` is `GOOGLE`, `FACEBOOK`, or `APPLE`:
+   *     - Required fields: `email`, `username`, `fullName`, `authMode`.
+   */
   createUser: UserResponse;
-  /** Delete a user by their ID. */
-  deleteUser: Scalars['ID']['output'];
+  /**
+   * Sign in a user using email and password.
+   * - `input`: Input data for signing in the user.
+   */
   signInUser?: Maybe<SignInResponse>;
-  /** Update an existing user. */
+  /**
+   * Update an existing user.
+   * - `input`: Input data for updating the user.
+   */
   updateUser: UserResponse;
 };
 
 
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
-};
-
-
-export type MutationDeleteUserArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -111,25 +139,23 @@ export type MutationUpdateUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  /**
+   * Check if a username is already taken.
+   * - `input`: Input containing the username to check for duplication.
+   */
   checkDuplicate: CheckDuplicateUserResponse;
-  /** Search for users based on various criteria. */
-  searchUsers?: Maybe<Array<User>>;
-  /** Retrieve a user by their ID. */
+  /**
+   * Retrieve a user by their username.
+   * - `username`: Username of the user to retrieve.
+   */
   user?: Maybe<User>;
-  /** Retrieve a user by their ID. */
+  /** Retrieve a list of all users. */
   users?: Maybe<Array<User>>;
 };
 
 
 export type QueryCheckDuplicateArgs = {
   input: CheckDuplicateUserInput;
-};
-
-
-export type QuerySearchUsersArgs = {
-  game?: InputMaybe<Scalars['String']['input']>;
-  skillLevel?: InputMaybe<Scalars['Float']['input']>;
-  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -150,6 +176,7 @@ export type SignInInput = {
   phone?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Payload returned by sign-in mutation. */
 export type SignInResponse = ResponsePayload & {
   __typename?: 'SignInResponse';
   error?: Maybe<Scalars['String']['output']>;
@@ -178,6 +205,13 @@ export type Team = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type TokenPayloadInput = {
+  __typename?: 'TokenPayloadInput';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+};
+
+/** Enum representing the status of an access token. */
 export enum TokenStatus {
   Active = 'ACTIVE',
   Expired = 'EXPIRED'
@@ -318,8 +352,10 @@ export type ResolversTypes = {
   CreateUserInput: CreateUserInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  GraphQLRequestBody: GraphQlRequestBody;
   Highlight: ResolverTypeWrapper<Highlight>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
@@ -328,6 +364,7 @@ export type ResolversTypes = {
   Skill: ResolverTypeWrapper<Skill>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Team: ResolverTypeWrapper<Team>;
+  TokenPayloadInput: ResolverTypeWrapper<TokenPayloadInput>;
   TokenStatus: TokenStatus;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
@@ -345,8 +382,10 @@ export type ResolversParentTypes = {
   CreateUserInput: CreateUserInput;
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
+  GraphQLRequestBody: GraphQlRequestBody;
   Highlight: Highlight;
   ID: Scalars['ID']['output'];
+  JSON: Scalars['JSON']['output'];
   Mutation: {};
   Query: {};
   ResponsePayload: ResolversInterfaceTypes<ResolversParentTypes>['ResponsePayload'];
@@ -355,6 +394,7 @@ export type ResolversParentTypes = {
   Skill: Skill;
   String: Scalars['String']['output'];
   Team: Team;
+  TokenPayloadInput: TokenPayloadInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   UserResponse: UserResponse;
@@ -397,16 +437,18 @@ export type HighlightResolvers<ContextType = any, ParentType extends ResolversPa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
-  deleteUser?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   signInUser?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInUserArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   checkDuplicate?: Resolver<ResolversTypes['CheckDuplicateUserResponse'], ParentType, ContextType, RequireFields<QueryCheckDuplicateArgs, 'input'>>;
-  searchUsers?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType, Partial<QuerySearchUsersArgs>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserArgs>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
 };
@@ -439,6 +481,12 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
   members?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TokenPayloadInputResolvers<ContextType = any, ParentType extends ResolversParentTypes['TokenPayloadInput'] = ResolversParentTypes['TokenPayloadInput']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -476,12 +524,14 @@ export type Resolvers<ContextType = any> = {
   CheckDuplicateUserResponse?: CheckDuplicateUserResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Highlight?: HighlightResolvers<ContextType>;
+  JSON?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ResponsePayload?: ResponsePayloadResolvers<ContextType>;
   SignInResponse?: SignInResponseResolvers<ContextType>;
   Skill?: SkillResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
+  TokenPayloadInput?: TokenPayloadInputResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserResponse?: UserResponseResolvers<ContextType>;
 };

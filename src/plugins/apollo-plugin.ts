@@ -1,5 +1,6 @@
 import {ApolloServer} from '@apollo/server'
-import {GraphQLRequestBody} from '../@types/auth'
+import {ErrorCode} from '../constants/errors'
+import {GraphQlRequestBody} from '../generated/graphql'
 import {MongoClient} from 'mongodb'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/services/access.token.service'
@@ -14,7 +15,6 @@ import fp, {PluginMetadata} from 'fastify-plugin'
 import {logger, serverConfig} from '../config'
 
 const typeDefs = readFileSync('./schema.graphql', 'utf8')
-
 /**
  * Create Apollo Server instance, MongoDB connection, and integrate with Fastify
  * @param {FastifyInstance} fastify - The Fastify instance to integrate with
@@ -36,30 +36,31 @@ export const fastifyApolloPlugin = fp(
 
         await fastify.register(fastifyApollo(apolloServer), {
             context: async (req: FastifyRequest) => {
-                const body = req.body as GraphQLRequestBody
+                const body = req.body as GraphQlRequestBody
                 const operationName = body.operationName
-                logger.info(`Operation : ${operationName}`)
+                logger.info(`Received request for operation: ${operationName}`)
 
                 const publicOperations = ['createUser', 'signInUser']
-
                 if (publicOperations.includes(operationName ?? '')) {
+                    logger.info('Public operation, no authentication required.')
                     return {mongodb: mongodb.db(serverConfig.db)}
                 }
 
-                try {
-                    const token = req.headers.authorization ?? ''
-                    if (isEmpty(token)) throw Error(`Unauthorized Access`)
-                    logger.info(`TOKEN is valid: ${token}`)
-                    const isActive = await checkAccessTokenIsValid(mongodb.db(serverConfig.db), token)
-                    if (isActive) {
-                        logger.info(`TOKEN is valid: ${isActive}`)
-                        jwt.verify(token, serverConfig.jwtSecreteKey)
-                    } else throw Error(`Unauthorized Access`)
-                } catch (error) {
-                    logger.error(`Unauthorized Access`)
-                    throw Error(`Unauthorized Access`)
+                const token = req.headers.authorization ?? ''
+                if (isEmpty(token)) {
+                    logger.error('Authorization token is missing.')
+                    throw new Error(ErrorCode.NOT_AUTHENTICATED)
                 }
-                return {mongodb: mongodb.db(serverConfig.db)}
+
+                const isActive = await checkAccessTokenIsValid(mongodb.db(serverConfig.db), token)
+                if (isActive) {
+                    jwt.verify(token, serverConfig.jwtSecreteKey)
+                    logger.info('Authorization token is valid.')
+                    return {mongodb: mongodb.db(serverConfig.db)}
+                } else {
+                    logger.error('Invalid authorization token provided.')
+                    throw new Error(ErrorCode.NOT_AUTHENTICATED)
+                }
             }
         })
     },

@@ -26,6 +26,14 @@ export interface UsersCollection {
   /**
    * 'bio' must be a string
    */
+  phone?: string;
+  /**
+   * 'bio' must be a string
+   */
+  email?: string;
+  /**
+   * 'bio' must be a string
+   */
   bio?: string;
   /**
    * 'bio' must be a string

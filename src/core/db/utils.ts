@@ -19,7 +19,7 @@ export async function fetchRelationalData<T>(
         const result: T[] = (await collection.aggregate(finalQuery).toArray()) as T[]
         return result
     } catch (error) {
-        logger.error(`Error fetching data: ${error}`)
+        logger.error(`Error fetching ${collectionName}s: ${error}`)
         throw error
     }
 }
@@ -34,28 +34,9 @@ export async function insertDataInDB<T, U>(db: Db, collectionName: PipelineColle
             })
             return result[0]
         }
-        throw new Error('Error inserting document')
+        throw new Error('Unable to insert data')
     } catch (error) {
-        logger.error(error)
-        throw error
-    }
-}
-
-export async function fetchDocumentByName<T>(
-    db: Db,
-    collectionName: MongoCollection,
-    name: string,
-    caseInsensitive: boolean = false
-): Promise<T | null> {
-    const queryOptions = caseInsensitive ? 'i' : ''
-    try {
-        const collection = db.collection(collectionName)
-        const result = await collection.findOne({
-            username: {$regex: '^' + name + '$', $options: queryOptions}
-        })
-        return result as T
-    } catch (error) {
-        logger.error(`Error fetching data by name: ${error}`)
+        logger.error(`Error fetching data into ${collectionName}s collection: ${error}`)
         throw error
     }
 }
@@ -72,7 +53,7 @@ export async function fetchDocumentByField<T>(
         const result = await collection.findOne({[fieldName]: fieldValue})
         return result as T
     } catch (error) {
-        logger.error(`Error fetching data by field: ${error}`)
+        logger.error(`Error fetching ${collectionName}s data by ${[fieldName]}: ${error}`)
         throw error
     }
 }
@@ -90,13 +71,15 @@ export async function updateDataInDB<T, U>(
         // Ensure the document exists
         const existingDocument = await collection.findOne({id})
         if (!existingDocument) {
-            throw new Error(`Document with id ${id} not found`)
+            logger.error(`No document found with id ${id} not found`)
+            throw new Error(`No document found with id ${id} not found`)
         }
 
         // Perform the update
         const updateResult = await collection.updateOne({id}, {$set: updateFields as Document})
 
         if (updateResult.modifiedCount === 0) {
+            logger.error('Failed to update document')
             throw new Error('Failed to update document')
         }
 
@@ -104,7 +87,7 @@ export async function updateDataInDB<T, U>(
         const updatedDocuments = await fetchRelationalData<U>(db, collectionName, {id})
         return updatedDocuments[0]
     } catch (error) {
-        logger.error(`Error updating data: ${error}`)
+        logger.error(`Error updating ${collectionName}s data: ${error}`)
         throw error
     }
 }
