@@ -3,7 +3,6 @@ import {Db} from 'mongodb'
 import {MongoCollection} from '../../@types/collections'
 import {TokenStatus} from '../../generated/graphql'
 import {fetchDocumentByField} from '../db/common'
-import {logger} from '../../config'
 
 export async function checkAccessTokenIsValid(db: Db, token: string): Promise<boolean> {
     const tokenData = await fetchDocumentByField<AccessTokensCollection>(
@@ -12,6 +11,5 @@ export async function checkAccessTokenIsValid(db: Db, token: string): Promise<bo
         'token',
         token
     )
-    logger.info(`checkAccessTokenIsValid: ${JSON.stringify(tokenData)}`)
     return tokenData?.status === TokenStatus.Active
 }
