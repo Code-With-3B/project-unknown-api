@@ -85,7 +85,7 @@ type User {
   profileBannerUri: String
   phone: String
   email: String
-  password: String
+  password: String!
   bio: String # Biography or profile description of the user (optional).
   authMode: AuthMode! # Authentication mode of the user.
   verificationStatus: VerificationStatus! # Verification status of the user.
@@ -170,6 +170,8 @@ input SignInInput {
 
 type SignInResponse implements ResponsePayload {
   success: Boolean!
+  message: String
+  error: String
   token: String
 }
 

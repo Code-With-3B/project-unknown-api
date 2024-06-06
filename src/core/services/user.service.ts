@@ -2,7 +2,6 @@ import {MongoCollection} from '../../@types/collections'
 import {ResolverContext} from '../../@types/context'
 import {TokenInputPayload} from '../../@types/auth'
 import {UsersCollection} from './../../generated/mongo-types'
-import {generateToken} from '../auth/utils'
 import {logger} from '../../config'
 import {v4 as uuid} from 'uuid'
 
@@ -17,6 +16,8 @@ import {
     User,
     UserResponse
 } from '../../generated/graphql'
+import {bcryptConfig, generateToken} from '../auth/utils'
+import {compare, hash} from 'bcrypt'
 import {
     fetchDocumentByField,
     fetchDocumentByName,
@@ -78,6 +79,7 @@ export async function createUser(context: ResolverContext, input: CreateUserInpu
     const userDocument: UsersCollection = {
         id: uuid(),
         ...input,
+        password: await hash(input.password ?? '9q$cx?^0BzuF,0(', bcryptConfig.saltRounds),
         createdAt: new Date().toISOString().toString()
     }
     const user3 = await fetchDocumentByName(context.mongodb, MongoCollection.USER, input.username)
@@ -128,7 +130,7 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
                 `Password is not strong enough. It should have at least one uppercase letter, one lowercase letter, one number, one special character, and be at least 8 characters long.`
             )
         }
-        updateFields.password = input.password // Ideally, you should hash the password before storing it
+        updateFields.password = await hash(input.password, bcryptConfig.saltRounds) // Hash the new password with stronger configuration
     }
 
     if (input.username) {
@@ -185,7 +187,14 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
         input.email
     )
     if (!user) return {success: false}
-
+    logger.info(`User details: ${JSON.stringify(user)}`)
+    const newPassword = input.password ?? '9q$cx?^0BzuF,0('
+    logger.info(`New hashed: ${newPassword}`)
+    const flg = await compare(newPassword, user.password)
+    logger.info(`User details password match: ${flg}`)
+    if (!flg) {
+        return {success: false, error: 'Incorrect password'}
+    }
     const payload: TokenInputPayload = {
         id: user.id,
         createdAt: user.createdAt ?? `${user.createdAt}`

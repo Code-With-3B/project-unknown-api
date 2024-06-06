@@ -36,3 +36,7 @@ export async function verifyToken(db: Db, token: string): Promise<boolean> {
         return false
     }
 }
+
+export const bcryptConfig = {
+    saltRounds: 12 // Increase the number of salt rounds for stronger hashing
+}
