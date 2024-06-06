@@ -1,5 +1,7 @@
 # Scalars
 scalar DateTime # Represents date and time values.
+scalar JSON
+
 # Interfaces
 """
 Interface for response payloads containing a success flag.
@@ -134,9 +136,15 @@ type CheckDuplicateUserResponse {
   isDuplicate: Boolean! # Indicates whether the username is a duplicate.
 }
 
-type Error {
-  code: Int! # Error code indicating the type of error.
-  message: String! # Error message describing the error.
+type TokenPayloadInput {
+  id: String!
+  createdAt: String!
+}
+
+input GraphQLRequestBody {
+  operationName: String
+  query: String
+  variables: JSON
 }
 
 """

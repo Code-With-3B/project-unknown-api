@@ -1,7 +1,7 @@
 import {Db} from 'mongodb'
-import {TokenInputPayload} from '../../@types/auth'
-import {checkAccessTokenIsValid} from '../services/access.token.service'
-import {createOrUpdateAccessToken} from '../db/collections/access.token.db'
+import {TokenPayloadInput} from '../../generated/graphql'
+import {checkAccessTokenIsValid} from '../../core/services/access.token.service'
+import {createOrUpdateAccessToken} from '../../core/db/collections/access.token.db'
 import jwt from 'jsonwebtoken'
 import {serverConfig} from '../../config'
 
@@ -10,7 +10,7 @@ import {serverConfig} from '../../config'
  * @param payload The payload to be included in the JWT token.
  * @returns The generated JWT token.
  */
-export async function generateToken(db: Db, payload: TokenInputPayload): Promise<string> {
+export async function generateToken(db: Db, payload: TokenPayloadInput): Promise<string> {
     const token = jwt.sign(payload, serverConfig.jwtSecreteKey, {
         expiresIn: serverConfig.jwtExpirationTime,
         algorithm: 'HS256'

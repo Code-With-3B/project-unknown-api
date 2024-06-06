@@ -1,6 +1,6 @@
 import {ApolloServer} from '@apollo/server'
 import {ErrorCode} from '../constants/errors'
-import {GraphQLRequestBody} from '../@types/auth'
+import {GraphQlRequestBody} from '../generated/graphql'
 import {MongoClient} from 'mongodb'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/services/access.token.service'
@@ -36,7 +36,7 @@ export const fastifyApolloPlugin = fp(
 
         await fastify.register(fastifyApollo(apolloServer), {
             context: async (req: FastifyRequest) => {
-                const body = req.body as GraphQLRequestBody
+                const body = req.body as GraphQlRequestBody
                 const operationName = body.operationName
                 logger.info(`Received request for operation: ${operationName}`)
 

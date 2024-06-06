@@ -1,6 +1,5 @@
 import {MongoCollection} from '../../@types/collections'
 import {ResolverContext} from '../../@types/context'
-import {TokenInputPayload} from '../../@types/auth'
 import {UsersCollection} from './../../generated/mongo-types'
 import {logger} from '../../config'
 import {v4 as uuid} from 'uuid'
@@ -12,11 +11,12 @@ import {
     CreateUserInput,
     SignInInput,
     SignInResponse,
+    TokenPayloadInput,
     UpdateUserInput,
     User,
     UserResponse
 } from '../../generated/graphql'
-import {bcryptConfig, generateToken} from '../auth/utils'
+import {bcryptConfig, generateToken} from '../../constants/auth/utils'
 import {compare, hash} from 'bcrypt'
 import {
     fetchDocumentByField,
@@ -24,7 +24,7 @@ import {
     fetchRelationalData,
     insertDataInDB,
     updateDataInDB
-} from '../db/common'
+} from '../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
 
 export async function getUsers(context: ResolverContext): Promise<User[] | null> {
@@ -195,7 +195,7 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
     if (!flg) {
         return {success: false, error: 'Incorrect password'}
     }
-    const payload: TokenInputPayload = {
+    const payload: TokenPayloadInput = {
         id: user.id,
         createdAt: user.createdAt ?? `${user.createdAt}`
     }

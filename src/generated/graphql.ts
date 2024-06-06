@@ -18,6 +18,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
+  JSON: { input: any; output: any; }
 };
 
 /** Represents an access token for authentication. */
@@ -71,10 +72,10 @@ export type CreateUserInput = {
   username: Scalars['String']['input'];
 };
 
-export type Error = {
-  __typename?: 'Error';
-  code: Scalars['Int']['output'];
-  message: Scalars['String']['output'];
+export type GraphQlRequestBody = {
+  operationName?: InputMaybe<Scalars['String']['input']>;
+  query?: InputMaybe<Scalars['String']['input']>;
+  variables?: InputMaybe<Scalars['JSON']['input']>;
 };
 
 /** Represents a highlight (e.g., screenshot, gameplay clip) in a user's profile. */
@@ -202,6 +203,12 @@ export type Team = {
   members: Array<User>;
   name: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TokenPayloadInput = {
+  __typename?: 'TokenPayloadInput';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['String']['output'];
 };
 
 /** Enum representing the status of an access token. */
@@ -344,11 +351,11 @@ export type ResolversTypes = {
   CheckDuplicateUserResponse: ResolverTypeWrapper<CheckDuplicateUserResponse>;
   CreateUserInput: CreateUserInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
-  Error: ResolverTypeWrapper<Error>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  GraphQLRequestBody: GraphQlRequestBody;
   Highlight: ResolverTypeWrapper<Highlight>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
-  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
@@ -357,6 +364,7 @@ export type ResolversTypes = {
   Skill: ResolverTypeWrapper<Skill>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Team: ResolverTypeWrapper<Team>;
+  TokenPayloadInput: ResolverTypeWrapper<TokenPayloadInput>;
   TokenStatus: TokenStatus;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
@@ -373,11 +381,11 @@ export type ResolversParentTypes = {
   CheckDuplicateUserResponse: CheckDuplicateUserResponse;
   CreateUserInput: CreateUserInput;
   DateTime: Scalars['DateTime']['output'];
-  Error: Error;
   Float: Scalars['Float']['output'];
+  GraphQLRequestBody: GraphQlRequestBody;
   Highlight: Highlight;
   ID: Scalars['ID']['output'];
-  Int: Scalars['Int']['output'];
+  JSON: Scalars['JSON']['output'];
   Mutation: {};
   Query: {};
   ResponsePayload: ResolversInterfaceTypes<ResolversParentTypes>['ResponsePayload'];
@@ -386,6 +394,7 @@ export type ResolversParentTypes = {
   Skill: Skill;
   String: Scalars['String']['output'];
   Team: Team;
+  TokenPayloadInput: TokenPayloadInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   UserResponse: UserResponse;
@@ -419,12 +428,6 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type ErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = {
-  code?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type HighlightResolvers<ContextType = any, ParentType extends ResolversParentTypes['Highlight'] = ResolversParentTypes['Highlight']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -433,6 +436,10 @@ export type HighlightResolvers<ContextType = any, ParentType extends ResolversPa
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
@@ -477,6 +484,12 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TokenPayloadInputResolvers<ContextType = any, ParentType extends ResolversParentTypes['TokenPayloadInput'] = ResolversParentTypes['TokenPayloadInput']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   achievements?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   authMode?: Resolver<ResolversTypes['AuthMode'], ParentType, ContextType>;
@@ -510,14 +523,15 @@ export type Resolvers<ContextType = any> = {
   Achievement?: AchievementResolvers<ContextType>;
   CheckDuplicateUserResponse?: CheckDuplicateUserResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
-  Error?: ErrorResolvers<ContextType>;
   Highlight?: HighlightResolvers<ContextType>;
+  JSON?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ResponsePayload?: ResponsePayloadResolvers<ContextType>;
   SignInResponse?: SignInResponseResolvers<ContextType>;
   Skill?: SkillResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
+  TokenPayloadInput?: TokenPayloadInputResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserResponse?: UserResponseResolvers<ContextType>;
 };
