@@ -1,11 +1,13 @@
 import {fastifyApolloPlugin} from './plugins/apollo-plugin'
 import {logger} from './config'
+import {restApiPlugin} from './plugins/rest-api-plugin'
 
 import fastify, {FastifyBaseLogger, FastifyInstance} from 'fastify'
 
 export default (): FastifyInstance => {
     const app = async (childInstance: FastifyInstance): Promise<void> => {
         childInstance.register(fastifyApolloPlugin)
+        childInstance.register(restApiPlugin)
     }
     const server: FastifyInstance = fastify({
         caseSensitive: false,

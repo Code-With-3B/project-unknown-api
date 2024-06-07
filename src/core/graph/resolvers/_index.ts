@@ -1,4 +1,4 @@
-import {Resolvers} from '../../generated/graphql'
+import {Resolvers} from '../../../generated/graphql'
 import {mergeResolvers} from '@graphql-tools/merge'
 import {userResolver} from './user.resolver'
 
