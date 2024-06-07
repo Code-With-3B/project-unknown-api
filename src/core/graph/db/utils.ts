@@ -1,5 +1,5 @@
-import {MongoCollection} from '../../@types/collections'
-import {logger} from '../../config'
+import {MongoCollection} from '../../../@types/collections'
+import {logger} from '../../../config'
 import {pipelines} from './pipelines'
 
 import {Db, Document} from 'mongodb'

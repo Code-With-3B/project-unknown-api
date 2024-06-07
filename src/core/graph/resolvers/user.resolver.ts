@@ -1,6 +1,6 @@
-import {ResolverContext} from '../../@types/context'
+import {ResolverContext} from '../../../@types/context'
 
-import {CheckDuplicateUserResponse, Resolvers, SignInResponse, User, UserResponse} from '../../generated/graphql'
+import {CheckDuplicateUserResponse, Resolvers, SignInResponse, User, UserResponse} from '../../../generated/graphql'
 import {checkUsernameIsDuplicate, createUser, getUsers, signInUser, updateUser} from '../services/user.service'
 
 export const userResolver: Resolvers = {

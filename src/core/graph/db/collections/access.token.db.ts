@@ -1,10 +1,10 @@
-import {AccessTokensCollection} from '../../../generated/mongo-types'
+import {AccessTokensCollection} from '../../../../generated/mongo-types'
 import {Db} from 'mongodb'
-import {MongoCollection} from '../../../@types/collections'
-import {logger} from '../../../config'
+import {MongoCollection} from '../../../../@types/collections'
+import {logger} from '../../../../config'
 import {v4 as uuid} from 'uuid'
 
-import {AccessToken, TokenPayloadInput, TokenStatus} from '../../../generated/graphql'
+import {AccessToken, TokenPayloadInput, TokenStatus} from '../../../../generated/graphql'
 import {fetchDocumentByField, insertDataInDB} from '../utils'
 
 /**

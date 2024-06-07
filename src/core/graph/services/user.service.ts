@@ -1,7 +1,7 @@
-import {ErrorCode} from '../../constants/errors'
-import {MongoCollection} from '../../@types/collections'
-import {ResolverContext} from '../../@types/context'
-import {UsersCollection} from './../../generated/mongo-types'
+import {ErrorCode} from '../../../constants/errors'
+import {MongoCollection} from '../../../@types/collections'
+import {ResolverContext} from '../../../@types/context'
+import {UsersCollection} from '../../../generated/mongo-types'
 import {v4 as uuid} from 'uuid'
 
 import {
@@ -15,12 +15,12 @@ import {
     UpdateUserInput,
     User,
     UserResponse
-} from '../../generated/graphql'
-import {bcryptConfig, generateToken} from '../../constants/auth/utils'
+} from '../../../generated/graphql'
+import {bcryptConfig, generateToken} from '../../../constants/auth/utils'
 import {compare, hash} from 'bcrypt'
 import {fetchDocumentByField, fetchRelationalData, insertDataInDB, updateDataInDB} from '../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
-import {logger, serverConfig} from '../../config'
+import {logger, serverConfig} from '../../../config'
 
 /**
  * Initiates the process of fetching all users from the database.
