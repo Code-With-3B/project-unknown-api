@@ -88,6 +88,21 @@ export type Highlight = {
   title: Scalars['String']['output'];
 };
 
+export enum MediaType {
+  Banner = 'BANNER',
+  Post = 'POST',
+  Profile = 'PROFILE',
+  Video = 'VIDEO'
+}
+
+export type MediaUploadResponse = ResponsePayload & {
+  __typename?: 'MediaUploadResponse';
+  error?: Maybe<Scalars['String']['output']>;
+  fileUri?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /**
@@ -165,7 +180,15 @@ export type QueryUserArgs = {
 
 /** Interface for response payloads containing a success flag. */
 export type ResponsePayload = {
+  error?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
+};
+
+export type RestParamsInput = {
+  __typename?: 'RestParamsInput';
+  mediaType?: Maybe<MediaType>;
+  userId?: Maybe<Scalars['String']['output']>;
 };
 
 /** Input for signing in a user with email and password. */
@@ -256,6 +279,8 @@ export type User = {
 /** Payload returned by user-related mutations. */
 export type UserResponse = ResponsePayload & {
   __typename?: 'UserResponse';
+  error?: Maybe<Scalars['String']['output']>;
+  message?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
   user?: Maybe<User>;
 };
@@ -338,7 +363,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( SignInResponse ) | ( UserResponse );
+  ResponsePayload: ( MediaUploadResponse ) | ( SignInResponse ) | ( UserResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -356,9 +381,12 @@ export type ResolversTypes = {
   Highlight: ResolverTypeWrapper<Highlight>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
+  MediaType: MediaType;
+  MediaUploadResponse: ResolverTypeWrapper<MediaUploadResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
+  RestParamsInput: ResolverTypeWrapper<RestParamsInput>;
   SignInInput: SignInInput;
   SignInResponse: ResolverTypeWrapper<SignInResponse>;
   Skill: ResolverTypeWrapper<Skill>;
@@ -386,9 +414,11 @@ export type ResolversParentTypes = {
   Highlight: Highlight;
   ID: Scalars['ID']['output'];
   JSON: Scalars['JSON']['output'];
+  MediaUploadResponse: MediaUploadResponse;
   Mutation: {};
   Query: {};
   ResponsePayload: ResolversInterfaceTypes<ResolversParentTypes>['ResponsePayload'];
+  RestParamsInput: RestParamsInput;
   SignInInput: SignInInput;
   SignInResponse: SignInResponse;
   Skill: Skill;
@@ -441,6 +471,14 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'JSON';
 }
 
+export type MediaUploadResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['MediaUploadResponse'] = ResolversParentTypes['MediaUploadResponse']> = {
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fileUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   signInUser?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInUserArgs, 'input'>>;
@@ -454,8 +492,16 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'SignInResponse' | 'UserResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'MediaUploadResponse' | 'SignInResponse' | 'UserResponse', ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+};
+
+export type RestParamsInputResolvers<ContextType = any, ParentType extends ResolversParentTypes['RestParamsInput'] = ResolversParentTypes['RestParamsInput']> = {
+  mediaType?: Resolver<Maybe<ResolversTypes['MediaType']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SignInResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['SignInResponse'] = ResolversParentTypes['SignInResponse']> = {
@@ -513,6 +559,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type UserResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserResponse'] = ResolversParentTypes['UserResponse']> = {
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -525,9 +573,11 @@ export type Resolvers<ContextType = any> = {
   DateTime?: GraphQLScalarType;
   Highlight?: HighlightResolvers<ContextType>;
   JSON?: GraphQLScalarType;
+  MediaUploadResponse?: MediaUploadResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   ResponsePayload?: ResponsePayloadResolvers<ContextType>;
+  RestParamsInput?: RestParamsInputResolvers<ContextType>;
   SignInResponse?: SignInResponseResolvers<ContextType>;
   Skill?: SkillResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;

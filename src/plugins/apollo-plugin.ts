@@ -1,7 +1,6 @@
 import {ApolloServer} from '@apollo/server'
 import {ErrorCode} from '../constants/errors'
 import {GraphQlRequestBody} from '../generated/graphql'
-import {MongoClient} from 'mongodb'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/graph/services/access.token.service'
 import fastifyApollo from '@as-integrations/fastify'
@@ -21,46 +20,48 @@ const typeDefs = readFileSync('./schema.graphql', 'utf8')
  * @throws {Error} Throws error if unable to establish MongoDB connection or start ApolloServer
  * @returns {Promise<void>} A Promise indicating the completion of integration process
  */
+
 export const fastifyApolloPlugin = fp(
     async (fastify: FastifyInstance): Promise<void> => {
-        const mongodb = await MongoClient.connect(serverConfig.dbUri, {
-            maxPoolSize: 20
-        })
-
         const apolloServer = new ApolloServer<ResolverContext>({
             typeDefs,
             resolvers
         })
 
         await apolloServer.start()
-
         await fastify.register(fastifyApollo(apolloServer), {
             context: async (req: FastifyRequest) => {
-                const body = req.body as GraphQlRequestBody
-                const operationName = body.operationName
-                logger.info(`Received request for operation: ${operationName}`)
+                const db = fastify.mongo.db
+                if (db) {
+                    const body = req.body as GraphQlRequestBody
+                    const operationName = body.operationName
+                    logger.info(`Received request for operation: ${operationName}`)
 
-                const publicOperations = ['createUser', 'signInUser']
-                if (publicOperations.includes(operationName ?? '')) {
-                    logger.info('Public operation, no authentication required.')
-                    return {mongodb: mongodb.db(serverConfig.db)}
-                }
+                    const publicOperations = ['createUser', 'signInUser']
+                    if (publicOperations.includes(operationName ?? '')) {
+                        logger.info('Public operation, no authentication required.')
+                        return {mongodb: db}
+                    }
 
-                const token = req.headers.authorization ?? ''
-                if (isEmpty(token)) {
-                    logger.error('Authorization token is missing.')
-                    throw new Error(ErrorCode.NOT_AUTHENTICATED)
-                }
+                    if (db) {
+                        const token = req.headers.authorization ?? ''
+                        if (isEmpty(token)) {
+                            logger.error('Authorization token is missing.')
+                            throw new Error(ErrorCode.NOT_AUTHENTICATED)
+                        }
 
-                const isActive = await checkAccessTokenIsValid(mongodb.db(serverConfig.db), token)
-                if (isActive) {
-                    jwt.verify(token, serverConfig.jwtSecreteKey)
-                    logger.info('Authorization token is valid.')
-                    return {mongodb: mongodb.db(serverConfig.db)}
-                } else {
-                    logger.error('Invalid authorization token provided.')
-                    throw new Error(ErrorCode.NOT_AUTHENTICATED)
-                }
+                        const isActive = await checkAccessTokenIsValid(db, token)
+                        if (isActive) {
+                            jwt.verify(token, serverConfig.jwtSecreteKey)
+                            logger.info('Authorization token is valid.')
+                            return {mongodb: db}
+                        } else {
+                            logger.error('Invalid authorization token provided.')
+                            throw new Error(ErrorCode.NOT_AUTHENTICATED)
+                        }
+                    }
+                } else throw Error('Unable to connect to database!!')
+                return {mongodb: db}
             }
         })
     },

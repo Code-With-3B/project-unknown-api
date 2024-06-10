@@ -8,6 +8,8 @@ Interface for response payloads containing a success flag.
 """
 interface ResponsePayload {
   success: Boolean! # Indicates whether the operation was successful.
+  message: String # Message describing the result of the sign-in.
+  error: String # Error message if sign-in was not successful.
 }
 
 # Enums
@@ -38,6 +40,13 @@ Enum representing the status of an access token.
 enum TokenStatus {
   ACTIVE # Token is currently active.
   EXPIRED # Token has expired.
+}
+
+enum MediaType {
+  PROFILE
+  BANNER
+  POST
+  VIDEO
 }
 
 # Types
@@ -126,6 +135,8 @@ Payload returned by user-related mutations.
 """
 type UserResponse implements ResponsePayload {
   success: Boolean! # Indicates whether the user-related mutation was successful.
+  message: String # Message describing the result of the sign-in.
+  error: String # Error message if sign-in was not successful.
   user: User # User object returned by the mutation (optional).
 }
 
@@ -139,6 +150,11 @@ type CheckDuplicateUserResponse {
 type TokenPayloadInput {
   id: String!
   createdAt: String!
+}
+
+type RestParamsInput {
+  userId: String
+  mediaType: MediaType
 }
 
 input GraphQLRequestBody {
@@ -155,6 +171,13 @@ type SignInResponse implements ResponsePayload {
   message: String # Message describing the result of the sign-in.
   error: String # Error message if sign-in was not successful.
   token: String # Token generated after successful sign-in.
+}
+
+type MediaUploadResponse implements ResponsePayload {
+  success: Boolean! # Indicates whether the sign-in was successful.
+  message: String # Message describing the result of the sign-in.
+  error: String # Error message if sign-in was not successful.
+  fileUri: String # Token generated after successful sign-in.
 }
 
 # Inputs
