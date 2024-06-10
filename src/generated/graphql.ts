@@ -90,9 +90,9 @@ export type Highlight = {
 
 export enum MediaType {
   Banner = 'BANNER',
-  Post = 'POST',
-  Profile = 'PROFILE',
-  Video = 'VIDEO'
+  PostImage = 'POST_IMAGE',
+  PostVideo = 'POST_VIDEO',
+  Profile = 'PROFILE'
 }
 
 export type MediaUploadResponse = ResponsePayload & {
@@ -261,6 +261,8 @@ export type User = {
   bio?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
+  followers?: Maybe<Scalars['String']['output']>;
+  following?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
   highlights?: Maybe<Array<Scalars['ID']['output']>>;
   id: Scalars['ID']['output'];
@@ -287,6 +289,7 @@ export type UserResponse = ResponsePayload & {
 
 /** Enum representing verification status of users or professionals. */
 export enum VerificationStatus {
+  Admin = 'ADMIN',
   Unverified = 'UNVERIFIED',
   VerifiedCoach = 'VERIFIED_COACH',
   VerifiedEsportsProfessional = 'VERIFIED_ESPORTS_PROFESSIONAL',
@@ -542,6 +545,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  followers?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  following?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   highlights?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
