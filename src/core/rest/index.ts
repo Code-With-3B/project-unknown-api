@@ -1,68 +1,68 @@
-import {FastifyInstance} from 'fastify'
-import {GridFSBucket} from 'mongodb'
+import {FastifyReply} from 'fastify'
+import {RestParamsInput} from '../../generated/graphql'
 import fs from 'fs'
 import {logger} from '../../config'
 import path from 'path'
 import {pipeline} from 'stream'
 import {promisify} from 'util'
+import {uploadDir} from './utils'
+import {v4 as uuid} from 'uuid'
+
+import {FastifyInstance, FastifyRequest} from 'fastify'
+import {GridFSBucket, GridFSBucketWriteStreamOptions} from 'mongodb'
 
 const pump = promisify(pipeline)
 
 export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
-    fastify.post('/upload', async (request, reply) => {
+    fastify.post('/upload/:userId/:mediaType', async (request: FastifyRequest, reply: FastifyReply) => {
         try {
-            const data = await request.file() // Correctly call file on request object
-
-            const uploadDir = path.join(__dirname, '..', 'uploads')
-            if (!fs.existsSync(uploadDir)) {
-                fs.mkdirSync(uploadDir)
+            logger.info(`Params: ${JSON.stringify(request.params)}`)
+            const {userId, mediaType} = request.params as RestParamsInput
+            const data = await request.file()
+            if (!data) {
+                return reply.send({status: 'upload failed', filename: null, filePath: null})
             }
 
-            if (data) {
-                const filePath = path.join(uploadDir, data.filename)
+            const filePath = path.join(uploadDir, data.filename)
 
-                // Pipe the file stream to the specified path
-                await pump(data.file, fs.createWriteStream(filePath))
+            await pump(data.file, fs.createWriteStream(filePath))
+            const db = fastify.mongo.db
+            if (!db) {
+                return reply.status(500).send({status: 'error', message: 'Database connection error'})
+            }
 
-                // Construct the file URL to be sent back in the response
-                const fileUrl = `http://${request.hostname}:${request.socket.remoteAddress}/${data.filename}`
+            logger.info(`Params: ${userId}, ${mediaType}`)
 
-                const db = fastify.mongo.db
-                if (db) {
-                    logger.info(`Database info: ${db.databaseName}`)
-                    const bucket = new GridFSBucket(db)
-
-                    // Upload the file to MongoDB using GridFS
-                    const uploadStream = bucket.openUploadStream(data.filename)
-                    const readStream = fs.createReadStream(filePath)
-                    readStream.pipe(uploadStream)
-                    uploadStream.on('error', error => {
-                        console.error('Error uploading file to MongoDB:', error)
-                        reply.status(500).send({status: 'error', message: 'Failed to upload file to MongoDB'})
-                    })
-                    uploadStream.on('finish', () => {
-                        console.log('File uploaded to MongoDB successfully')
-
-                        // Construct the file URL to be sent back in the response
-                        const fileUrl = `http://${request.hostname}:${request.socket.remoteAddress}/${data.filename}`
-
-                        // Respond to the client with the file path
-                        reply.send({status: 'success', filename: data.filename, filePath: fileUrl})
-
-                        // Clean up: remove the file from the server's filesystem
-                        fs.unlinkSync(filePath)
-
-                        // Close MongoDB connection
-                    })
+            const bucket = new GridFSBucket(db)
+            const uploadFilename = `${userId}.${path.extname(data.filename).slice(1)}`
+            const options: GridFSBucketWriteStreamOptions = {
+                contentType: data.mimetype,
+                metadata: {
+                    userId: uuid(),
+                    mediaType: mediaType
                 }
-                // Respond to the client with the file path
-                reply.send({status: 'success', filename: data.filename, filePath: fileUrl})
-            } else {
-                reply.send({status: 'upload failed', filename: null, filePath: null})
+            }
+            const uploadStream = bucket.openUploadStream(uploadFilename, options)
+            const readStream = fs.createReadStream(filePath)
+
+            try {
+                await new Promise((resolve, reject) => {
+                    uploadStream.once('error', reject)
+                    uploadStream.once('finish', resolve)
+                    readStream.pipe(uploadStream)
+                })
+
+                logger.info(`File uploaded to MongoDB successfully`)
+                return reply.send({status: 'success'})
+            } catch (error) {
+                logger.error(`Error uploading file to MongoDB: ${error}`)
+                reply.send({status: 'success failed'})
+            } finally {
+                fs.unlinkSync(filePath)
             }
         } catch (error) {
-            request.log.error(error) // Log error for debugging
-            reply.status(500).send({status: 'error', message: error})
+            logger.error(`Error uploading file: ${error}`)
+            reply.status(500).send({status: 'error', message: 'Internal server error'})
         }
     })
 }
