@@ -1,12 +1,15 @@
 import {FastifyInstance} from 'fastify'
+import dbConnector from './mongodb-plugin'
+import fastifyMultipart from '@fastify/multipart'
+import {registerRoutes} from '../core/rest'
 
 import fp, {PluginMetadata} from 'fastify-plugin'
-import {healthCheck, uploadFile} from '../core/rest'
 
 export const restApiPlugin = fp(
     async (fastify: FastifyInstance): Promise<void> => {
-        fastify.get('/status', healthCheck)
-        fastify.get('/upload', uploadFile)
+        fastify.register(dbConnector)
+        fastify.register(fastifyMultipart)
+        fastify.register(registerRoutes)
     },
     {
         name: 'restApiPlugin',
