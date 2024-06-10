@@ -1,12 +1,14 @@
+import {ErrorCode} from '../../constants/errors'
 import {FastifyReply} from 'fastify'
 import {RestParamsInput} from '../../generated/graphql'
+import {checkAccessTokenIsValid} from '../graph/services/access.token.service'
 import fs from 'fs'
+import {isEmpty} from 'ramda'
 import {logger} from '../../config'
 import path from 'path'
 import {pipeline} from 'stream'
 import {promisify} from 'util'
 import {uploadDir} from './utils'
-import {v4 as uuid} from 'uuid'
 
 import {FastifyInstance, FastifyRequest} from 'fastify'
 import {GridFSBucket, GridFSBucketWriteStreamOptions} from 'mongodb'
@@ -16,29 +18,42 @@ const pump = promisify(pipeline)
 export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
     fastify.post('/upload/:userId/:mediaType', async (request: FastifyRequest, reply: FastifyReply) => {
         try {
-            logger.info(`Params: ${JSON.stringify(request.params)}`)
             const {userId, mediaType} = request.params as RestParamsInput
+            const db = fastify.mongo.db
+            if (!db) {
+                logger.error('Database connection not available.')
+                return reply.status(500).send({success: false, error: ErrorCode.DATABASE_CONNECTION})
+            }
+
+            const token = request.headers.authorization ?? ''
+            if (isEmpty(token)) {
+                logger.error('Authorization token is missing.')
+                return reply.status(500).send({success: false, error: ErrorCode.NOT_AUTHENTICATED})
+            }
+
+            const isActive = await checkAccessTokenIsValid(db, token)
+            if (!isActive) {
+                logger.error('Invalid authorization token provided.')
+                return reply.status(500).send({success: false, error: ErrorCode.NOT_AUTHENTICATED})
+            }
+
+            logger.info(`Received upload request from user ${userId} for ${mediaType}.`)
             const data = await request.file()
             if (!data) {
-                return reply.send({status: 'upload failed', filename: null, filePath: null})
+                logger.error('Media not attached in the request.')
+                return reply.send({success: false, error: ErrorCode.MEDIA_NOT_ATTACHED})
             }
 
             const filePath = path.join(uploadDir, data.filename)
 
             await pump(data.file, fs.createWriteStream(filePath))
-            const db = fastify.mongo.db
-            if (!db) {
-                return reply.status(500).send({status: 'error', message: 'Database connection error'})
-            }
-
-            logger.info(`Params: ${userId}, ${mediaType}`)
 
             const bucket = new GridFSBucket(db)
-            const uploadFilename = `${userId}.${path.extname(data.filename).slice(1)}`
+            const uploadFilename = `${userId}-${mediaType}.${path.extname(data.filename).slice(1)}`
             const options: GridFSBucketWriteStreamOptions = {
                 contentType: data.mimetype,
                 metadata: {
-                    userId: uuid(),
+                    userId: userId,
                     mediaType: mediaType
                 }
             }
@@ -53,16 +68,16 @@ export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
                 })
 
                 logger.info(`File uploaded to MongoDB successfully`)
-                return reply.send({status: 'success'})
+                return reply.send({success: true, message: 'File uploaded successfully.'})
             } catch (error) {
                 logger.error(`Error uploading file to MongoDB: ${error}`)
-                reply.send({status: 'success failed'})
+                return reply.send({success: false, error: ErrorCode.MEDIA_UPLOAD_FAILED})
             } finally {
                 fs.unlinkSync(filePath)
             }
         } catch (error) {
             logger.error(`Error uploading file: ${error}`)
-            reply.status(500).send({status: 'error', message: 'Internal server error'})
+            reply.status(500).send({success: false, error: ErrorCode.INTERNAL_SERVER_ERROR})
         }
     })
 }

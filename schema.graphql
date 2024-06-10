@@ -45,8 +45,8 @@ enum TokenStatus {
 enum MediaType {
   PROFILE
   BANNER
-  POST
-  VIDEO
+  POST_IMAGE
+  POST_VIDEO
 }
 
 # Types

@@ -2,6 +2,10 @@
 export enum ErrorCode {
     // General errors
     GENERIC_ERROR = 'GENERIC_ERROR',
+    INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
+
+    // Server errors
+    DATABASE_CONNECTION = 'DATABASE_CONNECTION',
 
     // User creation errors
     DUPLICATE_EMAIL = 'DUPLICATE_EMAIL',
@@ -30,12 +34,20 @@ export enum ErrorCode {
 
     // Token and authentication errors
     NOT_AUTHENTICATED = 'NOT_AUTHENTICATED',
-    INVALID_TOKEN = 'INVALID_TOKEN'
+    INVALID_TOKEN = 'INVALID_TOKEN',
+
+    // Media Upload
+    MEDIA_UPLOAD_FAILED = 'MEDIA_UPLOAD_FAILED',
+    MEDIA_NOT_ATTACHED = 'MEDIA_NOT_ATTACHED',
+    MEDIA_UPLOAD_SUCCESS = 'MEDIA_UPLOAD_SUCCESS'
 }
 
 export const ErrorMessage: Record<ErrorCode, string> = {
     // General errors
     [ErrorCode.GENERIC_ERROR]: 'An error occurred',
+    [ErrorCode.INTERNAL_SERVER_ERROR]: 'Something went wrong',
+
+    [ErrorCode.DATABASE_CONNECTION]: 'Unable to connect database',
 
     // User creation errors
     [ErrorCode.DUPLICATE_EMAIL]: 'Email already exists',
@@ -64,5 +76,10 @@ export const ErrorMessage: Record<ErrorCode, string> = {
 
     // Token and authentication errors
     [ErrorCode.NOT_AUTHENTICATED]: 'Not authenticated',
-    [ErrorCode.INVALID_TOKEN]: 'Invalid token'
+    [ErrorCode.INVALID_TOKEN]: 'Invalid token',
+
+    // Media Upload
+    [ErrorCode.MEDIA_UPLOAD_FAILED]: 'Media upload failed',
+    [ErrorCode.MEDIA_UPLOAD_SUCCESS]: 'Media uploaded successfully',
+    [ErrorCode.MEDIA_NOT_ATTACHED]: 'No media found in request'
 }
