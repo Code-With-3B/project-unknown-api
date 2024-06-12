@@ -2,6 +2,7 @@ import {ErrorCode} from '../../../constants/errors'
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {UsersCollection} from '../../../generated/mongo-types'
+import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
 import {
@@ -20,7 +21,6 @@ import {bcryptConfig, generateToken} from '../../../constants/auth/utils'
 import {compare, hash} from 'bcrypt'
 import {fetchDocumentByField, fetchRelationalData, insertDataInDB, updateDataInDB} from '../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
-import {logger, serverConfig} from '../../../config'
 
 /**
  * Initiates the process of fetching all users from the database.
@@ -73,13 +73,15 @@ export async function createUser(context: ResolverContext, input: CreateUserInpu
         if (input.phone) await checkDuplicateUser(context, 'phone', input.phone, ErrorCode.DUPLICATE_PHONE)
         await checkDuplicateUser(context, 'username', input.username, ErrorCode.USERNAME_UNAVAILABLE)
 
+        const id = uuid()
+
         const userDocument: UsersCollection = {
-            id: uuid(),
+            id,
             ...input,
             username: input.username?.toLowerCase(),
             email: input.email?.toLowerCase(),
             phone: input.phone?.toLowerCase(),
-            password: await hash(input.password ?? serverConfig.defaultPassword, bcryptConfig.saltRounds),
+            password: await hash(input.password ?? id, bcryptConfig.saltRounds),
             createdAt: new Date().toISOString()
         }
 
@@ -176,7 +178,6 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
 
 export async function signInUser(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
     logger.info(`Initiating user sign-in with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
-    logger.info(`Context ${JSON.stringify(context.mongodb.databaseName)}`)
 
     if (input.authMode === AuthMode.PhonePass) {
         if (!input.phone) {
@@ -214,12 +215,6 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
             logger.error(`Password is required for phone-based sign-in`)
             return {success: false, error: ErrorCode.MISSING_PASSWORD}
         }
-
-        // if (input.authMode != AuthMode.EmailPass && !input.email) {
-        //     logger.error(`Email is required`)
-        //     throw new Error(ErrorCode.MISSING_EMAIL)
-        // }
-
         const user = await fetchDocumentByField<UsersCollection>(
             context.mongodb,
             MongoCollection.USER,
@@ -238,7 +233,7 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
         return {success: !!token, token: token}
     } else {
         if (!input.email) {
-            logger.error(`Phone number is required for phone-based sign-in`)
+            logger.error(`Email is required for social-based sign-in.`)
             return {success: false, error: ErrorCode.MISSING_EMAIL}
         }
 
@@ -249,7 +244,6 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
             input.email
         )
         if (!user) throw Error(ErrorCode.INCORRECT_EMAIL)
-        input.email = input.email?.toLowerCase()
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
