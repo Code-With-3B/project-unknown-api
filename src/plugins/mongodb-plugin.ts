@@ -1,7 +1,7 @@
 import {FastifyInstance} from 'fastify'
 import fastifyMongo from '@fastify/mongodb'
 import fastifyPlugin from 'fastify-plugin'
-import { serverConfig } from '../config'
+import {serverConfig} from '../config'
 
 /**
  * Plugin function to connect to MongoDB
