@@ -13,7 +13,7 @@ export const userResolver: Resolvers = {
         }
     },
     Mutation: {
-        createUser: (_, {input}, context: ResolverContext): Promise<UserResponse> => {
+        signUp: (_, {input}, context: ResolverContext): Promise<UserResponse> => {
             return createUser(context, input)
         },
         signInUser: (_, {input}, context: ResolverContext): Promise<SignInResponse> => {

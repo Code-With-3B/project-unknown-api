@@ -1,100 +1,132 @@
 {
   "type": "object",
   "title": "Users Collection",
-  "required": ["id", "username", "password"],
+  "required": ["id", "username"],
   "properties": {
     "id": {
       "type": "string",
-      "description": "'id' must be a string and is required"
+      "description": "'id' must be a string and is required."
     },
     "username": {
       "type": "string",
-      "description": "'name' must be a string and is required"
+      "description": "'username' must be a string and is required."
     },
     "fullName": {
       "type": "string",
-      "description": "'bio' must be a string"
+      "description": "'fullName' must be a string."
     },
     "phone": {
       "type": "string",
-      "description": "'bio' must be a string"
+      "pattern": "^\\+[1-9]\\d{1,3}\\d{4,14}$",
+      "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
     },
     "email": {
       "type": "string",
-      "description": "'bio' must be a string"
-    },
-    "bio": {
-      "type": "string",
-      "description": "'bio' must be a string"
+      "description": "'email' must be a valid email address."
     },
     "password": {
       "type": "string",
-      "description": "'bio' must be a string"
+      "description": "'password' must be a string."
+    },
+    "bio": {
+      "type": "string",
+      "description": "'bio' must be a string."
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["MALE", "FEMALE", "PREFER_NOT_SAY"],
+      "description": "'gender' must be a string indicating the user's gender."
+    },
+    "following": {
+      "type": "array",
+      "description": "'following' must be an array of user connections.",
+      "items": {
+        "type": "object",
+        "title": "User Connection Type",
+        "required": ["toUserId", "updatedAt"],
+        "properties": {
+          "toUserId": {
+            "type": "string",
+            "description": "'toUserId' must be a string representing the ID of the connected user."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "'updatedAt' must be a string indicating when the connection was last updated."
+          }
+        }
+      }
+    },
+    "blocked": {
+      "type": "array",
+      "description": "'blocked' must be an array of user connections.",
+      "items": {
+        "type": "object",
+        "title": "User Connection Type",
+        "required": ["toUserId", "updatedAt"],
+        "properties": {
+          "toUserId": {
+            "type": "string",
+            "description": "'toUserId' must be a string representing the ID of the connected user."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "'updatedAt' must be a string indicating when the connection was last updated."
+          }
+        }
+      }
     },
     "verificationStatus": {
       "type": "string",
-      "description": "'verificationStatus' must be a string"
-    },
-    "profilePictureUri": {
-      "type": "string",
-      "description": "'profilePictureUri' must be a string url"
-    },
-    "profileBannerUri": {
-      "type": "string",
-      "description": "'profileBannerUri' must be a string url"
+      "enum": ["UNVERIFIED", "VERIFIED_PLAYER", "VERIFIED_COACH", "VERIFIED_ESPORTS_PROFESSIONAL", "ADMIN"],
+      "description": "'verificationStatus' must be a string."
     },
     "authMode": {
       "type": "string",
       "enum": ["EMAIL_PASS", "PHONE_PASS", "GOOGLE", "FACEBOOK", "APPLE"],
-      "description": "The status of the access token, which can be either ACTIVE or EXPIRED"
+      "description": "'authMode' must be a string."
     },
-    "preferredGamesId": {
+    "preferredGames": {
       "type": "array",
-      "minItems": 0,
+      "description": "'preferredGames' must be an array of game IDs.",
       "items": {
         "type": "string"
-      },
-      "description": "'preferredGamesId' must be a array of strings"
+      }
     },
-    "achievementsId": {
+    "achievements": {
       "type": "array",
-      "minItems": 0,
+      "description": "'achievements' must be an array of achievement IDs.",
       "items": {
         "type": "string"
-      },
-      "description": "'achievementsId' must be a array of strings"
+      }
     },
-    "skillsId": {
+    "skills": {
       "type": "array",
-      "minItems": 0,
+      "description": "'skills' must be an array of skill IDs.",
       "items": {
         "type": "string"
-      },
-      "description": "'skillsId' must be a array of strings"
+      }
     },
-    "highlightsId": {
+    "highlights": {
       "type": "array",
-      "minItems": 0,
+      "description": "'highlights' must be an array of highlight IDs.",
       "items": {
         "type": "string"
-      },
-      "description": "'highlightsId' must be a array of strings"
+      }
     },
     "teams": {
       "type": "array",
-      "minItems": 0,
+      "description": "'teams' must be an array of team IDs.",
       "items": {
         "type": "string"
-      },
-      "description": "'teams' must be a array of strings"
+      }
     },
     "createdAt": {
       "type": "string",
-      "description": "'bio' must be a string"
+      "description": "'createdAt' must be a string."
     },
     "updatedAt": {
       "type": "string",
-      "description": "'bio' must be a string"
+      "description": "'updatedAt' must be a string."
     }
   }
 }

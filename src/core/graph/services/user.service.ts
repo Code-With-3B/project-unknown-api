@@ -9,9 +9,9 @@ import {
     AuthMode,
     CheckDuplicateUserInput,
     CheckDuplicateUserResponse,
-    CreateUserInput,
     SignInInput,
     SignInResponse,
+    SignUpInput,
     TokenPayloadInput,
     UpdateUserInput,
     User,
@@ -55,7 +55,7 @@ export async function checkUsernameIsDuplicate(
  * @param input The input data for creating a new user.
  * @returns A Promise that resolves to a UserResponse indicating success or failure.
  */
-export async function createUser(context: ResolverContext, input: CreateUserInput): Promise<UserResponse> {
+export async function createUser(context: ResolverContext, input: SignUpInput): Promise<UserResponse> {
     logger.info(`Initiating user onboarding with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
     try {
         if (!input.password) throw new Error(ErrorCode.MISSING_PASSWORD)
@@ -91,7 +91,7 @@ export async function createUser(context: ResolverContext, input: CreateUserInpu
             userDocument
         )
         logger.info(`User onboarding ${createdUser ? 'Successful' : 'Failed'}`)
-        return {success: !!createdUser, user: createdUser}
+        return {success: !!createdUser, user: createdUser, context: ''}
     } catch (error) {
         logger.error(`Error creating user: ${error}`)
         throw error
@@ -169,7 +169,7 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
         )
 
         logger.info(`User update successful for userID: ${input.id}`)
-        return {success: !!updatedUser, user: updatedUser}
+        return {success: !!updatedUser, user: updatedUser, context: ''}
     } catch (error) {
         logger.error(`Error updating user with userID: ${input.id} with: ${error}`)
         throw error
