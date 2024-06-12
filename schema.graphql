@@ -21,6 +21,7 @@ enum VerificationStatus {
   VERIFIED_PLAYER # User is verified as a player.
   VERIFIED_COACH # User is verified as a coach.
   VERIFIED_ESPORTS_PROFESSIONAL # User is verified as an esports professional.
+  ADMIN
 }
 
 """
@@ -108,6 +109,8 @@ type User {
   password: String! # Password for the user account.
   bio: String # Biography or profile description of the user (optional).
   authMode: AuthMode! # Authentication mode of the user.
+  following: String
+  followers: String
   verificationStatus: VerificationStatus! # Verification status of the user.
   preferredGames: [ID!] # List of preferred games for the user.
   achievements: [ID!] # List of achievements earned by the user.

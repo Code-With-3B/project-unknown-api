@@ -1,3 +1,7 @@
+import {FastifyInstance, FastifyRequest} from 'fastify'
+import fp, {PluginMetadata} from 'fastify-plugin'
+import {logger, serverConfig} from '../config'
+
 import {ApolloServer} from '@apollo/server'
 import {ErrorCode} from '../constants/errors'
 import {GraphQlRequestBody} from '../generated/graphql'
@@ -8,10 +12,6 @@ import {isEmpty} from 'ramda'
 import jwt from 'jsonwebtoken'
 import {readFileSync} from 'fs'
 import {resolvers} from '../core/graph/resolvers/_index'
-
-import {FastifyInstance, FastifyRequest} from 'fastify'
-import fp, {PluginMetadata} from 'fastify-plugin'
-import {logger, serverConfig} from '../config'
 
 const typeDefs = readFileSync('./schema.graphql', 'utf8')
 /**
