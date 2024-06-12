@@ -62,15 +62,11 @@ export type CheckDuplicateUserResponse = {
   isDuplicate: Scalars['Boolean']['output'];
 };
 
-/** Input for creating a new user. */
-export type CreateUserInput = {
-  authMode: AuthMode;
-  email?: InputMaybe<Scalars['String']['input']>;
-  fullName: Scalars['String']['input'];
-  password?: InputMaybe<Scalars['String']['input']>;
-  phone?: InputMaybe<Scalars['String']['input']>;
-  username: Scalars['String']['input'];
-};
+export enum GenderType {
+  Female = 'FEMALE',
+  Male = 'MALE',
+  PreferNotSay = 'PREFER_NOT_SAY'
+}
 
 export type GraphQlRequestBody = {
   operationName?: InputMaybe<Scalars['String']['input']>;
@@ -106,6 +102,11 @@ export type MediaUploadResponse = ResponsePayload & {
 export type Mutation = {
   __typename?: 'Mutation';
   /**
+   * Sign in a user using email and password.
+   * - `input`: Input data for signing in the user.
+   */
+  signInUser?: Maybe<SignInResponse>;
+  /**
    * Create a new user.
    *
    * - `input`: Input data for creating the new user.
@@ -124,12 +125,7 @@ export type Mutation = {
    *   - If `authMode` is `GOOGLE`, `FACEBOOK`, or `APPLE`:
    *     - Required fields: `email`, `username`, `fullName`, `authMode`.
    */
-  createUser: UserResponse;
-  /**
-   * Sign in a user using email and password.
-   * - `input`: Input data for signing in the user.
-   */
-  signInUser?: Maybe<SignInResponse>;
+  signUp: UserResponse;
   /**
    * Update an existing user.
    * - `input`: Input data for updating the user.
@@ -138,13 +134,13 @@ export type Mutation = {
 };
 
 
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
+export type MutationSignInUserArgs = {
+  input: SignInInput;
 };
 
 
-export type MutationSignInUserArgs = {
-  input: SignInInput;
+export type MutationSignUpArgs = {
+  input: SignUpInput;
 };
 
 
@@ -208,6 +204,16 @@ export type SignInResponse = ResponsePayload & {
   token?: Maybe<Scalars['String']['output']>;
 };
 
+/** Input for creating a new user. */
+export type SignUpInput = {
+  authMode: AuthMode;
+  email?: InputMaybe<Scalars['String']['input']>;
+  fullName: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
+  username: Scalars['String']['input'];
+};
+
 /** Represents a skill in a particular game. */
 export type Skill = {
   __typename?: 'Skill';
@@ -259,18 +265,17 @@ export type User = {
   achievements?: Maybe<Array<Scalars['ID']['output']>>;
   authMode: AuthMode;
   bio?: Maybe<Scalars['String']['output']>;
+  blocked: Array<UserConnectionType>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
-  followers?: Maybe<Scalars['String']['output']>;
-  following?: Maybe<Scalars['String']['output']>;
+  following: Array<UserConnectionType>;
   fullName: Scalars['String']['output'];
+  gender?: Maybe<GenderType>;
   highlights?: Maybe<Array<Scalars['ID']['output']>>;
   id: Scalars['ID']['output'];
   password: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
   preferredGames?: Maybe<Array<Scalars['ID']['output']>>;
-  profileBannerUri?: Maybe<Scalars['String']['output']>;
-  profilePictureUri?: Maybe<Scalars['String']['output']>;
   skills?: Maybe<Array<Scalars['ID']['output']>>;
   teams?: Maybe<Array<Scalars['ID']['output']>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -278,11 +283,16 @@ export type User = {
   verificationStatus: VerificationStatus;
 };
 
+export type UserConnectionType = {
+  __typename?: 'UserConnectionType';
+  toUserId: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 /** Payload returned by user-related mutations. */
 export type UserResponse = ResponsePayload & {
   __typename?: 'UserResponse';
-  error?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
+  context: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
   user?: Maybe<User>;
 };
@@ -377,9 +387,9 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CheckDuplicateUserInput: CheckDuplicateUserInput;
   CheckDuplicateUserResponse: ResolverTypeWrapper<CheckDuplicateUserResponse>;
-  CreateUserInput: CreateUserInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  GenderType: GenderType;
   GraphQLRequestBody: GraphQlRequestBody;
   Highlight: ResolverTypeWrapper<Highlight>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
@@ -392,6 +402,7 @@ export type ResolversTypes = {
   RestParamsInput: ResolverTypeWrapper<RestParamsInput>;
   SignInInput: SignInInput;
   SignInResponse: ResolverTypeWrapper<SignInResponse>;
+  SignUpInput: SignUpInput;
   Skill: ResolverTypeWrapper<Skill>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Team: ResolverTypeWrapper<Team>;
@@ -399,6 +410,7 @@ export type ResolversTypes = {
   TokenStatus: TokenStatus;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
+  UserConnectionType: ResolverTypeWrapper<UserConnectionType>;
   UserResponse: ResolverTypeWrapper<UserResponse>;
   VerificationStatus: VerificationStatus;
 };
@@ -410,7 +422,6 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   CheckDuplicateUserInput: CheckDuplicateUserInput;
   CheckDuplicateUserResponse: CheckDuplicateUserResponse;
-  CreateUserInput: CreateUserInput;
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   GraphQLRequestBody: GraphQlRequestBody;
@@ -424,12 +435,14 @@ export type ResolversParentTypes = {
   RestParamsInput: RestParamsInput;
   SignInInput: SignInInput;
   SignInResponse: SignInResponse;
+  SignUpInput: SignUpInput;
   Skill: Skill;
   String: Scalars['String']['output'];
   Team: Team;
   TokenPayloadInput: TokenPayloadInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
+  UserConnectionType: UserConnectionType;
   UserResponse: UserResponse;
 };
 
@@ -483,8 +496,8 @@ export type MediaUploadResponseResolvers<ContextType = any, ParentType extends R
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   signInUser?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInUserArgs, 'input'>>;
+  signUp?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
 
@@ -543,18 +556,17 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   achievements?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   authMode?: Resolver<ResolversTypes['AuthMode'], ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  blocked?: Resolver<Array<ResolversTypes['UserConnectionType']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  followers?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  following?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  following?: Resolver<Array<ResolversTypes['UserConnectionType']>, ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gender?: Resolver<Maybe<ResolversTypes['GenderType']>, ParentType, ContextType>;
   highlights?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   preferredGames?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
-  profileBannerUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  profilePictureUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   skills?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -563,9 +575,14 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserConnectionTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserConnectionType'] = ResolversParentTypes['UserConnectionType']> = {
+  toUserId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserResponse'] = ResolversParentTypes['UserResponse']> = {
-  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -588,6 +605,7 @@ export type Resolvers<ContextType = any> = {
   Team?: TeamResolvers<ContextType>;
   TokenPayloadInput?: TokenPayloadInputResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserConnectionType?: UserConnectionTypeResolvers<ContextType>;
   UserResponse?: UserResponseResolvers<ContextType>;
 };
 

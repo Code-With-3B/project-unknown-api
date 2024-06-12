@@ -6,7 +6,7 @@
     "env": {
         "es6": true
     },
-    "plugins": ["prettier", "@typescript-eslint"],
+    "plugins": ["prettier"],
     "extends": ["plugin:prettier/recommended", "plugin:@typescript-eslint/recommended"],
     "rules": {
         "prettier/prettier": [
@@ -25,7 +25,7 @@
             }
         ],
         "@typescript-eslint/member-delimiter-style": [
-            "error",
+            0,
             {
                 "multiline": {
                     "delimiter": "none",
@@ -37,9 +37,9 @@
                 }
             }
         ],
-        "@typescript-eslint/no-unused-vars": "error",
-        "@typescript-eslint/explicit-function-return-type": "error",
-        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-unused-vars": 2,
+        "@typescript-eslint/explicit-function-return-type": 2,
+        "@typescript-eslint/no-explicit-any": 2,
         "sort-imports": [
             "error",
             {
@@ -49,5 +49,13 @@
                 "memberSyntaxSortOrder": ["all", "single", "multiple", "none"]
             }
         ]
-    }
+    },
+    "overrides": [
+        {
+            "parserOptions": {
+                "project": "tsconfig_lint.json"
+            },
+            "files": ["src/*.ts", "src/**/*.ts", "migrations/*.ts"]
+        }
+    ]
 }
