@@ -1,7 +1,7 @@
 {
   "type": "object",
   "title": "Users Collection",
-  "required": ["id", "username"],
+  "required": ["id", "username", "password"],
   "properties": {
     "id": {
       "type": "string",
@@ -17,7 +17,6 @@
     },
     "phone": {
       "type": "string",
-      "pattern": "^\\+[1-9]\\d{1,3}\\d{4,14}$",
       "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
     },
     "email": {

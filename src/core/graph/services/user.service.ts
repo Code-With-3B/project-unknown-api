@@ -1,4 +1,5 @@
-import {ErrorCode} from '../../../constants/errors'
+import {ErrorCode} from '../../../constants/error-codes'
+import {GenderType} from './../../../generated/graphql'
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {UsersCollection} from '../../../generated/mongo-types'
@@ -55,8 +56,8 @@ export async function checkUsernameIsDuplicate(
  * @param input The input data for creating a new user.
  * @returns A Promise that resolves to a UserResponse indicating success or failure.
  */
-export async function createUser(context: ResolverContext, input: SignUpInput): Promise<UserResponse> {
-    logger.info(`Initiating user onboarding with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
+export async function signup(context: ResolverContext, input: SignUpInput): Promise<UserResponse> {
+    logger.info(`Initiating user sign-up with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
     try {
         if (!input.password) throw new Error(ErrorCode.MISSING_PASSWORD)
         if (!isStrongPassword(input.password)) throw new Error(ErrorCode.WEAK_PASSWORD)
@@ -74,7 +75,6 @@ export async function createUser(context: ResolverContext, input: SignUpInput): 
         await checkDuplicateUser(context, 'username', input.username, ErrorCode.USERNAME_UNAVAILABLE)
 
         const id = uuid()
-
         const userDocument: UsersCollection = {
             id,
             ...input,
@@ -82,6 +82,7 @@ export async function createUser(context: ResolverContext, input: SignUpInput): 
             email: input.email?.toLowerCase(),
             phone: input.phone?.toLowerCase(),
             password: await hash(input.password ?? id, bcryptConfig.saltRounds),
+            gender: input?.gender ?? GenderType.PreferNotSay,
             createdAt: new Date().toISOString()
         }
 
@@ -91,9 +92,11 @@ export async function createUser(context: ResolverContext, input: SignUpInput): 
             userDocument
         )
         logger.info(`User onboarding ${createdUser ? 'Successful' : 'Failed'}`)
-        return {success: !!createdUser, user: createdUser, context: ''}
+        if (createdUser) return {success: true, context: ErrorCode.USER_CREATION_SUCCESS, user: createdUser}
+        return {success: !!createdUser, context: ErrorCode.USER_CREATION_FAILED, user: null}
     } catch (error) {
-        logger.error(`Error creating user: ${error}`)
+        logger.error(`Error creating user`)
+        logger.error(error)
         throw error
     }
 }
@@ -123,9 +126,10 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
                 logger.error(`Invalid email format: ${input.email}`)
                 throw new Error(ErrorCode.INVALID_EMAIL_FORMAT)
             }
-            if (user.email != input.email)
+            if (user.email != input.email) {
                 await checkDuplicateUser(context, 'email', input.email, ErrorCode.DUPLICATE_EMAIL)
-            updateFields.email = input.email.toLowerCase()
+                updateFields.email = input.email
+            }
         }
 
         if (input.phone) {
@@ -133,9 +137,10 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
                 logger.error(`Invalid phone number format: ${input.phone}`)
                 throw new Error(ErrorCode.INVALID_PHONE_FORMAT)
             }
-            if (user.phone != input.phone)
+            if (user.phone != input.phone) {
                 await checkDuplicateUser(context, 'phone', input.phone, ErrorCode.DUPLICATE_PHONE)
-            updateFields.phone = input.phone.toLowerCase()
+                updateFields.phone = input.phone
+            }
         }
 
         if (input.username) {
@@ -143,50 +148,52 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
                 logger.error(`Invalid username length: ${input.username}`)
                 throw new Error(ErrorCode.INVALID_USERNAME_LENGTH)
             }
-            if (user.username != input.username)
+            if (user.username != input.username) {
                 await checkDuplicateUser(context, 'username', input.username, ErrorCode.USERNAME_UNAVAILABLE)
-            updateFields.username = input.username
+                updateFields.username = input.username
+            }
         }
+        if (input.fullName && input.fullName != user.fullName) updateFields.fullName = input.fullName
+        if (input.bio && input.bio != user.bio) updateFields.bio = input.bio
+        if (input.gender && input.gender != user.gender) updateFields.gender = input.gender
 
-        if (input.fullName) {
-            updateFields.fullName = input.fullName
-        }
-        if (input.bio) {
-            updateFields.bio = input.bio
-        }
-        if (input.profilePictureUri) {
-            updateFields.profilePictureUri = input.profilePictureUri
-        }
-        if (input.profileBannerUri) {
-            updateFields.profileBannerUri = input.profileBannerUri
-        }
+        if (Object.keys(updateFields).length > 0) {
+            updateFields.updatedAt = uuid()
+            const updatedUser = await updateDataInDB<UsersCollection, User>(
+                context.mongodb,
+                MongoCollection.USER,
+                user.id,
+                updateFields
+            )
 
-        const updatedUser = await updateDataInDB<UsersCollection, User>(
-            context.mongodb,
-            MongoCollection.USER,
-            user.id,
-            updateFields
-        )
-
-        logger.info(`User update successful for userID: ${input.id}`)
-        return {success: !!updatedUser, user: updatedUser, context: ''}
+            logger.info(`User update successful for userID: ${input.id}`)
+            return {
+                success: !!updatedUser,
+                context: updatedUser ? ErrorCode.USER_UPDATED : ErrorCode.USER_UPDATE_FAILED,
+                user: updatedUser
+            }
+        }
+        return {
+            success: false,
+            context: ErrorCode.NO_FIELDS_TO_UPDATE
+        }
     } catch (error) {
         logger.error(`Error updating user with userID: ${input.id} with: ${error}`)
         throw error
     }
 }
 
-export async function signInUser(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
+export async function signIn(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
     logger.info(`Initiating user sign-in with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
 
     if (input.authMode === AuthMode.PhonePass) {
         if (!input.phone) {
             logger.error(`Phone number is required for phone-based sign-in`)
-            return {success: false, error: ErrorCode.MISSING_PHONE}
+            return {success: false, context: ErrorCode.MISSING_PHONE}
         }
         if (!input.password) {
             logger.error(`Password is required for phone-based sign-in`)
-            return {success: false, error: ErrorCode.MISSING_PASSWORD}
+            return {success: false, context: ErrorCode.MISSING_PASSWORD}
         }
         const user = await fetchDocumentByField<UsersCollection>(
             context.mongodb,
@@ -196,24 +203,24 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
         )
         if (!user) {
             logger.error(`User not found with phone number: ${input.phone}`)
-            return {success: false, error: ErrorCode.INCORRECT_PHONE}
+            return {success: false, context: ErrorCode.INCORRECT_PHONE}
         }
         const flg = await compare(input.password, user.password)
-        if (!flg) return {success: false, error: ErrorCode.INCORRECT_PASSWORD}
+        if (!flg) return {success: false, context: ErrorCode.INCORRECT_PASSWORD}
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
-        return {success: !!token, token: token}
+        return {success: !!token, context: token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED, token: token}
     } else if (input.authMode == AuthMode.EmailPass) {
         if (!input.email) {
             logger.error(`Phone number is required for phone-based sign-in`)
-            return {success: false, error: ErrorCode.MISSING_EMAIL}
+            return {success: false, context: ErrorCode.MISSING_EMAIL}
         }
         if (!input.password) {
             logger.error(`Password is required for phone-based sign-in`)
-            return {success: false, error: ErrorCode.MISSING_PASSWORD}
+            return {success: false, context: ErrorCode.MISSING_PASSWORD}
         }
         const user = await fetchDocumentByField<UsersCollection>(
             context.mongodb,
@@ -224,17 +231,17 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
         if (!user) throw Error(ErrorCode.INCORRECT_EMAIL)
         input.email = input.email?.toLowerCase()
         const flg = await compare(input.password, user.password)
-        if (!flg) return {success: false, error: ErrorCode.INCORRECT_PASSWORD}
+        if (!flg) return {success: false, context: ErrorCode.INCORRECT_PASSWORD}
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
-        return {success: !!token, token: token}
+        return {success: !!token, context: token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED, token: token}
     } else {
         if (!input.email) {
             logger.error(`Email is required for social-based sign-in.`)
-            return {success: false, error: ErrorCode.MISSING_EMAIL}
+            return {success: false, context: ErrorCode.MISSING_EMAIL}
         }
 
         const user = await fetchDocumentByField<UsersCollection>(
@@ -244,12 +251,15 @@ export async function signInUser(context: ResolverContext, input: SignInInput): 
             input.email
         )
         if (!user) throw Error(ErrorCode.INCORRECT_EMAIL)
+        if (user.authMode == AuthMode.EmailPass || user.authMode == AuthMode.PhonePass) {
+            return {success: false, context: ErrorCode.INVALID_USER_AUTH_MODE}
+        }
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
-        return {success: !!token, token: token}
+        return {success: !!token, context: token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED, token: token}
     }
 }
 

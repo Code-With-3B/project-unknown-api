@@ -1,9 +1,5 @@
-import {FastifyInstance, FastifyRequest} from 'fastify'
-import fp, {PluginMetadata} from 'fastify-plugin'
-import {logger, serverConfig} from '../config'
-
 import {ApolloServer} from '@apollo/server'
-import {ErrorCode} from '../constants/errors'
+import {ErrorCode} from '../constants/error-codes'
 import {GraphQlRequestBody} from '../generated/graphql'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/graph/services/access.token.service'
@@ -12,6 +8,10 @@ import {isEmpty} from 'ramda'
 import jwt from 'jsonwebtoken'
 import {readFileSync} from 'fs'
 import {resolvers} from '../core/graph/resolvers/_index'
+
+import {FastifyInstance, FastifyRequest} from 'fastify'
+import fp, {PluginMetadata} from 'fastify-plugin'
+import {logger, serverConfig} from '../config'
 
 const typeDefs = readFileSync('./schema.graphql', 'utf8')
 /**
@@ -33,11 +33,12 @@ export const fastifyApolloPlugin = fp(
             context: async (req: FastifyRequest) => {
                 const db = fastify.mongo.db
                 if (db) {
+                    logger.info(`Data: ${JSON.stringify(req.body)}}`)
                     const body = req.body as GraphQlRequestBody
                     const operationName = body.operationName
                     logger.info(`Received request for operation: ${operationName}`)
 
-                    const publicOperations = ['createUser', 'signInUser']
+                    const publicOperations = ['signUp', 'signIn', 'checkDuplicate']
                     if (publicOperations.includes(operationName ?? '')) {
                         logger.info('Public operation, no authentication required.')
                         return {mongodb: db}

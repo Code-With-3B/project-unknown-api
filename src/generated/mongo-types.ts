@@ -12,87 +12,103 @@ export interface DatabaseSchema {
 }
 export interface UsersCollection {
   /**
-   * 'id' must be a string and is required
+   * 'id' must be a string and is required.
    */
   id: string;
   /**
-   * 'name' must be a string and is required
+   * 'username' must be a string and is required.
    */
   username: string;
   /**
-   * 'bio' must be a string
+   * 'fullName' must be a string.
    */
   fullName?: string;
   /**
-   * 'bio' must be a string
+   * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
    */
   phone?: string;
   /**
-   * 'bio' must be a string
+   * 'email' must be a valid email address.
    */
   email?: string;
   /**
-   * 'bio' must be a string
-   */
-  bio?: string;
-  /**
-   * 'bio' must be a string
+   * 'password' must be a string.
    */
   password: string;
   /**
-   * 'verificationStatus' must be a string
+   * 'bio' must be a string.
    */
-  verificationStatus?: string;
+  bio?: string;
   /**
-   * 'profilePictureUri' must be a string url
+   * 'gender' must be a string indicating the user's gender.
    */
-  profilePictureUri?: string;
+  gender?: "MALE" | "FEMALE" | "PREFER_NOT_SAY";
   /**
-   * 'profileBannerUri' must be a string url
+   * 'following' must be an array of user connections.
    */
-  profileBannerUri?: string;
+  following?: UserConnectionType[];
   /**
-   * The status of the access token, which can be either ACTIVE or EXPIRED
+   * 'blocked' must be an array of user connections.
+   */
+  blocked?: UserConnectionType1[];
+  /**
+   * 'verificationStatus' must be a string.
+   */
+  verificationStatus?: "UNVERIFIED" | "VERIFIED_PLAYER" | "VERIFIED_COACH" | "VERIFIED_ESPORTS_PROFESSIONAL" | "ADMIN";
+  /**
+   * 'authMode' must be a string.
    */
   authMode?: "EMAIL_PASS" | "PHONE_PASS" | "GOOGLE" | "FACEBOOK" | "APPLE";
   /**
-   * 'preferredGamesId' must be a array of strings
-   *
-   * @minItems 0
+   * 'preferredGames' must be an array of game IDs.
    */
-  preferredGamesId?: string[];
+  preferredGames?: string[];
   /**
-   * 'achievementsId' must be a array of strings
-   *
-   * @minItems 0
+   * 'achievements' must be an array of achievement IDs.
    */
-  achievementsId?: string[];
+  achievements?: string[];
   /**
-   * 'skillsId' must be a array of strings
-   *
-   * @minItems 0
+   * 'skills' must be an array of skill IDs.
    */
-  skillsId?: string[];
+  skills?: string[];
   /**
-   * 'highlightsId' must be a array of strings
-   *
-   * @minItems 0
+   * 'highlights' must be an array of highlight IDs.
    */
-  highlightsId?: string[];
+  highlights?: string[];
   /**
-   * 'teams' must be a array of strings
-   *
-   * @minItems 0
+   * 'teams' must be an array of team IDs.
    */
   teams?: string[];
   /**
-   * 'bio' must be a string
+   * 'createdAt' must be a string.
    */
   createdAt?: string;
   /**
-   * 'bio' must be a string
+   * 'updatedAt' must be a string.
    */
   updatedAt?: string;
+  [k: string]: unknown;
+}
+export interface UserConnectionType {
+  /**
+   * 'toUserId' must be a string representing the ID of the connected user.
+   */
+  toUserId: string;
+  /**
+   * 'updatedAt' must be a string indicating when the connection was last updated.
+   */
+  updatedAt: string;
+  [k: string]: unknown;
+}
+export interface UserConnectionType1 {
+  /**
+   * 'toUserId' must be a string representing the ID of the connected user.
+   */
+  toUserId: string;
+  /**
+   * 'updatedAt' must be a string indicating when the connection was last updated.
+   */
+  updatedAt: string;
   [k: string]: unknown;
 }
 export interface AccessTokensCollection {

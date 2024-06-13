@@ -93,9 +93,8 @@ export enum MediaType {
 
 export type MediaUploadResponse = ResponsePayload & {
   __typename?: 'MediaUploadResponse';
-  error?: Maybe<Scalars['String']['output']>;
+  context?: Maybe<Scalars['String']['output']>;
   fileUri?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -105,7 +104,7 @@ export type Mutation = {
    * Sign in a user using email and password.
    * - `input`: Input data for signing in the user.
    */
-  signInUser?: Maybe<SignInResponse>;
+  signIn?: Maybe<SignInResponse>;
   /**
    * Create a new user.
    *
@@ -134,7 +133,7 @@ export type Mutation = {
 };
 
 
-export type MutationSignInUserArgs = {
+export type MutationSignInArgs = {
   input: SignInInput;
 };
 
@@ -176,8 +175,7 @@ export type QueryUserArgs = {
 
 /** Interface for response payloads containing a success flag. */
 export type ResponsePayload = {
-  error?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
+  context?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -198,8 +196,7 @@ export type SignInInput = {
 /** Payload returned by sign-in mutation. */
 export type SignInResponse = ResponsePayload & {
   __typename?: 'SignInResponse';
-  error?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
+  context?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
   token?: Maybe<Scalars['String']['output']>;
 };
@@ -209,6 +206,7 @@ export type SignUpInput = {
   authMode: AuthMode;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName: Scalars['String']['input'];
+  gender?: InputMaybe<GenderType>;
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   username: Scalars['String']['input'];
@@ -251,6 +249,7 @@ export type UpdateUserInput = {
   bio?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<GenderType>;
   id: Scalars['String']['input'];
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
@@ -488,15 +487,14 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type MediaUploadResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['MediaUploadResponse'] = ResolversParentTypes['MediaUploadResponse']> = {
-  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fileUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  signInUser?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInUserArgs, 'input'>>;
+  signIn?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
   signUp?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
@@ -509,8 +507,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
   __resolveType: TypeResolveFn<'MediaUploadResponse' | 'SignInResponse' | 'UserResponse', ParentType, ContextType>;
-  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
@@ -521,8 +518,7 @@ export type RestParamsInputResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type SignInResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['SignInResponse'] = ResolversParentTypes['SignInResponse']> = {
-  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

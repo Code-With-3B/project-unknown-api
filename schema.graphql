@@ -8,8 +8,7 @@ Interface for response payloads containing a success flag.
 """
 interface ResponsePayload {
   success: Boolean! # Indicates whether the operation was successful.
-  message: String # Message describing the result of the sign-in.
-  error: String # Error message if sign-in was not successful.
+  context: String
 }
 
 # Enums
@@ -179,15 +178,13 @@ Payload returned by sign-in mutation.
 """
 type SignInResponse implements ResponsePayload {
   success: Boolean! # Indicates whether the sign-in was successful.
-  message: String # Message describing the result of the sign-in.
-  error: String # Error message if sign-in was not successful.
+  context: String
   token: String # Token generated after successful sign-in.
 }
 
 type MediaUploadResponse implements ResponsePayload {
   success: Boolean! # Indicates whether the sign-in was successful.
-  message: String # Message describing the result of the sign-in.
-  error: String # Error message if sign-in was not successful.
+  context: String
   fileUri: String # Token generated after successful sign-in.
 }
 
@@ -201,6 +198,7 @@ input SignUpInput {
   phone: String # Phone number for the new user (optional).
   email: String # Email address for the new user (optional).
   password: String # Password for the new user.
+  gender: GenderType
   authMode: AuthMode! # Authmode for creating or signing-up the new user.
 }
 
@@ -217,6 +215,7 @@ input UpdateUserInput {
   bio: String # Updated biography or profile description for the user (optional).
   profilePictureUri: String # Updated URI for the profile picture (optional).
   profileBannerUri: String # Updated URI for the profile banner (optional).
+  gender: GenderType
 }
 
 """
@@ -283,7 +282,7 @@ type Mutation {
   Sign in a user using email and password.
   - `input`: Input data for signing in the user.
   """
-  signInUser(input: SignInInput!): SignInResponse
+  signIn(input: SignInInput!): SignInResponse
 
   """
   Update an existing user.

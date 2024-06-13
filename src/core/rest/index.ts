@@ -1,4 +1,4 @@
-import {ErrorCode} from '../../constants/errors'
+import {ErrorCode} from '../../constants/error-codes'
 import {FastifyReply} from 'fastify'
 import {RestParamsInput} from '../../generated/graphql'
 import {checkAccessTokenIsValid} from '../graph/services/access.token.service'
