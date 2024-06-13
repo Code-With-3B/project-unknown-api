@@ -24,6 +24,14 @@ export interface UsersCollection {
    */
   fullName?: string;
   /**
+   * 'gender' must be a string indicating the user's gender.
+   */
+  accountStatus?: "ACTIVE" | "TERMINATED";
+  /**
+   * 'gender' must be a string indicating the user's gender.
+   */
+  accountType?: "PUBLIC" | "PRIVATE";
+  /**
    * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
    */
   phone?: string;
@@ -44,13 +52,9 @@ export interface UsersCollection {
    */
   gender?: "MALE" | "FEMALE" | "PREFER_NOT_SAY";
   /**
-   * 'following' must be an array of user connections.
+   * 'following' must be an array of achievement IDs.
    */
-  following?: UserConnectionType[];
-  /**
-   * 'blocked' must be an array of user connections.
-   */
-  blocked?: UserConnectionType1[];
+  following?: string[];
   /**
    * 'verificationStatus' must be a string.
    */
@@ -87,28 +91,6 @@ export interface UsersCollection {
    * 'updatedAt' must be a string.
    */
   updatedAt?: string;
-  [k: string]: unknown;
-}
-export interface UserConnectionType {
-  /**
-   * 'toUserId' must be a string representing the ID of the connected user.
-   */
-  toUserId: string;
-  /**
-   * 'updatedAt' must be a string indicating when the connection was last updated.
-   */
-  updatedAt: string;
-  [k: string]: unknown;
-}
-export interface UserConnectionType1 {
-  /**
-   * 'toUserId' must be a string representing the ID of the connected user.
-   */
-  toUserId: string;
-  /**
-   * 'updatedAt' must be a string indicating when the connection was last updated.
-   */
-  updatedAt: string;
   [k: string]: unknown;
 }
 export interface AccessTokensCollection {

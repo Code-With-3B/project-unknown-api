@@ -11,7 +11,7 @@ import {promisify} from 'util'
 import {uploadDir} from './utils'
 
 import {FastifyInstance, FastifyRequest} from 'fastify'
-import {GridFSBucket, GridFSBucketWriteStreamOptions} from 'mongodb'
+import {GridFSBucket, GridFSBucketWriteStreamOptions, ObjectId} from 'mongodb'
 
 const pump = promisify(pipeline)
 
@@ -48,13 +48,19 @@ export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
 
             await pump(data.file, fs.createWriteStream(filePath))
 
-            const bucket = new GridFSBucket(db)
-            const uploadFilename = `${userId}-${mediaType}.${path.extname(data.filename).slice(1)}`
+            // Create a unified GridFSBucket under a single collection named 'media'
+            const bucket = new GridFSBucket(db, {
+                bucketName: 'media' // Unified bucket for all media types
+            })
+
+            // Naming convention for files to indicate "nested" structure
+            const uploadFilename = `${userId}/${mediaType}/${Date.now()}-${data.filename}`
             const options: GridFSBucketWriteStreamOptions = {
                 contentType: data.mimetype,
                 metadata: {
                     userId: userId,
-                    mediaType: mediaType
+                    mediaType: mediaType,
+                    originalFilename: data.filename
                 }
             }
             const uploadStream = bucket.openUploadStream(uploadFilename, options)
@@ -67,8 +73,11 @@ export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
                     readStream.pipe(uploadStream)
                 })
 
-                logger.info(`File uploaded to MongoDB successfully`)
-                return reply.send({success: true, message: 'File uploaded successfully.'})
+                const fileId = uploadStream.id
+                const downloadUrl = `/download/${userId}/${mediaType}/${fileId}`
+
+                logger.info(`File uploaded to MongoDB successfully.`)
+                return reply.send({success: true, message: 'File uploaded successfully.', downloadUrl: downloadUrl})
             } catch (error) {
                 logger.error(`Error uploading file to MongoDB: ${error}`)
                 return reply.send({success: false, error: ErrorCode.MEDIA_UPLOAD_FAILED})

@@ -15,6 +15,16 @@
       "type": "string",
       "description": "'fullName' must be a string."
     },
+    "accountStatus": {
+      "type": "string",
+      "enum": ["ACTIVE", "TERMINATED"],
+      "description": "'gender' must be a string indicating the user's gender."
+    },
+    "accountType": {
+      "type": "string",
+      "enum": ["PUBLIC", "PRIVATE"],
+      "description": "'gender' must be a string indicating the user's gender."
+    },
     "phone": {
       "type": "string",
       "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
@@ -38,45 +48,20 @@
     },
     "following": {
       "type": "array",
-      "description": "'following' must be an array of user connections.",
+      "description": "'following' must be an array of achievement IDs.",
       "items": {
-        "type": "object",
-        "title": "User Connection Type",
-        "required": ["toUserId", "updatedAt"],
-        "properties": {
-          "toUserId": {
-            "type": "string",
-            "description": "'toUserId' must be a string representing the ID of the connected user."
-          },
-          "updatedAt": {
-            "type": "string",
-            "description": "'updatedAt' must be a string indicating when the connection was last updated."
-          }
-        }
-      }
-    },
-    "blocked": {
-      "type": "array",
-      "description": "'blocked' must be an array of user connections.",
-      "items": {
-        "type": "object",
-        "title": "User Connection Type",
-        "required": ["toUserId", "updatedAt"],
-        "properties": {
-          "toUserId": {
-            "type": "string",
-            "description": "'toUserId' must be a string representing the ID of the connected user."
-          },
-          "updatedAt": {
-            "type": "string",
-            "description": "'updatedAt' must be a string indicating when the connection was last updated."
-          }
-        }
+        "type": "string"
       }
     },
     "verificationStatus": {
       "type": "string",
-      "enum": ["UNVERIFIED", "VERIFIED_PLAYER", "VERIFIED_COACH", "VERIFIED_ESPORTS_PROFESSIONAL", "ADMIN"],
+      "enum": [
+        "UNVERIFIED",
+        "VERIFIED_PLAYER",
+        "VERIFIED_COACH",
+        "VERIFIED_ESPORTS_PROFESSIONAL",
+        "ADMIN"
+      ],
       "description": "'verificationStatus' must be a string."
     },
     "authMode": {

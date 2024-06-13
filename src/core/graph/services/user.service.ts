@@ -1,11 +1,11 @@
 import {ErrorCode} from '../../../constants/error-codes'
-import {GenderType} from './../../../generated/graphql'
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {UsersCollection} from '../../../generated/mongo-types'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
+import {AccountStatus, AccountType, GenderType} from './../../../generated/graphql'
 import {
     AuthMode,
     CheckDuplicateUserInput,
@@ -83,6 +83,9 @@ export async function signup(context: ResolverContext, input: SignUpInput): Prom
             phone: input.phone?.toLowerCase(),
             password: await hash(input.password ?? id, bcryptConfig.saltRounds),
             gender: input?.gender ?? GenderType.PreferNotSay,
+            accountStatus: AccountStatus.Active,
+            accountType: AccountType.Public,
+            following: [],
             createdAt: new Date().toISOString()
         }
 
@@ -156,9 +159,10 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
         if (input.fullName && input.fullName != user.fullName) updateFields.fullName = input.fullName
         if (input.bio && input.bio != user.bio) updateFields.bio = input.bio
         if (input.gender && input.gender != user.gender) updateFields.gender = input.gender
+        if (input.accountType && input.accountType != user.accountType) updateFields.accountType = input.accountType
 
         if (Object.keys(updateFields).length > 0) {
-            updateFields.updatedAt = uuid()
+            updateFields.updatedAt = new Date().toISOString()
             const updatedUser = await updateDataInDB<UsersCollection, User>(
                 context.mongodb,
                 MongoCollection.USER,

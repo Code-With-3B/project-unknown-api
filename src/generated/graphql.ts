@@ -32,6 +32,16 @@ export type AccessToken = {
   userId: Scalars['ID']['output'];
 };
 
+export enum AccountStatus {
+  Active = 'ACTIVE',
+  Terminated = 'TERMINATED'
+}
+
+export enum AccountType {
+  Private = 'PRIVATE',
+  Public = 'PUBLIC'
+}
+
 /** Represents an achievement in a particular game. */
 export type Achievement = {
   __typename?: 'Achievement';
@@ -246,6 +256,7 @@ export enum TokenStatus {
 
 /** Input for updating an existing user. */
 export type UpdateUserInput = {
+  accountType: AccountType;
   bio?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
@@ -261,13 +272,13 @@ export type UpdateUserInput = {
 /** Represents a user in the esports community. */
 export type User = {
   __typename?: 'User';
+  accountStatus: AccountStatus;
+  accountType: AccountType;
   achievements?: Maybe<Array<Scalars['ID']['output']>>;
   authMode: AuthMode;
   bio?: Maybe<Scalars['String']['output']>;
-  blocked: Array<UserConnectionType>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
-  following: Array<UserConnectionType>;
   fullName: Scalars['String']['output'];
   gender?: Maybe<GenderType>;
   highlights?: Maybe<Array<Scalars['ID']['output']>>;
@@ -280,12 +291,6 @@ export type User = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   username: Scalars['String']['output'];
   verificationStatus: VerificationStatus;
-};
-
-export type UserConnectionType = {
-  __typename?: 'UserConnectionType';
-  toUserId: Scalars['ID']['output'];
-  updatedAt: Scalars['DateTime']['output'];
 };
 
 /** Payload returned by user-related mutations. */
@@ -381,6 +386,8 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AccessToken: ResolverTypeWrapper<AccessToken>;
+  AccountStatus: AccountStatus;
+  AccountType: AccountType;
   Achievement: ResolverTypeWrapper<Achievement>;
   AuthMode: AuthMode;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -409,7 +416,6 @@ export type ResolversTypes = {
   TokenStatus: TokenStatus;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
-  UserConnectionType: ResolverTypeWrapper<UserConnectionType>;
   UserResponse: ResolverTypeWrapper<UserResponse>;
   VerificationStatus: VerificationStatus;
 };
@@ -441,7 +447,6 @@ export type ResolversParentTypes = {
   TokenPayloadInput: TokenPayloadInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
-  UserConnectionType: UserConnectionType;
   UserResponse: UserResponse;
 };
 
@@ -549,13 +554,13 @@ export type TokenPayloadInputResolvers<ContextType = any, ParentType extends Res
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  accountStatus?: Resolver<ResolversTypes['AccountStatus'], ParentType, ContextType>;
+  accountType?: Resolver<ResolversTypes['AccountType'], ParentType, ContextType>;
   achievements?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   authMode?: Resolver<ResolversTypes['AuthMode'], ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  blocked?: Resolver<Array<ResolversTypes['UserConnectionType']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  following?: Resolver<Array<ResolversTypes['UserConnectionType']>, ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['GenderType']>, ParentType, ContextType>;
   highlights?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
@@ -568,12 +573,6 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   verificationStatus?: Resolver<ResolversTypes['VerificationStatus'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UserConnectionTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserConnectionType'] = ResolversParentTypes['UserConnectionType']> = {
-  toUserId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -601,7 +600,6 @@ export type Resolvers<ContextType = any> = {
   Team?: TeamResolvers<ContextType>;
   TokenPayloadInput?: TokenPayloadInputResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
-  UserConnectionType?: UserConnectionTypeResolvers<ContextType>;
   UserResponse?: UserResponseResolvers<ContextType>;
 };
 

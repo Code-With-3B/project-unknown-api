@@ -47,7 +47,12 @@ export enum ErrorCode {
     // Media Upload
     MEDIA_UPLOAD_FAILED = 'MEDIA_UPLOAD_FAILED',
     MEDIA_NOT_ATTACHED = 'MEDIA_NOT_ATTACHED',
-    MEDIA_UPLOAD_SUCCESS = 'MEDIA_UPLOAD_SUCCESS'
+    MEDIA_UPLOAD_SUCCESS = 'MEDIA_UPLOAD_SUCCESS',
+    FILE_NOT_FOUND = 'FILE_NOT_FOUND',
+
+    // Following
+    FOLLOW_USER_SUCCESS = 'FOLLOW_USER_SUCCESS',
+    FOLLOW_USER_FAILED = 'FOLLOW_USER_FAILED'
 }
 
 export const ErrorMessage: Record<ErrorCode, string> = {
@@ -98,5 +103,10 @@ export const ErrorMessage: Record<ErrorCode, string> = {
     // Media Upload
     [ErrorCode.MEDIA_UPLOAD_FAILED]: 'Media upload failed',
     [ErrorCode.MEDIA_UPLOAD_SUCCESS]: 'Media uploaded successfully',
-    [ErrorCode.MEDIA_NOT_ATTACHED]: 'No media found in request'
+    [ErrorCode.MEDIA_NOT_ATTACHED]: 'No media found in request',
+    [ErrorCode.FILE_NOT_FOUND]: 'No file found to download',
+
+    // Following
+    [ErrorCode.FOLLOW_USER_SUCCESS]: 'User followed another uses',
+    [ErrorCode.FOLLOW_USER_FAILED]: 'Following user failed'
 }
