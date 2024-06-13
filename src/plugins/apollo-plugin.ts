@@ -10,6 +10,7 @@ import {readFileSync} from 'fs'
 import {resolvers} from '../core/graph/resolvers/_index'
 
 import {FastifyInstance, FastifyRequest} from 'fastify'
+import {FieldNode, OperationDefinitionNode, parse} from 'graphql'
 import fp, {PluginMetadata} from 'fastify-plugin'
 import {logger, serverConfig} from '../config'
 
@@ -33,13 +34,31 @@ export const fastifyApolloPlugin = fp(
             context: async (req: FastifyRequest) => {
                 const db = fastify.mongo.db
                 if (db) {
-                    logger.info(`Data: ${JSON.stringify(req.body)}}`)
                     const body = req.body as GraphQlRequestBody
-                    const operationName = body.operationName
+                    const {query, operationName} = body
                     logger.info(`Received request for operation: ${operationName}`)
+                    let actualFieldName = operationName?.toLowerCase() ?? ''
+
+                    if (query) {
+                        try {
+                            const parsedQuery = parse(query)
+                            const operationDefinition = parsedQuery.definitions.find(
+                                def => def.kind === 'OperationDefinition'
+                            ) as OperationDefinitionNode
+
+                            if (operationDefinition && operationDefinition.selectionSet.selections.length > 0) {
+                                const firstSelection = operationDefinition.selectionSet.selections[0] as FieldNode
+                                const fieldName = firstSelection.name.value
+                                logger.info(`Actual operation in service: ${fieldName}`)
+                                actualFieldName = fieldName
+                            }
+                        } catch (error) {
+                            logger.error('Failed to parse the query.', error)
+                        }
+                    }
 
                     const publicOperations = ['signUp', 'signIn', 'checkDuplicate']
-                    if (publicOperations.includes(operationName ?? '')) {
+                    if (publicOperations.includes(actualFieldName)) {
                         logger.info('Public operation, no authentication required.')
                         return {mongodb: db}
                     }
