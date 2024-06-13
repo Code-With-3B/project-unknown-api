@@ -1,9 +1,5 @@
-import {FastifyInstance, FastifyRequest} from 'fastify'
-import fp, {PluginMetadata} from 'fastify-plugin'
-import {logger, serverConfig} from '../config'
-
 import {ApolloServer} from '@apollo/server'
-import {ErrorCode} from '../constants/errors'
+import {ErrorCode} from '../constants/error-codes'
 import {GraphQlRequestBody} from '../generated/graphql'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/graph/services/access.token.service'
@@ -12,6 +8,11 @@ import {isEmpty} from 'ramda'
 import jwt from 'jsonwebtoken'
 import {readFileSync} from 'fs'
 import {resolvers} from '../core/graph/resolvers/_index'
+
+import {FastifyInstance, FastifyRequest} from 'fastify'
+import {FieldNode, OperationDefinitionNode, parse} from 'graphql'
+import fp, {PluginMetadata} from 'fastify-plugin'
+import {logger, serverConfig} from '../config'
 
 const typeDefs = readFileSync('./schema.graphql', 'utf8')
 /**
@@ -34,11 +35,30 @@ export const fastifyApolloPlugin = fp(
                 const db = fastify.mongo.db
                 if (db) {
                     const body = req.body as GraphQlRequestBody
-                    const operationName = body.operationName
+                    const {query, operationName} = body
                     logger.info(`Received request for operation: ${operationName}`)
+                    let actualFieldName = operationName?.toLowerCase() ?? ''
 
-                    const publicOperations = ['createUser', 'signInUser']
-                    if (publicOperations.includes(operationName ?? '')) {
+                    if (query) {
+                        try {
+                            const parsedQuery = parse(query)
+                            const operationDefinition = parsedQuery.definitions.find(
+                                def => def.kind === 'OperationDefinition'
+                            ) as OperationDefinitionNode
+
+                            if (operationDefinition && operationDefinition.selectionSet.selections.length > 0) {
+                                const firstSelection = operationDefinition.selectionSet.selections[0] as FieldNode
+                                const fieldName = firstSelection.name.value
+                                logger.info(`Actual operation in service: ${fieldName}`)
+                                actualFieldName = fieldName
+                            }
+                        } catch (error) {
+                            logger.error('Failed to parse the query.', error)
+                        }
+                    }
+
+                    const publicOperations = ['signUp', 'signIn', 'checkDuplicate']
+                    if (publicOperations.includes(actualFieldName)) {
                         logger.info('Public operation, no authentication required.')
                         return {mongodb: db}
                     }

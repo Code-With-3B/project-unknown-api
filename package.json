@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "yarn build && yarn start",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "build": "rimraf dist && tsc -p ./tsconfig.json",
     "gql-gen": "graphql-codegen --config codegen.yaml",
     "db-gen-types": "yarn json2ts -i schemas/db-schema.json -o src/generated/mongo-types.ts",

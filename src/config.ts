@@ -16,6 +16,7 @@ export const serverConfig = {
     host: parseEnv(process.env.FASTIFY_HOST, '::', stringParser),
     port: parseEnv(process.env.FASTIFY_PORT, 3000, Number),
     dbUri: parseEnv(process.env.MONGODB_CONNECTION_STRING, '', stringParser),
+    db: parseEnv(process.env.MONGODB_DATABASE, '', stringParser),
     poolSize: parseEnv(process.env.DB_POOL_SIZE, 20, Number),
     jwtSecreteKey: parseEnv(process.env.JWT_SECRET, '', stringParser),
     jwtExpirationTime: parseEnv(process.env.TOKEN_EXPIRATION, '1d', stringParser)
