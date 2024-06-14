@@ -25,3 +25,17 @@ jobs:
 
     - name: Build project
       run: yarn build
+    
+    - name: Build Docker image
+      run: |
+        docker build -t abhibarkade/project-unkown-apie:latest .
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: abhibarkade
+        password: nJw,f*bB2rX.XZ#
+    
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker push abhibarkade/project-unkown-api:latest
