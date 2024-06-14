@@ -1,5 +1,6 @@
 import {ErrorCode} from '../../constants/error-codes'
 import {FastifyReply} from 'fastify'
+import {MongoCollection} from '../../@types/collections'
 import {RestParamsInput} from '../../generated/graphql'
 import {checkAccessTokenIsValid} from '../graph/services/access.token.service'
 import fs from 'fs'
@@ -48,12 +49,10 @@ export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
 
             await pump(data.file, fs.createWriteStream(filePath))
 
-            // Create a unified GridFSBucket under a single collection named 'media'
             const bucket = new GridFSBucket(db, {
-                bucketName: 'media' // Unified bucket for all media types
+                bucketName: MongoCollection.MEDIA
             })
 
-            // Naming convention for files to indicate "nested" structure
             const uploadFilename = `${userId}/${mediaType}/${Date.now()}-${data.filename}`
             const options: GridFSBucketWriteStreamOptions = {
                 contentType: data.mimetype,
