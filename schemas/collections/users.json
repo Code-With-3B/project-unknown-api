@@ -15,12 +15,12 @@
       "type": "string",
       "description": "'fullName' must be a string."
     },
-    "accountStatus": {
+    "accountState": {
       "type": "string",
-      "enum": ["ACTIVE", "TERMINATED"],
+      "enum": ["ACTIVE", "INACTIVE", "SUSPENDED", "DELETED"],
       "description": "'gender' must be a string indicating the user's gender."
     },
-    "accountType": {
+    "accountVisibility": {
       "type": "string",
       "enum": ["PUBLIC", "PRIVATE"],
       "description": "'gender' must be a string indicating the user's gender."
@@ -56,10 +56,12 @@
     "verificationStatus": {
       "type": "string",
       "enum": [
-        "UNVERIFIED",
         "VERIFIED_PLAYER",
         "VERIFIED_COACH",
         "VERIFIED_ESPORTS_PROFESSIONAL",
+        "UNVERIFIED_PLAYER",
+        "UNVERIFIED_COACH",
+        "UNVERIFIED_ESPORTS_PROFESSIONAL",
         "ADMIN"
       ],
       "description": "'verificationStatus' must be a string."

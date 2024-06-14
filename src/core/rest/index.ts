@@ -11,7 +11,7 @@ import {promisify} from 'util'
 import {uploadDir} from './utils'
 
 import {FastifyInstance, FastifyRequest} from 'fastify'
-import {GridFSBucket, GridFSBucketWriteStreamOptions, ObjectId} from 'mongodb'
+import {GridFSBucket, GridFSBucketWriteStreamOptions} from 'mongodb'
 
 const pump = promisify(pipeline)
 

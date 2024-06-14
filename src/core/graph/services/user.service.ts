@@ -5,7 +5,7 @@ import {UsersCollection} from '../../../generated/mongo-types'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
-import {AccountStatus, AccountType, GenderType} from './../../../generated/graphql'
+import {AccountStateType, AccountVisibilityType, GenderType, VerificationStatusType} from './../../../generated/graphql'
 import {
     AuthMode,
     CheckDuplicateUserInput,
@@ -83,9 +83,13 @@ export async function signup(context: ResolverContext, input: SignUpInput): Prom
             phone: input.phone?.toLowerCase(),
             password: await hash(input.password ?? id, bcryptConfig.saltRounds),
             gender: input?.gender ?? GenderType.PreferNotSay,
-            accountStatus: AccountStatus.Active,
-            accountType: AccountType.Public,
-            following: [],
+            accountState: AccountStateType.Active,
+            accountVisibility: AccountVisibilityType.Public,
+            verificationStatus: VerificationStatusType.UnverifiedPlayer,
+            preferredGames: [],
+            achievements: [],
+            skills: [],
+            highlights: [],
             createdAt: new Date().toISOString()
         }
 
@@ -159,7 +163,12 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
         if (input.fullName && input.fullName != user.fullName) updateFields.fullName = input.fullName
         if (input.bio && input.bio != user.bio) updateFields.bio = input.bio
         if (input.gender && input.gender != user.gender) updateFields.gender = input.gender
-        if (input.accountType && input.accountType != user.accountType) updateFields.accountType = input.accountType
+        if (input.accountVisibility && input.accountVisibility != user.accountVisibility)
+            updateFields.accountVisibility = input.accountVisibility
+        if (input.accountState && input.accountState != user.accountState)
+            updateFields.accountState = input.accountState
+        if (input.verificationStatus && input.verificationStatus != user.verificationStatus)
+            updateFields.verificationStatus = input.verificationStatus
 
         if (Object.keys(updateFields).length > 0) {
             updateFields.updatedAt = new Date().toISOString()
