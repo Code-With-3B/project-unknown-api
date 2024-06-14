@@ -32,12 +32,14 @@ export type AccessToken = {
   userId: Scalars['ID']['output'];
 };
 
-export enum AccountStatus {
+export enum AccountStateType {
   Active = 'ACTIVE',
-  Terminated = 'TERMINATED'
+  Deleted = 'DELETED',
+  Inactive = 'INACTIVE',
+  Suspended = 'SUSPENDED'
 }
 
-export enum AccountType {
+export enum AccountVisibilityType {
   Private = 'PRIVATE',
   Public = 'PUBLIC'
 }
@@ -256,7 +258,8 @@ export enum TokenStatus {
 
 /** Input for updating an existing user. */
 export type UpdateUserInput = {
-  accountType: AccountType;
+  accountState?: InputMaybe<AccountStateType>;
+  accountVisibility?: InputMaybe<AccountVisibilityType>;
   bio?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
@@ -267,13 +270,14 @@ export type UpdateUserInput = {
   profileBannerUri?: InputMaybe<Scalars['String']['input']>;
   profilePictureUri?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
+  verificationStatus?: InputMaybe<VerificationStatusType>;
 };
 
 /** Represents a user in the esports community. */
 export type User = {
   __typename?: 'User';
-  accountStatus: AccountStatus;
-  accountType: AccountType;
+  accountState: AccountStateType;
+  accountVisibility: AccountVisibilityType;
   achievements?: Maybe<Array<Scalars['ID']['output']>>;
   authMode: AuthMode;
   bio?: Maybe<Scalars['String']['output']>;
@@ -290,7 +294,7 @@ export type User = {
   teams?: Maybe<Array<Scalars['ID']['output']>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   username: Scalars['String']['output'];
-  verificationStatus: VerificationStatus;
+  verificationStatus: VerificationStatusType;
 };
 
 /** Payload returned by user-related mutations. */
@@ -302,9 +306,11 @@ export type UserResponse = ResponsePayload & {
 };
 
 /** Enum representing verification status of users or professionals. */
-export enum VerificationStatus {
+export enum VerificationStatusType {
   Admin = 'ADMIN',
-  Unverified = 'UNVERIFIED',
+  UnverifiedCoach = 'UNVERIFIED_COACH',
+  UnverifiedEsportsProfessional = 'UNVERIFIED_ESPORTS_PROFESSIONAL',
+  UnverifiedPlayer = 'UNVERIFIED_PLAYER',
   VerifiedCoach = 'VERIFIED_COACH',
   VerifiedEsportsProfessional = 'VERIFIED_ESPORTS_PROFESSIONAL',
   VerifiedPlayer = 'VERIFIED_PLAYER'
@@ -386,8 +392,8 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AccessToken: ResolverTypeWrapper<AccessToken>;
-  AccountStatus: AccountStatus;
-  AccountType: AccountType;
+  AccountStateType: AccountStateType;
+  AccountVisibilityType: AccountVisibilityType;
   Achievement: ResolverTypeWrapper<Achievement>;
   AuthMode: AuthMode;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -417,7 +423,7 @@ export type ResolversTypes = {
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UserResponse: ResolverTypeWrapper<UserResponse>;
-  VerificationStatus: VerificationStatus;
+  VerificationStatusType: VerificationStatusType;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -554,8 +560,8 @@ export type TokenPayloadInputResolvers<ContextType = any, ParentType extends Res
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  accountStatus?: Resolver<ResolversTypes['AccountStatus'], ParentType, ContextType>;
-  accountType?: Resolver<ResolversTypes['AccountType'], ParentType, ContextType>;
+  accountState?: Resolver<ResolversTypes['AccountStateType'], ParentType, ContextType>;
+  accountVisibility?: Resolver<ResolversTypes['AccountVisibilityType'], ParentType, ContextType>;
   achievements?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   authMode?: Resolver<ResolversTypes['AuthMode'], ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -572,7 +578,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   teams?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  verificationStatus?: Resolver<ResolversTypes['VerificationStatus'], ParentType, ContextType>;
+  verificationStatus?: Resolver<ResolversTypes['VerificationStatusType'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

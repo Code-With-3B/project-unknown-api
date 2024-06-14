@@ -17,7 +17,6 @@ export async function fetchRelationalData<T>(
         const finalQuery = JSON.parse(JSON.stringify(pipelines[collectionName]))
         if (query) finalQuery[0] = {$match: query}
         const result: T[] = (await collection.aggregate(finalQuery).toArray()) as T[]
-        logger.info(`Fetched user data: ${JSON.stringify(result)}`)
         return result
     } catch (error) {
         logger.error(`Error fetching ${collectionName}s: ${error}`)

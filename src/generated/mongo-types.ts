@@ -26,11 +26,11 @@ export interface UsersCollection {
   /**
    * 'gender' must be a string indicating the user's gender.
    */
-  accountStatus?: "ACTIVE" | "TERMINATED";
+  accountState?: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "DELETED";
   /**
    * 'gender' must be a string indicating the user's gender.
    */
-  accountType?: "PUBLIC" | "PRIVATE";
+  accountVisibility?: "PUBLIC" | "PRIVATE";
   /**
    * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
    */
@@ -58,7 +58,14 @@ export interface UsersCollection {
   /**
    * 'verificationStatus' must be a string.
    */
-  verificationStatus?: "UNVERIFIED" | "VERIFIED_PLAYER" | "VERIFIED_COACH" | "VERIFIED_ESPORTS_PROFESSIONAL" | "ADMIN";
+  verificationStatus?:
+    | "VERIFIED_PLAYER"
+    | "VERIFIED_COACH"
+    | "VERIFIED_ESPORTS_PROFESSIONAL"
+    | "UNVERIFIED_PLAYER"
+    | "UNVERIFIED_COACH"
+    | "UNVERIFIED_ESPORTS_PROFESSIONAL"
+    | "ADMIN";
   /**
    * 'authMode' must be a string.
    */
