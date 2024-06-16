@@ -313,14 +313,11 @@ export async function updateUserConnection(
     input: UpdateUserConnectionInput
 ): Promise<UpdateUserConnectionResponse> {
     logger.info(`Received request from ${input.actor} to ${input.actionType} ${input.target}`)
-    console.log(context.mongodb.databaseName)
-
     const actionSuccessMessages = {
         [AccountInteractionType.Follow]: ErrorCode.FOLLOW_USER_SUCCESS,
         [AccountInteractionType.Unfollow]: ErrorCode.UNFOLLOW_USER_SUCCESS,
         [AccountInteractionType.Block]: ErrorCode.BLOCK_USER_SUCCESS
     }
-
     const actionFailureMessages = {
         [AccountInteractionType.Follow]: ErrorCode.FOLLOW_USER_FAILED,
         [AccountInteractionType.Unfollow]: ErrorCode.UNFOLLOW_USER_FAILED,
@@ -372,11 +369,12 @@ export async function updateUserConnection(
                 return {success: true, context: actionSuccessMessages[actionType]}
             } else {
                 logger.info(`Request failed: ${input.actor} ${actionType} ${input.target}`)
-                return {success: true, context: actionFailureMessages[actionType]}
+                return {success: false, context: actionFailureMessages[actionType]}
             }
         }
     } catch (error) {
         logger.error(`Error during ${input.actionType} ${input.target} for ${input.actor}`, error)
+        logger.error(error)
         return {success: false, context: ErrorCode.GENERIC_ERROR}
     }
 }
