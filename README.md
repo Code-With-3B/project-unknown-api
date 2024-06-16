@@ -106,3 +106,5 @@ This table lists commonly used yarn commands for this project:
 | `yarn purge` | Removes the `node_modules` and `dist` directories to clean up the project. |
 | `yarn migration:up` | Runs the database migrations to set up the current schema. |
 | `yarn migration:down` | Rolls back the most recent database migration. |
+
+For more commands, see [package.json](./package.json).
