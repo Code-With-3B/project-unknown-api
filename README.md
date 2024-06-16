@@ -41,11 +41,11 @@ Follow these instructions to set up the project on your local machine for develo
 
 Ensure you have the following tools installed on your local development environment:
 
-- **Node.js** (v14 or later)
-- **Yarn** (v1.22 or later)
+- **Node.js** (v20.11.0)
+- **Yarn** (v1.22.22)
+- **direnv** (v2.34.0)
 - **TypeScript** (v4.0 or later)
 - **MongoDB** (if using locally)
-- **direnv** (for managing environment variables)
 
 ### Installation
 
