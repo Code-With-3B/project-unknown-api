@@ -90,21 +90,23 @@ Create a .envrc file in the root of the project and add the necessary environmen
    ```bash
    yarn dev
    ```
-This command will build the project and start the server in development mode.
 
-**Commands**
-Here’s a table summarizing the various Yarn commands available in this project:
+## Commands
 
-Command	Description
-yarn dev	Builds the project and starts the server in development mode.
-yarn start	Starts the server using the compiled code in the dist directory.
-yarn build	Cleans the dist directory and compiles TypeScript to JavaScript.
-yarn gql-gen	Generates GraphQL types and operations based on the codegen.yaml configuration.
-yarn db-gen-types	Converts the JSON database schema into TypeScript types and saves them in src/generated/.
-yarn lint	Runs ESLint on the src directory and automatically fixes issues.
-yarn purge	Removes the node_modules and dist directories to clean up the project.
-yarn migration:up	Runs the database migrations to set up the current schema.
-yarn migration:down	Rolls back the most recent database migration.
+This table lists commonly used yarn commands for this project:
+
+| Command | Description |
+|---|---|
+| `yarn dev` | Builds the project and starts the server in development mode. |
+| `yarn start` | Starts the server using the compiled code in the `dist` directory. |
+| `yarn build` | Cleans the `dist` directory and compiles TypeScript to JavaScript. |
+| `yarn gql-gen` | Generates GraphQL types and operations based on the `codegen.yaml` configuration. |
+| `yarn db-gen-types` | Converts the JSON database schema into TypeScript types and saves them in `src/generated/`. |
+| `yarn lint` | Runs ESLint on the `src` directory and automatically fixes issues (if possible). |
+| `yarn purge` | Removes the `node_modules` and `dist` directories to clean up the project. |
+| `yarn migration:up` | Runs the database migrations to set up the current schema. |
+| `yarn migration:down` | Rolls back the most recent database migration. |
+
 Explanation of Environment Variables
 To help you understand the specific environment variables required for the project:
 
