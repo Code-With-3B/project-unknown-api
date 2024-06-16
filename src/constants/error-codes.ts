@@ -45,6 +45,7 @@ export enum ErrorCode {
     TOKEN_DENIED = 'TOKEN_DENIED',
 
     // Media Upload
+    INVALID_MEDIA_TYPE = 'INVALID_MEDIA_TYPE',
     MEDIA_UPLOAD_FAILED = 'MEDIA_UPLOAD_FAILED',
     MEDIA_NOT_ATTACHED = 'MEDIA_NOT_ATTACHED',
     MEDIA_UPLOAD_SUCCESS = 'MEDIA_UPLOAD_SUCCESS',
@@ -101,6 +102,7 @@ export const ErrorMessage: Record<ErrorCode, string> = {
     [ErrorCode.TOKEN_DENIED]: 'Token not created for user',
 
     // Media Upload
+    [ErrorCode.INVALID_MEDIA_TYPE]: 'Invalid media type',
     [ErrorCode.MEDIA_UPLOAD_FAILED]: 'Media upload failed',
     [ErrorCode.MEDIA_UPLOAD_SUCCESS]: 'Media uploaded successfully',
     [ErrorCode.MEDIA_NOT_ATTACHED]: 'No media found in request',

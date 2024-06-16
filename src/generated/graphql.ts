@@ -97,10 +97,8 @@ export type Highlight = {
 };
 
 export enum MediaType {
-  Banner = 'BANNER',
-  PostImage = 'POST_IMAGE',
-  PostVideo = 'POST_VIDEO',
-  Profile = 'PROFILE'
+  Image = 'IMAGE',
+  Video = 'VIDEO'
 }
 
 export type MediaUploadResponse = ResponsePayload & {
@@ -193,8 +191,8 @@ export type ResponsePayload = {
 
 export type RestParamsInput = {
   __typename?: 'RestParamsInput';
-  mediaType?: Maybe<MediaType>;
-  userId?: Maybe<Scalars['String']['output']>;
+  mediaType: MediaType;
+  userId: Scalars['String']['output'];
 };
 
 /** Input for signing in a user with email and password. */
@@ -523,8 +521,8 @@ export type ResponsePayloadResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type RestParamsInputResolvers<ContextType = any, ParentType extends ResolversParentTypes['RestParamsInput'] = ResolversParentTypes['RestParamsInput']> = {
-  mediaType?: Resolver<Maybe<ResolversTypes['MediaType']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  mediaType?: Resolver<ResolversTypes['MediaType'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
