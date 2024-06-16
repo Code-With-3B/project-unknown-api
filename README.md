@@ -82,7 +82,7 @@ Create a .envrc file in the root of the project and add the necessary environmen
    ```
 
 
-7. **Start the Fastify server:**
+8. **Start the Fastify server:**
 
    ```bash
    yarn start
