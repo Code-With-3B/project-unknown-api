@@ -82,14 +82,13 @@ Create a .envrc file in the root of the project and add the necessary environmen
    ```
 
 
-8. **Start the Fastify server:**
+7. **Start the Fastify server:**
 
    ```bash
    yarn start
    ```
 
-**Development**
-For development purposes, you can use the dev command to build and start the project in one go:
+8. **For development purposes, you can use the dev command to build and start the project in one go:**
 
    ```bash
    yarn dev
