@@ -49,14 +49,11 @@ Create a .envrc file in the root of the project and add the necessary environmen
    ```bash
    echo 'export FASTIFY_PORT=3000' >> .envrc
    echo 'export ESLINT_USE_FLAT_CONFIG=true' >> .envrc 
-
    echo "export MONGODB_CONNECTION_STRING='mongodb://localhost:27017/project-unknown'" >> .envrc
    echo 'export MONGODB_DATABASE=project-unknown' >> .envrc
    echo 'export DB_POOL_SIZE=20' >> .envrc
-
    echo 'export JWT_SECRET=your_jwt_secret' >> .envrc
    echo "export TOKEN_EXPIRATION='1d'" >> .envrc
-
    echo 'export MAX_FILE_SIZE=96' >> .envrc
    ```
 
