@@ -32,37 +32,38 @@ Ensure you have the following tools installed on your local development environm
    git clone https://github.com/your-username/project-unknown.git
    cd project-unknown 
 
-Install Dependencies
+2. **Install Dependencies**
 
 Use Yarn to install the project dependencies:
 
-bash
-Copy code
-yarn install
+   ```bash
+   yarn install 
+   ```
 
-2. **Set Up Environment Variables**
+3. **Set Up Environment Variables**
 
 Create a .envrc file in the root of the project and add the necessary environment variables. You can create and populate this file with the following commands:
 
-```bash
-echo 'export FASTIFY_PORT=3000' >> .envrc
-echo 'export ESLINT_USE_FLAT_CONFIG=true' >> .envrc 
+   ```bash
+   echo 'export FASTIFY_PORT=3000' >> .envrc
+   echo 'export ESLINT_USE_FLAT_CONFIG=true' >> .envrc 
 
-echo "export MONGODB_CONNECTION_STRING='mongodb://localhost:27017/project-unknown'" >> .envrc
-echo 'export MONGODB_DATABASE=project-unknown' >> .envrc
-echo 'export DB_POOL_SIZE=20' >> .envrc
+   echo "export MONGODB_CONNECTION_STRING='mongodb://localhost:27017/project-unknown'" >> .envrc
+   echo 'export MONGODB_DATABASE=project-unknown' >> .envrc
+   echo 'export DB_POOL_SIZE=20' >> .envrc
 
-echo 'export JWT_SECRET=your_jwt_secret' >> .envrc
-echo "export TOKEN_EXPIRATION='1d'" >> .envrc
+   echo 'export JWT_SECRET=your_jwt_secret' >> .envrc
+   echo "export TOKEN_EXPIRATION='1d'" >> .envrc
 
-echo 'export MAX_FILE_SIZE=96' >> .envrc
-Replace your_jwt_secret with a secure, randomly generated string.
+   echo 'export MAX_FILE_SIZE=96' >> .envrc
+   ```
 
-After creating the .envrc file, use direnv to allow loading the environment variables automatically:
+4. **After creating the .envrc file, use direnv to allow loading the environment variables automatically:**
 
-bash
-Copy code
-direnv allow
+   ```bash
+   direnv allow 
+   ```
+
 Note: Make sure direnv is installed and properly configured in your shell. If you don't have direnv installed, follow the installation guide.
 
 Build the Project
