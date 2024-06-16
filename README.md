@@ -6,9 +6,9 @@
    Project Unknown Api
 </p>
 
-<p>
+<p align="center">
    <a href="https://nodejs.org/">
-      <img src="https://aleen42.github.io/badges/src/node.svj"/>
+      <img src="https://aleen42.github.io/badges/src/node.svg"/>
    </a>
 </p>
 
