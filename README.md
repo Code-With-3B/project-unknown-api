@@ -10,15 +10,6 @@
    <a href="https://nodejs.org/">
       <img src="https://aleen42.github.io/badges/src/node.svg"/>
    </a>
-   <a href="https://www.fastify.io/">
-    <img src="https://github.com/fastify/graphics"/>
-  </a>
-  <a href="https://graphql.org/">
-    <img src="https://graphql.org/favicon.ico"/>
-  </a>
-   <a href="https://www.apollographql.com/">
-    <img src="https://www.apollographql.com/static/favicon/favicon.ico"/>
-  </a>
    <a href="https://www.typescriptlanag.org/">
       <img src="https://aleen42.github.io/badges/src/typescript.svg"/>
    </a>
