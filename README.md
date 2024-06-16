@@ -29,8 +29,9 @@ Ensure you have the following tools installed on your local development environm
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-username/project-unknown.git
+   git clone https://github.com/Code-With-3B/project-unknown-api.git
    cd project-unknown 
+
 
 2. **Install Dependencies**
 
@@ -39,6 +40,7 @@ Use Yarn to install the project dependencies:
    ```bash
    yarn install 
    ```
+
 
 3. **Set Up Environment Variables**
 
@@ -58,6 +60,7 @@ Create a .envrc file in the root of the project and add the necessary environmen
    echo 'export MAX_FILE_SIZE=96' >> .envrc
    ```
 
+
 4. **After creating the .envrc file, use direnv to allow loading the environment variables automatically:**
 
    ```bash
@@ -70,31 +73,30 @@ Create a .envrc file in the root of the project and add the necessary environmen
    ```bash
    yarn build
    ```
-   Run the Migrations
 
-Apply the necessary database migrations:
 
-bash
-Copy code
-yarn migration:up
-Start the Server
+6. **Apply the necessary database migrations:**
 
-Start the Fastify server:
+   ```bash
+   yarn migration:up
+   ```
 
-bash
-Copy code
-yarn start
-The server should now be running at http://localhost:3000.
 
-Development
+7. **Start the Fastify server:**
+
+   ```bash
+   yarn start
+   ```
+
+**Development**
 For development purposes, you can use the dev command to build and start the project in one go:
 
-bash
-Copy code
-yarn dev
+   ```bash
+   yarn dev
+   ```
 This command will build the project and start the server in development mode.
 
-Commands
+**Commands**
 Here’s a table summarizing the various Yarn commands available in this project:
 
 Command	Description
