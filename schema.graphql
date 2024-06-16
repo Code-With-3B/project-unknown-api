@@ -45,8 +45,10 @@ enum TokenStatus {
 }
 
 enum MediaType {
-  IMAGE
-  VIDEO
+  PROFILE_PICTURE
+  PROFILE_BANNER
+  HIGHLIGHT_IMAGE
+  HIGHLIGHT_VIDEO
 }
 
 enum AccountVisibilityType {
@@ -120,6 +122,8 @@ type User {
   fullName: String! # Full name of the user.
   accountState: AccountStateType!
   accountVisibility: AccountVisibilityType!
+  profilePicture: String
+  profileBanner: String
   phone: String # Phone number of the user (optional).
   email: String # Email address of the user (optional).
   password: String! # Password for the user account.

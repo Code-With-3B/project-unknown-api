@@ -2,13 +2,15 @@ import {ErrorCode} from '../../constants/error-codes'
 import {FastifyReply} from 'fastify'
 import {MongoCollection} from '../../@types/collections'
 import {Readable} from 'stream'
+import {UsersCollection} from '../../generated/mongo-types'
 import {checkAccessTokenIsValid} from '../graph/services/access.token.service'
 import {isEmpty} from 'ramda'
 import {logger} from '../../config'
+import {updateDataInDB} from '../graph/db/utils'
 
 import {FastifyInstance, FastifyRequest} from 'fastify'
 import {GridFSBucket, ObjectId} from 'mongodb'
-import {MediaType, RestParamsInput} from '../../generated/graphql'
+import {MediaType, RestParamsInput, User} from '../../generated/graphql'
 
 export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
     fastify.post('/upload/:userId/:mediaType', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -77,12 +79,38 @@ export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
             })
 
             const id = uploadStream.id
+            if (mediaType == MediaType.ProfilePicture) {
+                const updateFields: Partial<UsersCollection> = {}
+                updateFields.profilePicture = id.toString()
+                updateFields.updatedAt = new Date().toISOString()
+                const updatedUser = await updateDataInDB<UsersCollection, User>(
+                    db,
+                    MongoCollection.USER,
+                    userId,
+                    updateFields
+                )
+                if (updatedUser)
+                    logger.info(`User profile picture updated successfully for userID: ${userId}, fileId: ${id}`)
+            }
+            if (mediaType == MediaType.ProfileBanner) {
+                const updateFields: Partial<UsersCollection> = {}
+                updateFields.profileBanner = id.toString()
+                updateFields.updatedAt = new Date().toISOString()
+                const updatedUser = await updateDataInDB<UsersCollection, User>(
+                    db,
+                    MongoCollection.USER,
+                    userId,
+                    updateFields
+                )
+                if (updatedUser)
+                    logger.info(`User profile banner updated successfully for userID: ${userId}, fileId: ${id}`)
+            }
             if (!id) {
                 return reply.status(404).send({success: false, error: ErrorCode.FILE_NOT_FOUND})
             }
 
             return reply.send({
-                file: id,
+                fileId: id,
                 context: ErrorCode.MEDIA_UPLOAD_SUCCESS
             })
         } catch (error) {

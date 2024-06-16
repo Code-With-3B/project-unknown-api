@@ -97,8 +97,10 @@ export type Highlight = {
 };
 
 export enum MediaType {
-  Image = 'IMAGE',
-  Video = 'VIDEO'
+  HighlightImage = 'HIGHLIGHT_IMAGE',
+  HighlightVideo = 'HIGHLIGHT_VIDEO',
+  ProfileBanner = 'PROFILE_BANNER',
+  ProfilePicture = 'PROFILE_PICTURE'
 }
 
 export type MediaUploadResponse = ResponsePayload & {
@@ -288,6 +290,8 @@ export type User = {
   password: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
   preferredGames?: Maybe<Array<Scalars['ID']['output']>>;
+  profileBanner?: Maybe<Scalars['String']['output']>;
+  profilePicture?: Maybe<Scalars['String']['output']>;
   skills?: Maybe<Array<Scalars['ID']['output']>>;
   teams?: Maybe<Array<Scalars['ID']['output']>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -572,6 +576,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   preferredGames?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
+  profileBanner?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profilePicture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   skills?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
