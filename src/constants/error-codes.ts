@@ -53,7 +53,11 @@ export enum ErrorCode {
 
     // Following
     FOLLOW_USER_SUCCESS = 'FOLLOW_USER_SUCCESS',
-    FOLLOW_USER_FAILED = 'FOLLOW_USER_FAILED'
+    FOLLOW_USER_FAILED = 'FOLLOW_USER_FAILED',
+    UNFOLLOW_USER_SUCCESS = 'UNFOLLOW_USER_SUCCESS',
+    UNFOLLOW_USER_FAILED = 'UNFOLLOW_USER_FAILED',
+    BLOCK_USER_SUCCESS = 'BLOCK_USER_SUCCESS',
+    BLOCK_USER_FAILED = 'BLOCK_USER_FAILED'
 }
 
 export const ErrorMessage: Record<ErrorCode, string> = {
@@ -109,6 +113,10 @@ export const ErrorMessage: Record<ErrorCode, string> = {
     [ErrorCode.FILE_NOT_FOUND]: 'No file found to download',
 
     // Following
-    [ErrorCode.FOLLOW_USER_SUCCESS]: 'User followed another uses',
-    [ErrorCode.FOLLOW_USER_FAILED]: 'Following user failed'
+    [ErrorCode.FOLLOW_USER_SUCCESS]: 'User followed another user',
+    [ErrorCode.FOLLOW_USER_FAILED]: 'Following user failed',
+    [ErrorCode.UNFOLLOW_USER_SUCCESS]: 'User un-followed another user',
+    [ErrorCode.UNFOLLOW_USER_FAILED]: 'Unfollowing user failed',
+    [ErrorCode.BLOCK_USER_SUCCESS]: 'User blocked other used',
+    [ErrorCode.BLOCK_USER_FAILED]: 'Blocking user failed'
 }

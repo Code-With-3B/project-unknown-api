@@ -32,6 +32,12 @@ export type AccessToken = {
   userId: Scalars['ID']['output'];
 };
 
+export enum AccountInteractionType {
+  Block = 'BLOCK',
+  Follow = 'FOLLOW',
+  Unfollow = 'UNFOLLOW'
+}
+
 export enum AccountStateType {
   Active = 'ACTIVE',
   Deleted = 'DELETED',
@@ -142,6 +148,7 @@ export type Mutation = {
    * - `input`: Input data for updating the user.
    */
   updateUser: UserResponse;
+  updateUserConnection: UpdateUserConnectionResponse;
 };
 
 
@@ -159,13 +166,18 @@ export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
 };
 
+
+export type MutationUpdateUserConnectionArgs = {
+  input: UpdateUserConnectionInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   /**
    * Check if a username is already taken.
    * - `input`: Input containing the username to check for duplication.
    */
-  checkDuplicate: CheckDuplicateUserResponse;
+  checkDuplicateUsername: CheckDuplicateUserResponse;
   /**
    * Retrieve a user by their username.
    * - `username`: Username of the user to retrieve.
@@ -176,7 +188,7 @@ export type Query = {
 };
 
 
-export type QueryCheckDuplicateArgs = {
+export type QueryCheckDuplicateUsernameArgs = {
   input: CheckDuplicateUserInput;
 };
 
@@ -256,6 +268,18 @@ export enum TokenStatus {
   Expired = 'EXPIRED'
 }
 
+export type UpdateUserConnectionInput = {
+  actionType: AccountInteractionType;
+  actor: Scalars['ID']['input'];
+  target: Scalars['ID']['input'];
+};
+
+export type UpdateUserConnectionResponse = ResponsePayload & {
+  __typename?: 'UpdateUserConnectionResponse';
+  context: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 /** Input for updating an existing user. */
 export type UpdateUserInput = {
   accountState?: InputMaybe<AccountStateType>;
@@ -297,6 +321,16 @@ export type User = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   username: Scalars['String']['output'];
   verificationStatus: VerificationStatusType;
+};
+
+export type UserInteraction = {
+  __typename?: 'UserInteraction';
+  actionType: AccountInteractionType;
+  actor: Scalars['ID']['output'];
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  target: Scalars['ID']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 /** Payload returned by user-related mutations. */
@@ -388,12 +422,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( MediaUploadResponse ) | ( SignInResponse ) | ( UserResponse );
+  ResponsePayload: ( MediaUploadResponse ) | ( SignInResponse ) | ( UpdateUserConnectionResponse ) | ( UserResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AccessToken: ResolverTypeWrapper<AccessToken>;
+  AccountInteractionType: AccountInteractionType;
   AccountStateType: AccountStateType;
   AccountVisibilityType: AccountVisibilityType;
   Achievement: ResolverTypeWrapper<Achievement>;
@@ -422,8 +457,11 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<Team>;
   TokenPayloadInput: ResolverTypeWrapper<TokenPayloadInput>;
   TokenStatus: TokenStatus;
+  UpdateUserConnectionInput: UpdateUserConnectionInput;
+  UpdateUserConnectionResponse: ResolverTypeWrapper<UpdateUserConnectionResponse>;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
+  UserInteraction: ResolverTypeWrapper<UserInteraction>;
   UserResponse: ResolverTypeWrapper<UserResponse>;
   VerificationStatusType: VerificationStatusType;
 };
@@ -453,8 +491,11 @@ export type ResolversParentTypes = {
   String: Scalars['String']['output'];
   Team: Team;
   TokenPayloadInput: TokenPayloadInput;
+  UpdateUserConnectionInput: UpdateUserConnectionInput;
+  UpdateUserConnectionResponse: UpdateUserConnectionResponse;
   UpdateUserInput: UpdateUserInput;
   User: User;
+  UserInteraction: UserInteraction;
   UserResponse: UserResponse;
 };
 
@@ -510,16 +551,17 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   signIn?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
   signUp?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
+  updateUserConnection?: Resolver<ResolversTypes['UpdateUserConnectionResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserConnectionArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  checkDuplicate?: Resolver<ResolversTypes['CheckDuplicateUserResponse'], ParentType, ContextType, RequireFields<QueryCheckDuplicateArgs, 'input'>>;
+  checkDuplicateUsername?: Resolver<ResolversTypes['CheckDuplicateUserResponse'], ParentType, ContextType, RequireFields<QueryCheckDuplicateUsernameArgs, 'input'>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserArgs>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
 };
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'MediaUploadResponse' | 'SignInResponse' | 'UserResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'MediaUploadResponse' | 'SignInResponse' | 'UpdateUserConnectionResponse' | 'UserResponse', ParentType, ContextType>;
   context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -561,6 +603,12 @@ export type TokenPayloadInputResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UpdateUserConnectionResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateUserConnectionResponse'] = ResolversParentTypes['UpdateUserConnectionResponse']> = {
+  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   accountState?: Resolver<ResolversTypes['AccountStateType'], ParentType, ContextType>;
   accountVisibility?: Resolver<ResolversTypes['AccountVisibilityType'], ParentType, ContextType>;
@@ -583,6 +631,16 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   verificationStatus?: Resolver<ResolversTypes['VerificationStatusType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserInteractionResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserInteraction'] = ResolversParentTypes['UserInteraction']> = {
+  actionType?: Resolver<ResolversTypes['AccountInteractionType'], ParentType, ContextType>;
+  actor?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  target?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -609,7 +667,9 @@ export type Resolvers<ContextType = any> = {
   Skill?: SkillResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   TokenPayloadInput?: TokenPayloadInputResolvers<ContextType>;
+  UpdateUserConnectionResponse?: UpdateUserConnectionResponseResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  UserInteraction?: UserInteractionResolvers<ContextType>;
   UserResponse?: UserResponseResolvers<ContextType>;
 };
 

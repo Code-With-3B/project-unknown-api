@@ -1,11 +1,19 @@
 import {ErrorCode} from '../../../constants/error-codes'
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
-import {UsersCollection} from '../../../generated/mongo-types'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
-import {AccountStateType, AccountVisibilityType, GenderType, VerificationStatusType} from './../../../generated/graphql'
+import {
+    AccountInteractionType,
+    AccountStateType,
+    AccountVisibilityType,
+    GenderType,
+    UpdateUserConnectionInput,
+    UpdateUserConnectionResponse,
+    UserInteraction,
+    VerificationStatusType
+} from './../../../generated/graphql'
 import {
     AuthMode,
     CheckDuplicateUserInput,
@@ -18,6 +26,7 @@ import {
     User,
     UserResponse
 } from '../../../generated/graphql'
+import {UserInteractionCollection, UsersCollection} from '../../../generated/mongo-types'
 import {bcryptConfig, generateToken} from '../../../constants/auth/utils'
 import {compare, hash} from 'bcrypt'
 import {fetchDocumentByField, fetchRelationalData, insertDataInDB, updateDataInDB} from '../db/utils'
@@ -296,5 +305,78 @@ async function checkDuplicateUser(
         (await fetchDocumentByField<UsersCollection>(context.mongodb, MongoCollection.USER, field, value.toLowerCase()))
     ) {
         throw new Error(errorCode)
+    }
+}
+
+export async function updateUserConnection(
+    context: ResolverContext,
+    input: UpdateUserConnectionInput
+): Promise<UpdateUserConnectionResponse> {
+    logger.info(`Received request from ${input.actor} to ${input.actionType} ${input.target}`)
+    console.log(context.mongodb.databaseName)
+
+    const actionSuccessMessages = {
+        [AccountInteractionType.Follow]: ErrorCode.FOLLOW_USER_SUCCESS,
+        [AccountInteractionType.Unfollow]: ErrorCode.UNFOLLOW_USER_SUCCESS,
+        [AccountInteractionType.Block]: ErrorCode.BLOCK_USER_SUCCESS
+    }
+
+    const actionFailureMessages = {
+        [AccountInteractionType.Follow]: ErrorCode.FOLLOW_USER_FAILED,
+        [AccountInteractionType.Unfollow]: ErrorCode.UNFOLLOW_USER_FAILED,
+        [AccountInteractionType.Block]: ErrorCode.BLOCK_USER_FAILED
+    }
+
+    try {
+        const actionType = input.actionType
+        const query = {actor: input.actor, target: input.target}
+        const existingRecord = await fetchRelationalData<UserInteraction>(
+            context.mongodb,
+            MongoCollection.USER_INTERACTION,
+            query
+        )
+        if (existingRecord[0]) {
+            const updateFields: Partial<UserInteractionCollection> = {}
+            if (input.actionType != existingRecord[0].actionType) updateFields.actionType = input.actionType
+            updateFields.updatedAt = new Date().toISOString()
+            const updatedRecord = await updateDataInDB<UserInteractionCollection, UserInteraction>(
+                context.mongodb,
+                MongoCollection.USER_INTERACTION,
+                existingRecord[0].id,
+                updateFields
+            )
+            if (updatedRecord) {
+                logger.info(`Updating record successful for recordId: ${existingRecord[0].id}`)
+                return {success: true, context: actionSuccessMessages[actionType]}
+            } else {
+                logger.info(`Updating record failed for recordId: ${existingRecord[0].id}`)
+                return {success: false, context: actionFailureMessages[actionType]}
+            }
+        } else {
+            logger.info(`No existing record found, creating new one`)
+            const document: UserInteractionCollection = {
+                id: uuid(),
+                ...input,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            }
+
+            const createdInteraction = await insertDataInDB<UserInteractionCollection, UserInteraction>(
+                context.mongodb,
+                MongoCollection.USER_INTERACTION,
+                document
+            )
+
+            if (createdInteraction) {
+                logger.info(`Request completed successfully: ${input.actor} ${actionType} ${input.target}`)
+                return {success: true, context: actionSuccessMessages[actionType]}
+            } else {
+                logger.info(`Request failed: ${input.actor} ${actionType} ${input.target}`)
+                return {success: true, context: actionFailureMessages[actionType]}
+            }
+        }
+    } catch (error) {
+        logger.error(`Error during ${input.actionType} ${input.target} for ${input.actor}`, error)
+        return {success: false, context: ErrorCode.GENERIC_ERROR}
     }
 }
