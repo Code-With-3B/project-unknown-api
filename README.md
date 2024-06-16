@@ -65,12 +65,9 @@ Create a .envrc file in the root of the project and add the necessary environmen
    ```
 
 
-5. **Build the Project**
-
-Compile the TypeScript code to JavaScript using the build command:
+5. **Compile the TypeScript code to JavaScript using the build command:**
 
    ```bash
-   Copy code
    yarn build
    ```
    Run the Migrations
