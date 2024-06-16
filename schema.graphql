@@ -51,16 +51,45 @@ enum MediaType {
   HIGHLIGHT_VIDEO
 }
 
+# Represents account visibility
 enum AccountVisibilityType {
   PUBLIC
   PRIVATE
 }
 
+# Represents account state
 enum AccountStateType {
   ACTIVE
   INACTIVE
   SUSPENDED
   DELETED
+}
+
+# how we interact with other account
+enum AccountInteractionType {
+  FOLLOW
+  UNFOLLOW
+  BLOCK
+}
+
+type UserInteraction {
+  id: ID!
+  actor: ID! # current user, if A wants to follow B, then actor is A
+  target: ID! # its B
+  actionType: AccountInteractionType! #defines action
+  createdAt: String!
+  updatedAt: String!
+}
+
+input UpdateUserConnectionInput {
+  actor: ID! # current user, if A wants to follow B, then actor is A
+  target: ID! # its B
+  actionType: AccountInteractionType! #defines action
+}
+
+type UpdateUserConnectionResponse implements ResponsePayload{
+  success: Boolean!
+  context: String!
 }
 
 enum GenderType {
@@ -270,7 +299,7 @@ type Query {
   Check if a username is already taken.
   - `input`: Input containing the username to check for duplication.
   """
-  checkDuplicate(input: CheckDuplicateUserInput!): CheckDuplicateUserResponse!
+  checkDuplicateUsername(input: CheckDuplicateUserInput!): CheckDuplicateUserResponse!
 }
 
 # Mutations
@@ -307,4 +336,7 @@ type Mutation {
   - `input`: Input data for updating the user.
   """
   updateUser(input: UpdateUserInput!): UserResponse!
+
+  # mutation to follow, unfollow block users
+  updateUserConnection(input: UpdateUserConnectionInput!): UpdateUserConnectionResponse!
 }

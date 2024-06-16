@@ -8,6 +8,7 @@
 export interface DatabaseSchema {
   user?: UsersCollection;
   accessToken?: AccessTokensCollection;
+  userInteraction?: UserInteractionCollection;
   [k: string]: unknown;
 }
 export interface UsersCollection {
@@ -133,5 +134,32 @@ export interface AccessTokensCollection {
    * An optional field representing the timestamp or date string indicating when the access token expires
    */
   expiresAt?: string;
+  [k: string]: unknown;
+}
+export interface UserInteractionCollection {
+  /**
+   * The unique identifier of the access token
+   */
+  id: string;
+  /**
+   * The identifier of the user associated with the access token
+   */
+  actor: string;
+  /**
+   * The actual token
+   */
+  target: string;
+  /**
+   * The status of the access token, which can be either ACTIVE or EXPIRED
+   */
+  actionType: "FOLLOW" | "UNFOLLOW" | "BLOCK";
+  /**
+   * The timestamp or date string indicating when the access token was created
+   */
+  createdAt: string;
+  /**
+   * The timestamp or date string indicating when the access token was created
+   */
+  updatedAt: string;
   [k: string]: unknown;
 }

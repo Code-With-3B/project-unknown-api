@@ -7,6 +7,9 @@
     },
     "accessToken": {
       "$ref": "schemas/collections/access-token.json"
+    },
+    "userInteraction": {
+      "$ref": "schemas/collections/user-interaction.json"
     }
   }
 }
