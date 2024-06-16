@@ -31,7 +31,7 @@ Ensure you have the following tools installed on your local development environm
    ```bash
    git clone https://github.com/Code-With-3B/project-unknown-api.git
    cd project-unknown 
-
+   ```
 
 2. **Install Dependencies**
 
@@ -106,17 +106,3 @@ This table lists commonly used yarn commands for this project:
 | `yarn purge` | Removes the `node_modules` and `dist` directories to clean up the project. |
 | `yarn migration:up` | Runs the database migrations to set up the current schema. |
 | `yarn migration:down` | Rolls back the most recent database migration. |
-
-Explanation of Environment Variables
-To help you understand the specific environment variables required for the project:
-
-FASTIFY_PORT: The port on which the Fastify server listens for incoming requests.
-ESLINT_USE_FLAT_CONFIG: Boolean flag indicating whether to use ESLint's flat configuration.
-MONGODB_CONNECTION_STRING: The connection string used to connect to the MongoDB database.
-MONGODB_DATABASE: The specific MongoDB database to use.
-DB_POOL_SIZE: Configures the maximum number of simultaneous connections that MongoDB client can handle.
-JWT_SECRET: Secret key for signing JWT tokens. It's essential for securing user authentication.
-TOKEN_EXPIRATION: Defines how long the JWT tokens are valid. For instance, '1d' means the token is valid for one day.
-MAX_FILE_SIZE: Sets the maximum allowable file size for uploads, in megabytes.
-Contributing
-We welcome contributions from the community. If you want to contribute to this project, please fork the repository and submit a pull request with your changes. Make sure to follow the code style and add tests for your changes.
