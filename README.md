@@ -30,7 +30,8 @@ Ensure you have the following tools installed on your local development environm
 
    ```bash
    git clone https://github.com/your-username/project-unknown.git
-   cd project-unknown
+   cd project-unknown 
+
 Install Dependencies
 
 Use Yarn to install the project dependencies:
@@ -38,14 +39,14 @@ Use Yarn to install the project dependencies:
 bash
 Copy code
 yarn install
-Set Up Environment Variables
+
+2. **Set Up Environment Variables**
 
 Create a .envrc file in the root of the project and add the necessary environment variables. You can create and populate this file with the following commands:
 
-bash
-Copy code
+```bash
 echo 'export FASTIFY_PORT=3000' >> .envrc
-echo 'export ESLINT_USE_FLAT_CONFIG=true' >> .envrc
+echo 'export ESLINT_USE_FLAT_CONFIG=true' >> .envrc 
 
 echo "export MONGODB_CONNECTION_STRING='mongodb://localhost:27017/project-unknown'" >> .envrc
 echo 'export MONGODB_DATABASE=project-unknown' >> .envrc
