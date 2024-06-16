@@ -1,24 +1,24 @@
 import {ErrorCode} from '../../constants/error-codes'
 import {FastifyReply} from 'fastify'
-import {RestParamsInput} from '../../generated/graphql'
+import {MongoCollection} from '../../@types/collections'
+import {Readable} from 'stream'
 import {checkAccessTokenIsValid} from '../graph/services/access.token.service'
-import fs from 'fs'
 import {isEmpty} from 'ramda'
 import {logger} from '../../config'
-import path from 'path'
-import {pipeline} from 'stream'
-import {promisify} from 'util'
-import {uploadDir} from './utils'
 
 import {FastifyInstance, FastifyRequest} from 'fastify'
-import {GridFSBucket, GridFSBucketWriteStreamOptions} from 'mongodb'
-
-const pump = promisify(pipeline)
+import {GridFSBucket, ObjectId} from 'mongodb'
+import {MediaType, RestParamsInput} from '../../generated/graphql'
 
 export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
     fastify.post('/upload/:userId/:mediaType', async (request: FastifyRequest, reply: FastifyReply) => {
         try {
             const {userId, mediaType} = request.params as RestParamsInput
+            logger.info(`Received upload request from user ${userId} for ${mediaType}.`)
+            if (!Object.values(MediaType).includes(mediaType)) {
+                logger.error('Invalid media type')
+                return reply.status(500).send({success: false, error: ErrorCode.INVALID_MEDIA_TYPE})
+            }
             const db = fastify.mongo.db
             if (!db) {
                 logger.error('Database connection not available.')
@@ -37,55 +37,103 @@ export async function registerRoutes(fastify: FastifyInstance): Promise<void> {
                 return reply.status(500).send({success: false, error: ErrorCode.NOT_AUTHENTICATED})
             }
 
-            logger.info(`Received upload request from user ${userId} for ${mediaType}.`)
             const data = await request.file()
             if (!data) {
                 logger.error('Media not attached in the request.')
                 return reply.send({success: false, error: ErrorCode.MEDIA_NOT_ATTACHED})
             }
 
-            const filePath = path.join(uploadDir, data.filename)
+            const fileType = data.mimetype
 
-            await pump(data.file, fs.createWriteStream(filePath))
-
-            // Create a unified GridFSBucket under a single collection named 'media'
             const bucket = new GridFSBucket(db, {
-                bucketName: 'media' // Unified bucket for all media types
+                bucketName: MongoCollection.MEDIA
+            })
+            const uploadStream = bucket.openUploadStream(data.filename, {
+                metadata: {
+                    userId,
+                    mediaType,
+                    fileType,
+                    uploadedAt: new Date().toISOString()
+                }
+            })
+            const buffer = await data.toBuffer()
+            const readBuffer = new Readable()
+
+            readBuffer.push(buffer)
+            readBuffer.push(null)
+
+            await new Promise<void>((resolve, reject) => {
+                readBuffer
+                    .pipe(uploadStream)
+                    .on('finish', () => {
+                        logger.info('File upload completed')
+                        resolve()
+                    })
+                    .on('error', error => {
+                        logger.error('File upload failed')
+                        logger.error(error)
+                        reject(error)
+                    })
             })
 
-            // Naming convention for files to indicate "nested" structure
-            const uploadFilename = `${userId}/${mediaType}/${Date.now()}-${data.filename}`
-            const options: GridFSBucketWriteStreamOptions = {
-                contentType: data.mimetype,
-                metadata: {
-                    userId: userId,
-                    mediaType: mediaType,
-                    originalFilename: data.filename
-                }
+            const id = uploadStream.id
+            if (!id) {
+                return reply.status(404).send({success: false, error: ErrorCode.FILE_NOT_FOUND})
             }
-            const uploadStream = bucket.openUploadStream(uploadFilename, options)
-            const readStream = fs.createReadStream(filePath)
 
-            try {
-                await new Promise((resolve, reject) => {
-                    uploadStream.once('error', reject)
-                    uploadStream.once('finish', resolve)
-                    readStream.pipe(uploadStream)
-                })
-
-                const fileId = uploadStream.id
-                const downloadUrl = `/download/${userId}/${mediaType}/${fileId}`
-
-                logger.info(`File uploaded to MongoDB successfully.`)
-                return reply.send({success: true, message: 'File uploaded successfully.', downloadUrl: downloadUrl})
-            } catch (error) {
-                logger.error(`Error uploading file to MongoDB: ${error}`)
-                return reply.send({success: false, error: ErrorCode.MEDIA_UPLOAD_FAILED})
-            } finally {
-                fs.unlinkSync(filePath)
-            }
+            return reply.send({
+                file: id,
+                context: ErrorCode.MEDIA_UPLOAD_SUCCESS
+            })
         } catch (error) {
             logger.error(`Error uploading file: ${error}`)
+            reply.status(500).send({success: false, error: ErrorCode.INTERNAL_SERVER_ERROR})
+        }
+    })
+
+    fastify.get('/download/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+        try {
+            const {id} = request.params as {id: string}
+            const db = fastify.mongo.db
+            if (!db) {
+                logger.error('Database connection not available.')
+                return reply.status(500).send({success: false, error: ErrorCode.DATABASE_CONNECTION})
+            }
+
+            const bucket = new GridFSBucket(db, {
+                bucketName: MongoCollection.MEDIA
+            })
+
+            const file = await bucket.find({_id: new ObjectId(id)}).toArray()
+            if (!file || file.length === 0) {
+                logger.error('File not found.')
+                return reply.status(404).send({success: false, error: ErrorCode.FILE_NOT_FOUND})
+            }
+
+            const fileBuffer = await new Promise((resolve, reject) => {
+                const chunks: Buffer[] = []
+                bucket
+                    .openDownloadStream(file[0]._id)
+                    .on('data', chunk => {
+                        chunks.push(chunk)
+                    })
+                    .on('end', () => {
+                        resolve(Buffer.concat(chunks))
+                    })
+                    .on('error', err => {
+                        reject(err)
+                    })
+            })
+
+            const fileType = file[0].metadata?.fileType
+            const filename = file[0].filename
+
+            reply.header('Content-Type', fileType)
+            reply.header('Content-Disposition', `attachment; filename="${filename}"`)
+            reply.send(fileBuffer)
+        } catch (error) {
+            logger.error(`Error downloading file`)
+            logger.error(error)
             reply.status(500).send({success: false, error: ErrorCode.INTERNAL_SERVER_ERROR})
         }
     })
