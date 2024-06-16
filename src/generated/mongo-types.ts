@@ -34,6 +34,14 @@ export interface UsersCollection {
   /**
    * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
    */
+  profilePicture?: string;
+  /**
+   * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
+   */
+  profileBanner?: string;
+  /**
+   * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
+   */
   phone?: string;
   /**
    * 'email' must be a valid email address.

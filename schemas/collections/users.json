@@ -25,6 +25,14 @@
       "enum": ["PUBLIC", "PRIVATE"],
       "description": "'gender' must be a string indicating the user's gender."
     },
+    "profilePicture": {
+      "type": "string",
+      "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
+    },
+    "profileBanner": {
+      "type": "string",
+      "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
+    },
     "phone": {
       "type": "string",
       "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
