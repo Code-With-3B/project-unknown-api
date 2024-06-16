@@ -10,6 +10,15 @@
    <a href="https://nodejs.org/">
       <img src="https://aleen42.github.io/badges/src/node.svg"/>
    </a>
+   <a href="https://www.typescriptlanag.org/">
+      <img src="https://aleen42.github.io/badges/src/typescript.svg"/>
+   </a>
+   <a href="https://www.mongodb.com/">
+      <img src="https://aleen42.github.io/badges/src/mongodb.svg"/>
+   </a>
+   <a href="https://eslint.org/">
+      <img src="https://aleen42.github.io/badges/src/eslint.svg"/>
+   </a>
 </p>
 
 # Description
