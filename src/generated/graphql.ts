@@ -62,10 +62,13 @@ export type Achievement = {
 
 /** Enum representing authentication modes. */
 export enum AuthMode {
-  Apple = 'APPLE',
+  AppleEmail = 'APPLE_EMAIL',
+  ApplePhone = 'APPLE_PHONE',
   EmailPass = 'EMAIL_PASS',
-  Facebook = 'FACEBOOK',
-  Google = 'GOOGLE',
+  FacebookEmail = 'FACEBOOK_EMAIL',
+  FacebookPhone = 'FACEBOOK_PHONE',
+  GoogleEmail = 'GOOGLE_EMAIL',
+  GooglePhone = 'GOOGLE_PHONE',
   PhonePass = 'PHONE_PASS'
 }
 
@@ -228,6 +231,7 @@ export type SignInResponse = ResponsePayload & {
 /** Input for creating a new user. */
 export type SignUpInput = {
   authMode: AuthMode;
+  birthday?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName: Scalars['String']['input'];
   gender?: InputMaybe<GenderType>;
@@ -285,6 +289,7 @@ export type UpdateUserInput = {
   accountState?: InputMaybe<AccountStateType>;
   accountVisibility?: InputMaybe<AccountVisibilityType>;
   bio?: InputMaybe<Scalars['String']['input']>;
+  birthday?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
   gender?: InputMaybe<GenderType>;
@@ -305,6 +310,7 @@ export type User = {
   achievements?: Maybe<Array<Scalars['ID']['output']>>;
   authMode: AuthMode;
   bio?: Maybe<Scalars['String']['output']>;
+  birthday?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fullName: Scalars['String']['output'];
@@ -615,6 +621,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   achievements?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   authMode?: Resolver<ResolversTypes['AuthMode'], ParentType, ContextType>;
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  birthday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

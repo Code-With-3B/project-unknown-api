@@ -40,6 +40,7 @@ export interface UsersCollection {
    * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
    */
   profileBanner?: string;
+  birthday?: string;
   /**
    * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
    */
@@ -78,7 +79,15 @@ export interface UsersCollection {
   /**
    * 'authMode' must be a string.
    */
-  authMode?: "EMAIL_PASS" | "PHONE_PASS" | "GOOGLE" | "FACEBOOK" | "APPLE";
+  authMode?:
+    | "EMAIL_PASS"
+    | "PHONE_PASS"
+    | "GOOGLE_PHONE"
+    | "GOOGLE_EMAIL"
+    | "FACEBOOK_PHONE"
+    | "FACEBOOK_EMAIL"
+    | "APPLE_PHONE"
+    | "APPLE_EMAIL";
   /**
    * 'preferredGames' must be an array of game IDs.
    */

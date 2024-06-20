@@ -33,6 +33,10 @@
       "type": "string",
       "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
     },
+    "birthday": {
+      "type": "string",
+      "description": ""
+    },
     "phone": {
       "type": "string",
       "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
@@ -76,7 +80,7 @@
     },
     "authMode": {
       "type": "string",
-      "enum": ["EMAIL_PASS", "PHONE_PASS", "GOOGLE", "FACEBOOK", "APPLE"],
+      "enum": ["EMAIL_PASS", "PHONE_PASS", "GOOGLE_PHONE", "GOOGLE_EMAIL", "FACEBOOK_PHONE", "FACEBOOK_EMAIL", "APPLE_PHONE","APPLE_EMAIL"],
       "description": "'authMode' must be a string."
     },
     "preferredGames": {
