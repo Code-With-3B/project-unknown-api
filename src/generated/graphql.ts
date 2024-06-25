@@ -83,6 +83,30 @@ export type CheckDuplicateUserResponse = {
   isDuplicate: Scalars['Boolean']['output'];
 };
 
+export type Comment = {
+  __typename?: 'Comment';
+  createdAt: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  likes: Array<Scalars['ID']['output']>;
+  postId: Scalars['ID']['output'];
+  text: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type CreateHighlightInput = {
+  content: Scalars['String']['input'];
+  media: Array<Scalars['String']['input']>;
+  state: PostState;
+  userId: Scalars['ID']['input'];
+};
+
+export type CreateHighlightResponse = ResponsePayload & {
+  __typename?: 'CreateHighlightResponse';
+  context: Scalars['String']['output'];
+  highlight?: Maybe<Highlight>;
+  success: Scalars['Boolean']['output'];
+};
+
 export enum GenderType {
   Female = 'FEMALE',
   Male = 'MALE',
@@ -98,18 +122,43 @@ export type GraphQlRequestBody = {
 /** Represents a highlight (e.g., screenshot, gameplay clip) in a user's profile. */
 export type Highlight = {
   __typename?: 'Highlight';
-  createdAt: Scalars['DateTime']['output'];
-  description?: Maybe<Scalars['String']['output']>;
+  comments: Array<Comment>;
+  content: Scalars['String']['output'];
+  createdAt: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  mediaURL: Scalars['String']['output'];
-  title: Scalars['String']['output'];
+  likes: Array<Scalars['ID']['output']>;
+  media: Array<Scalars['String']['output']>;
+  shareCount: Scalars['Int']['output'];
+  state: PostState;
+  updatedAt?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
+};
+
+export type LikeHighlightInput = {
+  liked?: InputMaybe<Scalars['Boolean']['input']>;
+  postId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+export type LikeHighlightResponse = ResponsePayload & {
+  __typename?: 'LikeHighlightResponse';
+  context: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type Media = {
+  __typename?: 'Media';
+  fileId: Scalars['String']['output'];
+  type: MediaType;
 };
 
 export enum MediaType {
   HighlightImage = 'HIGHLIGHT_IMAGE',
   HighlightVideo = 'HIGHLIGHT_VIDEO',
+  Image = 'IMAGE',
   ProfileBanner = 'PROFILE_BANNER',
-  ProfilePicture = 'PROFILE_PICTURE'
+  ProfilePicture = 'PROFILE_PICTURE',
+  Video = 'VIDEO'
 }
 
 export type MediaUploadResponse = ResponsePayload & {
@@ -121,6 +170,8 @@ export type MediaUploadResponse = ResponsePayload & {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createHighlight: CreateHighlightResponse;
+  likeHighlight: LikeHighlightResponse;
   /**
    * Sign in a user using email and password.
    * - `input`: Input data for signing in the user.
@@ -155,6 +206,16 @@ export type Mutation = {
 };
 
 
+export type MutationCreateHighlightArgs = {
+  input: CreateHighlightInput;
+};
+
+
+export type MutationLikeHighlightArgs = {
+  input: LikeHighlightInput;
+};
+
+
 export type MutationSignInArgs = {
   input: SignInInput;
 };
@@ -173,6 +234,12 @@ export type MutationUpdateUserArgs = {
 export type MutationUpdateUserConnectionArgs = {
   input: UpdateUserConnectionInput;
 };
+
+export enum PostState {
+  Archived = 'ARCHIVED',
+  Private = 'PRIVATE',
+  Public = 'PUBLIC'
+}
 
 export type Query = {
   __typename?: 'Query';
@@ -428,7 +495,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( MediaUploadResponse ) | ( SignInResponse ) | ( UpdateUserConnectionResponse ) | ( UserResponse );
+  ResponsePayload: ( CreateHighlightResponse ) | ( LikeHighlightResponse ) | ( MediaUploadResponse ) | ( SignInResponse ) | ( UpdateUserConnectionResponse ) | ( UserResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -442,16 +509,24 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CheckDuplicateUserInput: CheckDuplicateUserInput;
   CheckDuplicateUserResponse: ResolverTypeWrapper<CheckDuplicateUserResponse>;
+  Comment: ResolverTypeWrapper<Comment>;
+  CreateHighlightInput: CreateHighlightInput;
+  CreateHighlightResponse: ResolverTypeWrapper<CreateHighlightResponse>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   GenderType: GenderType;
   GraphQLRequestBody: GraphQlRequestBody;
   Highlight: ResolverTypeWrapper<Highlight>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
+  LikeHighlightInput: LikeHighlightInput;
+  LikeHighlightResponse: ResolverTypeWrapper<LikeHighlightResponse>;
+  Media: ResolverTypeWrapper<Media>;
   MediaType: MediaType;
   MediaUploadResponse: ResolverTypeWrapper<MediaUploadResponse>;
   Mutation: ResolverTypeWrapper<{}>;
+  PostState: PostState;
   Query: ResolverTypeWrapper<{}>;
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
   RestParamsInput: ResolverTypeWrapper<RestParamsInput>;
@@ -479,12 +554,19 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   CheckDuplicateUserInput: CheckDuplicateUserInput;
   CheckDuplicateUserResponse: CheckDuplicateUserResponse;
+  Comment: Comment;
+  CreateHighlightInput: CreateHighlightInput;
+  CreateHighlightResponse: CreateHighlightResponse;
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   GraphQLRequestBody: GraphQlRequestBody;
   Highlight: Highlight;
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   JSON: Scalars['JSON']['output'];
+  LikeHighlightInput: LikeHighlightInput;
+  LikeHighlightResponse: LikeHighlightResponse;
+  Media: Media;
   MediaUploadResponse: MediaUploadResponse;
   Mutation: {};
   Query: {};
@@ -529,22 +611,56 @@ export type CheckDuplicateUserResponseResolvers<ContextType = any, ParentType ex
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CommentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Comment'] = ResolversParentTypes['Comment']> = {
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  likes?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
+  postId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateHighlightResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateHighlightResponse'] = ResolversParentTypes['CreateHighlightResponse']> = {
+  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  highlight?: Resolver<Maybe<ResolversTypes['Highlight']>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
 
 export type HighlightResolvers<ContextType = any, ParentType extends ResolversParentTypes['Highlight'] = ResolversParentTypes['Highlight']> = {
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  comments?: Resolver<Array<ResolversTypes['Comment']>, ParentType, ContextType>;
+  content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  mediaURL?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  likes?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
+  media?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  shareCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  state?: Resolver<ResolversTypes['PostState'], ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
+
+export type LikeHighlightResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LikeHighlightResponse'] = ResolversParentTypes['LikeHighlightResponse']> = {
+  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MediaResolvers<ContextType = any, ParentType extends ResolversParentTypes['Media'] = ResolversParentTypes['Media']> = {
+  fileId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['MediaType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type MediaUploadResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['MediaUploadResponse'] = ResolversParentTypes['MediaUploadResponse']> = {
   context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -554,6 +670,8 @@ export type MediaUploadResponseResolvers<ContextType = any, ParentType extends R
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createHighlight?: Resolver<ResolversTypes['CreateHighlightResponse'], ParentType, ContextType, RequireFields<MutationCreateHighlightArgs, 'input'>>;
+  likeHighlight?: Resolver<ResolversTypes['LikeHighlightResponse'], ParentType, ContextType, RequireFields<MutationLikeHighlightArgs, 'input'>>;
   signIn?: Resolver<Maybe<ResolversTypes['SignInResponse']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
   signUp?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationSignUpArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
@@ -567,7 +685,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'MediaUploadResponse' | 'SignInResponse' | 'UpdateUserConnectionResponse' | 'UserResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CreateHighlightResponse' | 'LikeHighlightResponse' | 'MediaUploadResponse' | 'SignInResponse' | 'UpdateUserConnectionResponse' | 'UserResponse', ParentType, ContextType>;
   context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -662,9 +780,13 @@ export type Resolvers<ContextType = any> = {
   AccessToken?: AccessTokenResolvers<ContextType>;
   Achievement?: AchievementResolvers<ContextType>;
   CheckDuplicateUserResponse?: CheckDuplicateUserResponseResolvers<ContextType>;
+  Comment?: CommentResolvers<ContextType>;
+  CreateHighlightResponse?: CreateHighlightResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   Highlight?: HighlightResolvers<ContextType>;
   JSON?: GraphQLScalarType;
+  LikeHighlightResponse?: LikeHighlightResponseResolvers<ContextType>;
+  Media?: MediaResolvers<ContextType>;
   MediaUploadResponse?: MediaUploadResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
