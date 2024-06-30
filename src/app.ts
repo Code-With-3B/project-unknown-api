@@ -1,3 +1,4 @@
+import cors from '@fastify/cors'
 import {fastifyApolloPlugin} from './plugins/apollo-plugin'
 import {logger} from './config'
 import {restApiPlugin} from './plugins/rest-api-plugin'
@@ -8,6 +9,7 @@ export default (): FastifyInstance => {
     const app = async (childInstance: FastifyInstance): Promise<void> => {
         childInstance.register(fastifyApolloPlugin)
         childInstance.register(restApiPlugin)
+        childInstance.register(cors)
     }
     const server: FastifyInstance = fastify({
         caseSensitive: false,
