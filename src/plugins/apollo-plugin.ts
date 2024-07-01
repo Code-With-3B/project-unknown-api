@@ -57,7 +57,7 @@ export const fastifyApolloPlugin = fp(
                         }
                     }
 
-                    const publicOperations = ['__schema', 'signUp', 'signIn', 'checkDuplicate']
+                    const publicOperations = ['__schema', 'signUp', 'signIn', 'checkDuplicateUsername']
                     if (publicOperations.includes(actualFieldName)) {
                         logger.info('Public operation, no authentication required.')
                         return {mongodb: db}
