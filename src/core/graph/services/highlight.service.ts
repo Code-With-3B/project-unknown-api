@@ -30,9 +30,9 @@ export async function createHighlight(
         )
         if (createdHighlight) {
             logger.info(`Creating highlight ${createdHighlight ? 'Successful' : 'Failed'}`)
-            return {success: true, context: ErrorCode.USER_CREATION_SUCCESS, highlight: createdHighlight}
+            return {success: true, code: [ErrorCode.USER_CREATION_SUCCESS], highlight: createdHighlight}
         }
-        return {success: !!createdHighlight, context: ErrorCode.USER_CREATION_FAILED, highlight: null}
+        return {success: !!createdHighlight, code: [ErrorCode.USER_CREATION_FAILED], highlight: null}
     } catch (error) {
         logger.error(error)
         throw error
@@ -62,9 +62,9 @@ export async function updateHighlight(
         )
         if (createdHighlight) {
             logger.info(`Creating highlight ${createdHighlight ? 'Successful' : 'Failed'}`)
-            return {success: true, context: ErrorCode.USER_CREATION_SUCCESS, highlight: createdHighlight}
+            return {success: true, code: [ErrorCode.USER_CREATION_SUCCESS], highlight: createdHighlight}
         }
-        return {success: !!createdHighlight, context: ErrorCode.USER_CREATION_FAILED, highlight: null}
+        return {success: !!createdHighlight, code: [ErrorCode.USER_CREATION_FAILED], highlight: null}
     } catch (error) {
         logger.error(error)
         throw error
