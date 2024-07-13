@@ -102,7 +102,7 @@ export type CreateHighlightInput = {
 
 export type CreateHighlightResponse = ResponsePayload & {
   __typename?: 'CreateHighlightResponse';
-  context: Scalars['String']['output'];
+  code?: Maybe<Array<Scalars['String']['output']>>;
   highlight?: Maybe<Highlight>;
   success: Scalars['Boolean']['output'];
 };
@@ -142,7 +142,7 @@ export type LikeHighlightInput = {
 
 export type LikeHighlightResponse = ResponsePayload & {
   __typename?: 'LikeHighlightResponse';
-  context: Scalars['String']['output'];
+  code?: Maybe<Array<Scalars['String']['output']>>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -163,7 +163,7 @@ export enum MediaType {
 
 export type MediaUploadResponse = ResponsePayload & {
   __typename?: 'MediaUploadResponse';
-  context?: Maybe<Scalars['String']['output']>;
+  code?: Maybe<Array<Scalars['String']['output']>>;
   fileUri?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
 };
@@ -269,7 +269,7 @@ export type QueryUserArgs = {
 
 /** Interface for response payloads containing a success flag. */
 export type ResponsePayload = {
-  context?: Maybe<Scalars['String']['output']>;
+  code?: Maybe<Array<Scalars['String']['output']>>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -290,7 +290,7 @@ export type SignInInput = {
 /** Payload returned by sign-in mutation. */
 export type SignInResponse = ResponsePayload & {
   __typename?: 'SignInResponse';
-  context?: Maybe<Scalars['String']['output']>;
+  code?: Maybe<Array<Scalars['String']['output']>>;
   success: Scalars['Boolean']['output'];
   token?: Maybe<Scalars['String']['output']>;
 };
@@ -347,7 +347,7 @@ export type UpdateUserConnectionInput = {
 
 export type UpdateUserConnectionResponse = ResponsePayload & {
   __typename?: 'UpdateUserConnectionResponse';
-  context: Scalars['String']['output'];
+  code?: Maybe<Array<Scalars['String']['output']>>;
   success: Scalars['Boolean']['output'];
 };
 
@@ -409,7 +409,7 @@ export type UserInteraction = {
 /** Payload returned by user-related mutations. */
 export type UserResponse = ResponsePayload & {
   __typename?: 'UserResponse';
-  context: Scalars['String']['output'];
+  code?: Maybe<Array<Scalars['String']['output']>>;
   success: Scalars['Boolean']['output'];
   user?: Maybe<User>;
 };
@@ -622,7 +622,7 @@ export type CommentResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type CreateHighlightResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateHighlightResponse'] = ResolversParentTypes['CreateHighlightResponse']> = {
-  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   highlight?: Resolver<Maybe<ResolversTypes['Highlight']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -651,7 +651,7 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type LikeHighlightResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LikeHighlightResponse'] = ResolversParentTypes['LikeHighlightResponse']> = {
-  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -663,7 +663,7 @@ export type MediaResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type MediaUploadResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['MediaUploadResponse'] = ResolversParentTypes['MediaUploadResponse']> = {
-  context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   fileUri?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -686,7 +686,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
   __resolveType: TypeResolveFn<'CreateHighlightResponse' | 'LikeHighlightResponse' | 'MediaUploadResponse' | 'SignInResponse' | 'UpdateUserConnectionResponse' | 'UserResponse', ParentType, ContextType>;
-  context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
@@ -697,7 +697,7 @@ export type RestParamsInputResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type SignInResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['SignInResponse'] = ResolversParentTypes['SignInResponse']> = {
-  context?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -728,7 +728,7 @@ export type TokenPayloadInputResolvers<ContextType = any, ParentType extends Res
 };
 
 export type UpdateUserConnectionResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateUserConnectionResponse'] = ResolversParentTypes['UpdateUserConnectionResponse']> = {
-  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -770,7 +770,7 @@ export type UserInteractionResolvers<ContextType = any, ParentType extends Resol
 };
 
 export type UserResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserResponse'] = ResolversParentTypes['UserResponse']> = {
-  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

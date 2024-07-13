@@ -1,6 +1,7 @@
 import {ErrorCode} from '../../../constants/error-codes'
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
+import {dissoc} from 'ramda'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
@@ -66,11 +67,14 @@ export async function checkUsernameIsDuplicate(
  * @returns A Promise that resolves to a UserResponse indicating success or failure.
  */
 export async function signup(context: ResolverContext, input: SignUpInput): Promise<UserResponse> {
-    logger.info(`Initiating user sign-up with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
+    logger.info(
+        dissoc('password', input),
+        `Initiating user sign-up with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`
+    )
+    const errorCodes = []
     try {
-        if (!input.password) throw new Error(ErrorCode.MISSING_PASSWORD)
-        if (!isStrongPassword(input.password)) throw new Error(ErrorCode.WEAK_PASSWORD)
-
+        if (!input.password) errorCodes.push(ErrorCode.MISSING_PASSWORD)
+        if (!isStrongPassword(input.password)) errorCodes.push(ErrorCode.WEAK_PASSWORD)
         if (
             !input.authMode ||
             input.authMode === AuthMode.EmailPass ||
@@ -78,21 +82,52 @@ export async function signup(context: ResolverContext, input: SignUpInput): Prom
             input.authMode === AuthMode.FacebookEmail ||
             input.authMode === AuthMode.AppleEmail
         ) {
-            if (!input.email) throw new Error(ErrorCode.MISSING_EMAIL)
-            if (!isEmail(input.email)) throw new Error(ErrorCode.INVALID_EMAIL_FORMAT)
+            if (!input.email) errorCodes.push(ErrorCode.MISSING_EMAIL)
+            if (!isEmail(input.email)) errorCodes.push(ErrorCode.INVALID_EMAIL_FORMAT)
         } else if (
             input.authMode === AuthMode.PhonePass ||
             input.authMode === AuthMode.GooglePhone ||
             input.authMode === AuthMode.FacebookPhone ||
             input.authMode === AuthMode.ApplePhone
         ) {
-            if (!input.phone) throw new Error(ErrorCode.MISSING_PHONE)
-            if (!isMobilePhone(input.phone)) throw new Error(ErrorCode.INVALID_PHONE_FORMAT)
+            if (!input.phone) errorCodes.push(ErrorCode.MISSING_PHONE)
+            if (!isMobilePhone(input.phone)) errorCodes.push(ErrorCode.INVALID_PHONE_FORMAT)
         }
 
-        if (input.email) await checkDuplicateUser(context, 'email', input.email, ErrorCode.DUPLICATE_EMAIL)
-        if (input.phone) await checkDuplicateUser(context, 'phone', input.phone, ErrorCode.DUPLICATE_PHONE)
-        await checkDuplicateUser(context, 'username', input.username, ErrorCode.USERNAME_UNAVAILABLE)
+        if (input.email) {
+            const user = await fetchDocumentByField<UsersCollection>(
+                context.mongodb,
+                MongoCollection.USER,
+                input.email,
+                input.email.toLowerCase()
+            )
+            if (user) errorCodes.push(ErrorCode.DUPLICATE_EMAIL)
+        }
+        if (input.phone) {
+            const user = await fetchDocumentByField<UsersCollection>(
+                context.mongodb,
+                MongoCollection.USER,
+                input.phone,
+                input.phone
+            )
+            if (user) errorCodes.push(ErrorCode.DUPLICATE_PHONE)
+        }
+        if (input.username && input.username.length > 6) {
+            if (input.phone) {
+                const user = await fetchDocumentByField<UsersCollection>(
+                    context.mongodb,
+                    MongoCollection.USER,
+                    input.username,
+                    input.username.toLowerCase()
+                )
+                if (user) errorCodes.push(ErrorCode.USERNAME_NOT_AVAILABLE)
+            }
+        } else errorCodes.push(ErrorCode.INVALID_USERNAME_LENGTH)
+
+        if (errorCodes.length > 0) {
+            logger.error(`User onboarding failed with error code ${errorCodes}`)
+            return {success: false, code: errorCodes.reverse()}
+        }
 
         const id = uuid()
         const userDocument: UsersCollection = {
@@ -122,8 +157,8 @@ export async function signup(context: ResolverContext, input: SignUpInput): Prom
             userDocument
         )
         logger.info(`User onboarding ${createdUser ? 'Successful' : 'Failed'}`)
-        if (createdUser) return {success: true, context: ErrorCode.USER_CREATION_SUCCESS, user: createdUser}
-        return {success: !!createdUser, context: ErrorCode.USER_CREATION_FAILED, user: null}
+        if (createdUser) return {success: true, code: [ErrorCode.USER_CREATION_SUCCESS], user: createdUser}
+        return {success: !!createdUser, code: [ErrorCode.USER_CREATION_FAILED], user: null}
     } catch (error) {
         logger.error(`Error creating user`)
         logger.error(error)
@@ -205,13 +240,13 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
             logger.info(`User update successful for userID: ${input.id}`)
             return {
                 success: !!updatedUser,
-                context: updatedUser ? ErrorCode.USER_UPDATED : ErrorCode.USER_UPDATE_FAILED,
+                code: [updatedUser ? ErrorCode.USER_UPDATED : ErrorCode.USER_UPDATE_FAILED],
                 user: updatedUser
             }
         }
         return {
             success: false,
-            context: ErrorCode.NO_FIELDS_TO_UPDATE
+            code: [ErrorCode.NO_FIELDS_TO_UPDATE]
         }
     } catch (error) {
         logger.error(`Error updating user with userID: ${input.id} with: ${error}`)
@@ -221,15 +256,14 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
 
 export async function signIn(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
     logger.info(`Initiating user sign-in with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
-
     if (input.authMode === AuthMode.PhonePass) {
         if (!input.phone) {
             logger.error(`Phone number is required for phone-based sign-in`)
-            return {success: false, context: ErrorCode.MISSING_PHONE}
+            return {success: false, code: [ErrorCode.MISSING_PHONE]}
         }
         if (!input.password) {
             logger.error(`Password is required for phone-based sign-in`)
-            return {success: false, context: ErrorCode.MISSING_PASSWORD}
+            return {success: false, code: [ErrorCode.MISSING_PASSWORD]}
         }
         const user = await fetchDocumentByField<UsersCollection>(
             context.mongodb,
@@ -239,24 +273,24 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
         )
         if (!user) {
             logger.error(`User not found with phone number: ${input.phone}`)
-            return {success: false, context: ErrorCode.INCORRECT_PHONE}
+            return {success: false, code: [ErrorCode.INCORRECT_PHONE]}
         }
         const flg = await compare(input.password, user.password)
-        if (!flg) return {success: false, context: ErrorCode.INCORRECT_PASSWORD}
+        if (!flg) return {success: false, code: [ErrorCode.INCORRECT_PASSWORD]}
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
-        return {success: !!token, context: token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED, token: token}
+        return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     } else if (input.authMode == AuthMode.EmailPass) {
         if (!input.email) {
             logger.error(`Phone number is required for phone-based sign-in`)
-            return {success: false, context: ErrorCode.MISSING_EMAIL}
+            return {success: false, code: [ErrorCode.MISSING_EMAIL]}
         }
         if (!input.password) {
             logger.error(`Password is required for phone-based sign-in`)
-            return {success: false, context: ErrorCode.MISSING_PASSWORD}
+            return {success: false, code: [ErrorCode.MISSING_PASSWORD]}
         }
         const user = await fetchDocumentByField<UsersCollection>(
             context.mongodb,
@@ -264,16 +298,19 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
             'email',
             input.email
         )
-        if (!user) throw Error(ErrorCode.INCORRECT_EMAIL)
+        if (!user) {
+            logger.error(`User not found with email: ${input.email}`)
+            return {success: false, code: [ErrorCode.INCORRECT_EMAIL]}
+        }
         input.email = input.email?.toLowerCase()
         const flg = await compare(input.password, user.password)
-        if (!flg) return {success: false, context: ErrorCode.INCORRECT_PASSWORD}
+        if (!flg) return {success: false, code: [ErrorCode.INCORRECT_PASSWORD]}
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
-        return {success: !!token, context: token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED, token: token}
+        return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     } else if (
         input.authMode == AuthMode.GoogleEmail ||
         input.authMode == AuthMode.FacebookEmail ||
@@ -281,7 +318,7 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
     ) {
         if (!input.email) {
             logger.error(`Email is required for social-based sign-in.`)
-            return {success: false, context: ErrorCode.MISSING_EMAIL}
+            return {success: false, code: [ErrorCode.MISSING_EMAIL]}
         }
 
         const user = await fetchDocumentByField<UsersCollection>(
@@ -292,18 +329,18 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
         )
         if (!user) throw Error(ErrorCode.INCORRECT_EMAIL)
         if (user.authMode == AuthMode.EmailPass) {
-            return {success: false, context: ErrorCode.INVALID_USER_AUTH_MODE}
+            return {success: false, code: [ErrorCode.INVALID_USER_AUTH_MODE]}
         }
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
-        return {success: !!token, context: token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED, token: token}
+        return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     } else {
         if (!input.email) {
             logger.error(`Phone is required for social-based sign-in.`)
-            return {success: false, context: ErrorCode.MISSING_PHONE}
+            return {success: false, code: [ErrorCode.MISSING_PHONE]}
         }
 
         const user = await fetchDocumentByField<UsersCollection>(
@@ -314,14 +351,14 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
         )
         if (!user) throw Error(ErrorCode.INCORRECT_PHONE)
         if (user.authMode == AuthMode.PhonePass) {
-            return {success: false, context: ErrorCode.INVALID_USER_AUTH_MODE}
+            return {success: false, code: [ErrorCode.INVALID_USER_AUTH_MODE]}
         }
         const payload: TokenPayloadInput = {
             id: user.id,
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
-        return {success: !!token, context: token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED, token: token}
+        return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     }
 }
 
@@ -384,10 +421,10 @@ export async function updateUserConnection(
             )
             if (updatedRecord) {
                 logger.info(`Updating record successful for recordId: ${existingRecord[0].id}`)
-                return {success: true, context: actionSuccessMessages[actionType]}
+                return {success: true, code: [actionSuccessMessages[actionType]]}
             } else {
                 logger.info(`Updating record failed for recordId: ${existingRecord[0].id}`)
-                return {success: false, context: actionFailureMessages[actionType]}
+                return {success: false, code: [actionFailureMessages[actionType]]}
             }
         } else {
             logger.info(`No existing record found, creating new one`)
@@ -406,15 +443,15 @@ export async function updateUserConnection(
 
             if (createdInteraction) {
                 logger.info(`Request completed successfully: ${input.actor} ${actionType} ${input.target}`)
-                return {success: true, context: actionSuccessMessages[actionType]}
+                return {success: true, code: [actionSuccessMessages[actionType]]}
             } else {
                 logger.info(`Request failed: ${input.actor} ${actionType} ${input.target}`)
-                return {success: false, context: actionFailureMessages[actionType]}
+                return {success: false, code: [actionFailureMessages[actionType]]}
             }
         }
     } catch (error) {
         logger.error(`Error during ${input.actionType} ${input.target} for ${input.actor}`, error)
         logger.error(error)
-        return {success: false, context: ErrorCode.GENERIC_ERROR}
+        return {success: false, code: [ErrorCode.GENERIC_ERROR]}
     }
 }

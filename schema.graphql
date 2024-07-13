@@ -8,7 +8,7 @@ Interface for response payloads containing a success flag.
 """
 interface ResponsePayload {
   success: Boolean! # Indicates whether the operation was successful.
-  context: String
+  code: [String!]
 }
 
 # Enums
@@ -92,7 +92,7 @@ input UpdateUserConnectionInput {
 
 type UpdateUserConnectionResponse implements ResponsePayload{
   success: Boolean!
-  context: String!
+  code: [String!]
 }
 
 enum GenderType {
@@ -180,7 +180,7 @@ Payload returned by user-related mutations.
 """
 type UserResponse implements ResponsePayload {
   success: Boolean! # Indicates whether the user-related mutation was successful.
-  context: String! # Used to provide any message or to display errors
+  code: [String!] # Used to provide any message or to display errors
   user: User # User object returned by the mutation (optional).
 }
 
@@ -212,13 +212,13 @@ Payload returned by sign-in mutation.
 """
 type SignInResponse implements ResponsePayload {
   success: Boolean! # Indicates whether the sign-in was successful.
-  context: String
+  code: [String!]
   token: String # Token generated after successful sign-in.
 }
 
 type MediaUploadResponse implements ResponsePayload {
   success: Boolean! # Indicates whether the sign-in was successful.
-  context: String
+  code: [String!]
   fileUri: String # Token generated after successful sign-in.
 }
 
@@ -326,13 +326,13 @@ enum MediaType {
 
 type CreateHighlightResponse implements ResponsePayload {
   success: Boolean!
-  context: String!
+  code: [String!]
   highlight: Highlight
 }
 
 type LikeHighlightResponse implements ResponsePayload {
   success: Boolean!
-  context: String!
+  code: [String!]
 }
 
 input LikeHighlightInput {
