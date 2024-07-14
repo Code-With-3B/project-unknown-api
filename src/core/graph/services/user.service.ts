@@ -144,6 +144,7 @@ export async function signup(context: ResolverContext, input: SignUpInput): Prom
             accountState: AccountStateType.Active,
             accountVisibility: AccountVisibilityType.Public,
             verificationStatus: VerificationStatusType.UnverifiedPlayer,
+            fbToken: '',
             preferredGames: [],
             achievements: [],
             skills: [],
@@ -256,6 +257,9 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
 
 export async function signIn(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
     logger.info(`Initiating user sign-in with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`)
+    if (!input.fbToken) {
+        return {success: false, code: [ErrorCode.MISSING_NOTIFICATION_TOKEN]}
+    }
     if (input.authMode === AuthMode.PhonePass) {
         if (!input.phone) {
             logger.error(`Phone number is required for phone-based sign-in`)
@@ -282,6 +286,11 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
+        const updateFields: Partial<UsersCollection> = {}
+        updateFields.fbToken = input.fbToken ?? ''
+        updateFields.updatedAt = new Date().toISOString()
+        await updateDataInDB<UsersCollection, User>(context.mongodb, MongoCollection.USER, user.id, updateFields)
+        logger.info(`Added firebase notification token added`)
         return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     } else if (input.authMode == AuthMode.EmailPass) {
         if (!input.email) {
@@ -310,6 +319,11 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
+        const updateFields: Partial<UsersCollection> = {}
+        updateFields.fbToken = input.fbToken ?? ''
+        updateFields.updatedAt = new Date().toISOString()
+        await updateDataInDB<UsersCollection, User>(context.mongodb, MongoCollection.USER, user.id, updateFields)
+        logger.info(`Added firebase notification token added`)
         return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     } else if (
         input.authMode == AuthMode.GoogleEmail ||
@@ -336,6 +350,11 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
+        const updateFields: Partial<UsersCollection> = {}
+        updateFields.fbToken = input.fbToken ?? ''
+        updateFields.updatedAt = new Date().toISOString()
+        await updateDataInDB<UsersCollection, User>(context.mongodb, MongoCollection.USER, user.id, updateFields)
+        logger.info(`Added firebase notification token added`)
         return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     } else {
         if (!input.email) {
@@ -358,6 +377,11 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
             createdAt: user.createdAt ?? `${user.createdAt}`
         }
         const token = await generateToken(context.mongodb, payload)
+        const updateFields: Partial<UsersCollection> = {}
+        updateFields.fbToken = input.fbToken ?? ''
+        updateFields.updatedAt = new Date().toISOString()
+        await updateDataInDB<UsersCollection, User>(context.mongodb, MongoCollection.USER, user.id, updateFields)
+        logger.info(`Added firebase notification token added`)
         return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     }
 }
