@@ -62,13 +62,10 @@ export type Achievement = {
 
 /** Enum representing authentication modes. */
 export enum AuthMode {
-  AppleEmail = 'APPLE_EMAIL',
-  ApplePhone = 'APPLE_PHONE',
+  Apple = 'APPLE',
   EmailPass = 'EMAIL_PASS',
-  FacebookEmail = 'FACEBOOK_EMAIL',
-  FacebookPhone = 'FACEBOOK_PHONE',
-  GoogleEmail = 'GOOGLE_EMAIL',
-  GooglePhone = 'GOOGLE_PHONE',
+  Facebook = 'FACEBOOK',
+  Google = 'GOOGLE',
   PhonePass = 'PHONE_PASS'
 }
 
@@ -413,7 +410,6 @@ export type UserResponse = ResponsePayload & {
   __typename?: 'UserResponse';
   code?: Maybe<Array<Scalars['String']['output']>>;
   success: Scalars['Boolean']['output'];
-  user?: Maybe<User>;
 };
 
 /** Enum representing verification status of users or professionals. */
@@ -775,7 +771,6 @@ export type UserInteractionResolvers<ContextType = any, ParentType extends Resol
 export type UserResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserResponse'] = ResolversParentTypes['UserResponse']> = {
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

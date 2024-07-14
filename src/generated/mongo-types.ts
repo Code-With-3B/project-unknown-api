@@ -83,15 +83,7 @@ export interface UsersCollection {
   /**
    * 'authMode' must be a string.
    */
-  authMode?:
-    | "EMAIL_PASS"
-    | "PHONE_PASS"
-    | "GOOGLE_PHONE"
-    | "GOOGLE_EMAIL"
-    | "FACEBOOK_PHONE"
-    | "FACEBOOK_EMAIL"
-    | "APPLE_PHONE"
-    | "APPLE_EMAIL";
+  authMode?: "EMAIL_PASS" | "PHONE_PASS" | "GOOGLE" | "FACEBOOK" | "APPLE";
   /**
    * 'preferredGames' must be an array of game IDs.
    */

@@ -31,12 +31,9 @@ Enum representing authentication modes.
 enum AuthMode {
   EMAIL_PASS # Email and password authentication.
   PHONE_PASS # Phone number and password authentication.
-  GOOGLE_PHONE # Google authentication.
-  GOOGLE_EMAIL # Google authentication.
-  FACEBOOK_PHONE # Facebook authentication.
-  FACEBOOK_EMAIL # Facebook authentication.
-  APPLE_PHONE # Apple authentication.
-  APPLE_EMAIL # Apple authentication.
+  GOOGLE # Google authentication.
+  FACEBOOK # Facebook authentication.
+  APPLE # Apple authentication.
 }
 
 """
@@ -182,9 +179,7 @@ Payload returned by user-related mutations.
 type UserResponse implements ResponsePayload {
   success: Boolean! # Indicates whether the user-related mutation was successful.
   code: [String!] # Used to provide any message or to display errors
-  user: User # User object returned by the mutation (optional).
 }
-
 """
 Response for checking if a username is duplicate.
 """
