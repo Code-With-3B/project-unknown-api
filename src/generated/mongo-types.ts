@@ -58,6 +58,10 @@ export interface UsersCollection {
    */
   bio?: string;
   /**
+   * 'fbToken' must be a string.
+   */
+  fbToken?: string;
+  /**
    * 'gender' must be a string indicating the user's gender.
    */
   gender?: "MALE" | "FEMALE" | "PREFER_NOT_SAY";

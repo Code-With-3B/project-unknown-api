@@ -159,6 +159,7 @@ type User {
   skills: [ID!] # List of skills recorded for the user.
   highlights: [ID!] # List of highlights in the user's profile.
   teams: [ID!] # List of teams the user belongs to.
+  fbToken: String!
   createdAt: DateTime # Date and time when the user account was created.
   updatedAt: DateTime # Date and time when the user account was last updated.
 }
@@ -273,8 +274,8 @@ input SignInInput {
   phone: String # Phone number of the user (optional, required if email is not provided).
   password: String # Password of the user.
   authMode: AuthMode! # Authentication mode used for sign-in.
+  fbToken: String!
 }
-
 
 """
 Represents a highlight (e.g., screenshot, gameplay clip) in a user's profile.

@@ -53,6 +53,10 @@
       "type": "string",
       "description": "'bio' must be a string."
     },
+    "fbToken": {
+      "type": "string",
+      "description": "'fbToken' must be a string."
+    },
     "gender": {
       "type": "string",
       "enum": ["MALE", "FEMALE", "PREFER_NOT_SAY"],
