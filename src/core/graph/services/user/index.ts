@@ -1,36 +1,30 @@
-import {ErrorCode} from '../../../constants/error-codes'
-import {MongoCollection} from '../../../@types/collections'
-import {ResolverContext} from '../../../@types/context'
-import {dissoc} from 'ramda'
-import {logger} from '../../../config'
+import {ErrorCode} from '../../../../constants/error-codes'
+import {MongoCollection} from '../../../../@types/collections'
+import {ResolverContext} from '../../../../@types/context'
+import {logger} from '../../../../config'
 import {v4 as uuid} from 'uuid'
 
 import {
     AccountInteractionType,
-    AccountStateType,
-    AccountVisibilityType,
-    GenderType,
     UpdateUserConnectionInput,
     UpdateUserConnectionResponse,
-    UserInteraction,
-    VerificationStatusType
-} from './../../../generated/graphql'
+    UserInteraction
+} from '../../../../generated/graphql'
 import {
     AuthMode,
     CheckDuplicateUserInput,
     CheckDuplicateUserResponse,
     SignInInput,
     SignInResponse,
-    SignUpInput,
     TokenPayloadInput,
     UpdateUserInput,
     User,
     UserResponse
-} from '../../../generated/graphql'
-import {UserInteractionCollection, UsersCollection} from '../../../generated/mongo-types'
-import {bcryptConfig, generateToken} from '../../../constants/auth/utils'
+} from '../../../../generated/graphql'
+import {UserInteractionCollection, UsersCollection} from '../../../../generated/mongo-types'
+import {bcryptConfig, generateToken} from '../../../../constants/auth/utils'
 import {compare, hash} from 'bcrypt'
-import {fetchDocumentByField, fetchRelationalData, insertDataInDB, updateDataInDB} from '../db/utils'
+import {fetchDocumentByField, fetchRelationalData, insertDataInDB, updateDataInDB} from '../../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
 
 /**
@@ -58,113 +52,6 @@ export async function checkUsernameIsDuplicate(
     logger.info(`User fetch result: ${user ? 'User exists' : 'No user found'}`)
     if (user) return {isDuplicate: true}
     return {isDuplicate: false}
-}
-
-/**
- * Creates a new user in the database.
- * @param context The resolver context containing the MongoDB database instance.
- * @param input The input data for creating a new user.
- * @returns A Promise that resolves to a UserResponse indicating success or failure.
- */
-export async function signup(context: ResolverContext, input: SignUpInput): Promise<UserResponse> {
-    logger.info(
-        dissoc('password', input),
-        `Initiating user sign-up with ${input.authMode == AuthMode.PhonePass ? input.phone : input.email}`
-    )
-    const errorCodes = []
-    try {
-        if (!input.password) errorCodes.push(ErrorCode.MISSING_PASSWORD)
-        if (!isStrongPassword(input.password)) errorCodes.push(ErrorCode.WEAK_PASSWORD)
-        if (
-            !input.authMode ||
-            input.authMode === AuthMode.EmailPass ||
-            input.authMode === AuthMode.GoogleEmail ||
-            input.authMode === AuthMode.FacebookEmail ||
-            input.authMode === AuthMode.AppleEmail
-        ) {
-            if (!input.email) errorCodes.push(ErrorCode.MISSING_EMAIL)
-            if (!isEmail(input.email)) errorCodes.push(ErrorCode.INVALID_EMAIL_FORMAT)
-        } else if (
-            input.authMode === AuthMode.PhonePass ||
-            input.authMode === AuthMode.GooglePhone ||
-            input.authMode === AuthMode.FacebookPhone ||
-            input.authMode === AuthMode.ApplePhone
-        ) {
-            if (!input.phone) errorCodes.push(ErrorCode.MISSING_PHONE)
-            if (!isMobilePhone(input.phone)) errorCodes.push(ErrorCode.INVALID_PHONE_FORMAT)
-        }
-
-        if (input.email) {
-            const user = await fetchDocumentByField<UsersCollection>(
-                context.mongodb,
-                MongoCollection.USER,
-                input.email,
-                input.email.toLowerCase()
-            )
-            if (user) errorCodes.push(ErrorCode.DUPLICATE_EMAIL)
-        }
-        if (input.phone) {
-            const user = await fetchDocumentByField<UsersCollection>(
-                context.mongodb,
-                MongoCollection.USER,
-                input.phone,
-                input.phone
-            )
-            if (user) errorCodes.push(ErrorCode.DUPLICATE_PHONE)
-        }
-        if (input.username && input.username.length > 6) {
-            if (input.phone) {
-                const user = await fetchDocumentByField<UsersCollection>(
-                    context.mongodb,
-                    MongoCollection.USER,
-                    input.username,
-                    input.username.toLowerCase()
-                )
-                if (user) errorCodes.push(ErrorCode.USERNAME_NOT_AVAILABLE)
-            }
-        } else errorCodes.push(ErrorCode.INVALID_USERNAME_LENGTH)
-
-        if (errorCodes.length > 0) {
-            logger.error(`User onboarding failed with error code ${errorCodes}`)
-            return {success: false, code: errorCodes.reverse()}
-        }
-
-        const id = uuid()
-        const userDocument: UsersCollection = {
-            id,
-            authMode: input.authMode,
-            fullName: input.fullName ?? '',
-            username: input.username?.toLowerCase(),
-            email: input.email?.toLowerCase(),
-            phone: input.phone?.toLowerCase(),
-            bio: '',
-            birthday: input.birthday ?? '',
-            password: await hash(input.password ?? id, bcryptConfig.saltRounds),
-            gender: input?.gender ?? GenderType.PreferNotSay,
-            accountState: AccountStateType.Active,
-            accountVisibility: AccountVisibilityType.Public,
-            verificationStatus: VerificationStatusType.UnverifiedPlayer,
-            fbToken: '',
-            preferredGames: [],
-            achievements: [],
-            skills: [],
-            highlights: [],
-            createdAt: new Date().toISOString()
-        }
-
-        const createdUser = await insertDataInDB<UsersCollection, User>(
-            context.mongodb,
-            MongoCollection.USER,
-            userDocument
-        )
-        logger.info(`User onboarding ${createdUser ? 'Successful' : 'Failed'}`)
-        if (createdUser) return {success: true, code: [ErrorCode.USER_CREATION_SUCCESS], user: createdUser}
-        return {success: !!createdUser, code: [ErrorCode.USER_CREATION_FAILED], user: null}
-    } catch (error) {
-        logger.error(`Error creating user`)
-        logger.error(error)
-        throw error
-    }
 }
 
 export async function updateUser(context: ResolverContext, input: UpdateUserInput): Promise<UserResponse> {
@@ -241,8 +128,7 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
             logger.info(`User update successful for userID: ${input.id}`)
             return {
                 success: !!updatedUser,
-                code: [updatedUser ? ErrorCode.USER_UPDATED : ErrorCode.USER_UPDATE_FAILED],
-                user: updatedUser
+                code: [updatedUser ? ErrorCode.USER_UPDATED : ErrorCode.USER_UPDATE_FAILED]
             }
         }
         return {
@@ -326,9 +212,9 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
         logger.info(`Added firebase notification token added`)
         return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
     } else if (
-        input.authMode == AuthMode.GoogleEmail ||
-        input.authMode == AuthMode.FacebookEmail ||
-        input.authMode == AuthMode.AppleEmail
+        input.authMode == AuthMode.Google ||
+        input.authMode == AuthMode.Facebook ||
+        input.authMode == AuthMode.Apple
     ) {
         if (!input.email) {
             logger.error(`Email is required for social-based sign-in.`)

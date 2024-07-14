@@ -7,7 +7,7 @@ import {
     User,
     UserResponse
 } from '../../../generated/graphql'
-import {checkUsernameIsDuplicate, getUsers, updateUser, updateUserConnection} from '../services/user.service'
+import {checkUsernameIsDuplicate, getUsers, updateUser, updateUserConnection} from '../services/user'
 
 export const userResolver: Resolvers = {
     Query: {

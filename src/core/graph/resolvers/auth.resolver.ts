@@ -1,7 +1,8 @@
 import {ResolverContext} from '../../../@types/context'
+import {signIn} from '../services/user/signin'
+import {signup} from '../services/user/signup'
 
 import {Resolvers, SignInResponse, UserResponse} from '../../../generated/graphql'
-import {signIn, signup} from '../services/user.service'
 
 export const authResolver: Resolvers = {
     Mutation: {
