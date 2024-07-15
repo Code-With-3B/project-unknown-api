@@ -39,6 +39,8 @@ export enum ErrorCode {
     WEAK_PASSWORD = 'WEAK_PASSWORD',
     INVALID_USER_AUTH_MODE = 'INVALID_USER_AUTH_MODE',
     NO_USER_FOUND = 'NO_USER_FOUND',
+    CANT_MODIFY_EMAIL = 'CANT_MODIFY_EMAIL',
+    CANT_MODIFY_PHONE = 'CANT_MODIFY_PHONE',
 
     // Token and authentication errors
     NOT_AUTHENTICATED = 'NOT_AUTHENTICATED',
@@ -102,6 +104,9 @@ export const ErrorMessage: Record<ErrorCode, string> = {
     [ErrorCode.INVALID_USER_AUTH_MODE]:
         'User has created account with google, facebook or apple. Try with EMAIL_PASS instead.',
     [ErrorCode.NO_USER_FOUND]: 'No User found',
+    [ErrorCode.CANT_MODIFY_EMAIL]:
+        'Email for account created with email-pass, google, facebook or apple cannot be updated',
+    [ErrorCode.CANT_MODIFY_PHONE]: 'Phone for account created with phone-pass cannot be updated',
 
     // Token and authentication errors
     [ErrorCode.NOT_AUTHENTICATED]: 'Not authenticated',
