@@ -61,7 +61,12 @@ export enum ErrorCode {
     UNFOLLOW_USER_SUCCESS = 'UNFOLLOW_USER_SUCCESS',
     UNFOLLOW_USER_FAILED = 'UNFOLLOW_USER_FAILED',
     BLOCK_USER_SUCCESS = 'BLOCK_USER_SUCCESS',
-    BLOCK_USER_FAILED = 'BLOCK_USER_FAILED'
+    BLOCK_USER_FAILED = 'BLOCK_USER_FAILED',
+
+    // Upload Url Request
+    UPLOAD_URL_GRANTED = 'UPLOAD_URL_GRANTED',
+    UPLOAD_URL_DENIED = 'UPLOAD_URL_DENIED',
+    FILE_TOO_LARGE = 'FILE_TOO_LARGE'
 }
 
 export const ErrorMessage: Record<ErrorCode, string> = {
@@ -127,5 +132,10 @@ export const ErrorMessage: Record<ErrorCode, string> = {
     [ErrorCode.UNFOLLOW_USER_SUCCESS]: 'User un-followed another user',
     [ErrorCode.UNFOLLOW_USER_FAILED]: 'Unfollowing user failed',
     [ErrorCode.BLOCK_USER_SUCCESS]: 'User blocked other used',
-    [ErrorCode.BLOCK_USER_FAILED]: 'Blocking user failed'
+    [ErrorCode.BLOCK_USER_FAILED]: 'Blocking user failed',
+
+    // Upload Url Request
+    [ErrorCode.UPLOAD_URL_GRANTED]: 'Upload url is created',
+    [ErrorCode.UPLOAD_URL_DENIED]: 'Upload url is not created',
+    [ErrorCode.FILE_TOO_LARGE]: 'File is too large'
 }

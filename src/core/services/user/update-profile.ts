@@ -98,6 +98,10 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
             updateFields.accountState = input.accountState
         if (input.verificationStatus && input.verificationStatus != user.verificationStatus)
             updateFields.verificationStatus = input.verificationStatus
+        if (input.profilePictureUri && input.profilePictureUri != user.profilePicture)
+            updateFields.profilePicture = input.profilePictureUri
+        if (input.profileBannerUri && input.profilePictureUri != user.profileBanner)
+            updateFields.profileBanner = input.profileBannerUri
 
         if (Object.keys(updateFields).length > 0) {
             updateFields.updatedAt = new Date().toISOString()

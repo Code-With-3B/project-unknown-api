@@ -26,7 +26,8 @@ export const serverConfig = {
         jwtExpirationTime: parseEnv(process.env.TOKEN_EXPIRATION, '1d', stringParser)
     },
     media: {
-        maxFileSize: parseEnv(process.env.MAX_FILE_SIZE, 48, Number)
+        maxFileSize: parseEnv(process.env.MAX_FILE_SIZE, 48, Number),
+        uploadUrlExpiration: parseEnv(process.env.UPLOAD_URL_EXPIRATION, 1800, Number)
     },
     storage: {
         region: parseEnv(process.env.CLOUDFLARE_REGION, '', stringParser),
