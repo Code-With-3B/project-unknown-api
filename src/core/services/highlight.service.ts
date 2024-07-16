@@ -1,11 +1,11 @@
-import {ErrorCode} from '../../../constants/error-codes'
-import {MongoCollection} from '../../../@types/collections'
-import {ResolverContext} from '../../../@types/context'
+import {ErrorCode} from '../../constants/error-codes'
+import {MongoCollection} from '../../@types/collections'
+import {ResolverContext} from '../../@types/context'
 import {insertDataInDB} from '../db/utils'
-import {logger} from '../../../config'
+import {logger} from '../../config'
 import {v4 as uuid} from 'uuid'
 
-import {CreateHighlightInput, CreateHighlightResponse, Highlight} from '../../../generated/graphql'
+import {CreateHighlightInput, CreateHighlightResponse, Highlight} from '../../generated/graphql'
 
 export async function createHighlight(
     context: ResolverContext,

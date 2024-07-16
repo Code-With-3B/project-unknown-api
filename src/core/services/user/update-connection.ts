@@ -1,8 +1,8 @@
-import {ErrorCode} from '../../../../constants/error-codes'
-import {MongoCollection} from '../../../../@types/collections'
-import {ResolverContext} from '../../../../@types/context'
-import {UserInteractionCollection} from '../../../../generated/mongo-types'
-import {logger} from '../../../../config'
+import {ErrorCode} from '../../../constants/error-codes'
+import {MongoCollection} from '../../../@types/collections'
+import {ResolverContext} from '../../../@types/context'
+import {UserInteractionCollection} from '../../../generated/mongo-types'
+import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
 import {
@@ -10,7 +10,7 @@ import {
     UpdateUserConnectionInput,
     UpdateUserConnectionResponse,
     UserInteraction
-} from '../../../../generated/graphql'
+} from '../../../generated/graphql'
 import {fetchRelationalData, insertDataInDB, updateDataInDB} from '../../db/utils'
 
 export async function updateUserConnection(
