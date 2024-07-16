@@ -1,10 +1,10 @@
-import {ErrorCode} from '../../../../constants/error-codes'
-import {MongoCollection} from '../../../../@types/collections'
-import {ResolverContext} from '../../../../@types/context'
-import {UsersCollection} from '../../../../generated/mongo-types'
-import {bcryptConfig} from '../../../../constants/auth/utils'
+import {ErrorCode} from '../../../constants/error-codes'
+import {MongoCollection} from '../../../@types/collections'
+import {ResolverContext} from '../../../@types/context'
+import {UsersCollection} from '../../../generated/mongo-types'
+import {bcryptConfig} from '../../../constants/auth/utils'
 import {hash} from 'bcrypt'
-import {logger} from '../../../../config'
+import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
 import {
@@ -15,7 +15,7 @@ import {
     SignUpInput,
     UserResponse,
     VerificationStatusType
-} from '../../../../generated/graphql'
+} from '../../../generated/graphql'
 import {doesDocumentExistByField, insertDataInDBWithoutData} from '../../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
 

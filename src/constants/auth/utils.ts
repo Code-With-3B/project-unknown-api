@@ -1,7 +1,7 @@
 import {Db} from 'mongodb'
 import {TokenPayloadInput} from '../../generated/graphql'
-import {checkAccessTokenIsValid} from '../../core/graph/services/access.token.service'
-import {createOrUpdateAccessToken} from '../../core/graph/db/collections/access.token.db'
+import {checkAccessTokenIsValid} from '../../core/services/access.token.service'
+import {createOrUpdateAccessToken} from '../../core/db/collections/access.token.db'
 import jwt from 'jsonwebtoken'
 import {serverConfig} from '../../config'
 

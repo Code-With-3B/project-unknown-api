@@ -1,4 +1,4 @@
-import {ResolverContext} from '../../../@types/context'
+import {ResolverContext} from '../../@types/context'
 import {updateUser} from '../services/user/update-profile'
 import {updateUserConnection} from '../services/user/update-connection'
 
@@ -8,7 +8,7 @@ import {
     UpdateUserConnectionResponse,
     User,
     UserResponse
-} from '../../../generated/graphql'
+} from '../../generated/graphql'
 import {checkUsernameIsDuplicate, getUsers} from '../services/user'
 
 export const userResolver: Resolvers = {

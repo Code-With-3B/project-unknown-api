@@ -27,6 +27,14 @@ export const serverConfig = {
     },
     media: {
         maxFileSize: parseEnv(process.env.MAX_FILE_SIZE, 48, Number)
+    },
+    storage: {
+        region: parseEnv(process.env.CLOUDFLARE_REGION, '', stringParser),
+        endpoint: parseEnv(process.env.CLOUDFLARE_ENDPOINT, '', stringParser),
+        credentials: {
+            accessKeyId: parseEnv(process.env.CLOUDFLARE_ACCESS_KEY_ID, '', stringParser),
+            secretAccessKey: parseEnv(process.env.CLOUDFLARE_SECRETE_ACCESS_KEY, '', stringParser)
+        }
     }
 }
 

@@ -1,12 +1,12 @@
-import {ErrorCode} from '../../../../constants/error-codes'
-import {MongoCollection} from '../../../../@types/collections'
-import {ResolverContext} from '../../../../@types/context'
-import {UsersCollection} from '../../../../generated/mongo-types'
+import {ErrorCode} from '../../../constants/error-codes'
+import {MongoCollection} from '../../../@types/collections'
+import {ResolverContext} from '../../../@types/context'
+import {UsersCollection} from '../../../generated/mongo-types'
 import {compare} from 'bcrypt'
-import {generateToken} from '../../../../constants/auth/utils'
-import {logger} from '../../../../config'
+import {generateToken} from '../../../constants/auth/utils'
+import {logger} from '../../../config'
 
-import {AuthMode, SignInInput, SignInResponse, TokenPayloadInput} from '../../../../generated/graphql'
+import {AuthMode, SignInInput, SignInResponse, TokenPayloadInput} from '../../../generated/graphql'
 import {
     fetchDocumentForValidEmail,
     fetchDocumentForValidPhone,

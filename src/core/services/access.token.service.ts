@@ -1,7 +1,7 @@
-import {AccessTokensCollection} from '../../../generated/mongo-types'
+import {AccessTokensCollection} from '../../generated/mongo-types'
 import {Db} from 'mongodb'
-import {MongoCollection} from '../../../@types/collections'
-import {TokenStatus} from '../../../generated/graphql'
+import {MongoCollection} from '../../@types/collections'
+import {TokenStatus} from '../../generated/graphql'
 import {fetchDocumentByField} from '../db/utils'
 
 /**

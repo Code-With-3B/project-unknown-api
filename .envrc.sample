@@ -1,11 +1,18 @@
+export FASTIFY_HOST='0.0.0.0'
 export FASTIFY_PORT=3000
 export ESLINT_USE_FLAT_CONFIG=true
 
-export MONGODB_CONNECTION_STRING='mongodb://localhost:27017/project-unknown'
+# Mongo
+export MONGODB_CONNECTION_STRING='mongodb://localhost:27017/'
 export MONGODB_DATABASE='project-unknown'
 export DB_POOL_SIZE=20
 
-export JWT_SECRET=
+# Authentication
+export JWT_SECRET=''
 export TOKEN_EXPIRATION='1d'
 
-export MAX_FILE_SIZE=96
+# Cloudflare
+export CLOUDFLARE_REGION='auto'
+export CLOUDFLARE_ENDPOINT=''
+export CLOUDFLARE_ACCESS_KEY_ID=''
+export CLOUDFLARE_SECRETE_ACCESS_KEY=''
