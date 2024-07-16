@@ -315,11 +315,6 @@ enum PostState {
   ARCHIVED
 }
 
-enum MediaType {
-  IMAGE
-  VIDEO
-}
-
 type CreateHighlightResponse implements ResponsePayload {
   success: Boolean!
   code: [String!]
@@ -335,6 +330,25 @@ input LikeHighlightInput {
   postId: ID!, 
   userId: ID!
   liked: Boolean
+}
+
+input RequestUploadUrlFileDetailsInput {
+  fileName: String!
+  fileType: String!
+  fileSize: String!
+}
+
+input RequestUploadUrlInput {
+  mediaType: MediaType!
+  userId: ID!
+  file: RequestUploadUrlFileDetailsInput!
+  
+}
+
+type RequestUploadUrlResponse implements ResponsePayload {
+  uploadUrl: String
+  success: Boolean!
+  code: [String!]
 }
 
 """
@@ -358,6 +372,8 @@ type Query {
   - `input`: Input containing the username to check for duplication.
   """
   checkDuplicateUsername(input: CheckDuplicateUserInput!): CheckDuplicateUserResponse!
+
+  requestUploadUrl(input: RequestUploadUrlInput!): RequestUploadUrlResponse!
 }
 
 # Mutations

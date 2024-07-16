@@ -152,10 +152,8 @@ export type Media = {
 export enum MediaType {
   HighlightImage = 'HIGHLIGHT_IMAGE',
   HighlightVideo = 'HIGHLIGHT_VIDEO',
-  Image = 'IMAGE',
   ProfileBanner = 'PROFILE_BANNER',
-  ProfilePicture = 'PROFILE_PICTURE',
-  Video = 'VIDEO'
+  ProfilePicture = 'PROFILE_PICTURE'
 }
 
 export type MediaUploadResponse = ResponsePayload & {
@@ -245,6 +243,7 @@ export type Query = {
    * - `input`: Input containing the username to check for duplication.
    */
   checkDuplicateUsername: CheckDuplicateUserResponse;
+  requestUploadUrl: RequestUploadUrlResponse;
   /**
    * Retrieve a user by their username.
    * - `username`: Username of the user to retrieve.
@@ -260,8 +259,32 @@ export type QueryCheckDuplicateUsernameArgs = {
 };
 
 
+export type QueryRequestUploadUrlArgs = {
+  input: RequestUploadUrlInput;
+};
+
+
 export type QueryUserArgs = {
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RequestUploadUrlFileDetailsInput = {
+  fileName: Scalars['String']['input'];
+  fileSize: Scalars['String']['input'];
+  fileType: Scalars['String']['input'];
+};
+
+export type RequestUploadUrlInput = {
+  file: RequestUploadUrlFileDetailsInput;
+  mediaType: MediaType;
+  userId: Scalars['ID']['input'];
+};
+
+export type RequestUploadUrlResponse = ResponsePayload & {
+  __typename?: 'RequestUploadUrlResponse';
+  code?: Maybe<Array<Scalars['String']['output']>>;
+  success: Scalars['Boolean']['output'];
+  uploadUrl?: Maybe<Scalars['String']['output']>;
 };
 
 /** Interface for response payloads containing a success flag. */
@@ -493,7 +516,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( CreateHighlightResponse ) | ( LikeHighlightResponse ) | ( MediaUploadResponse ) | ( SignInResponse ) | ( UpdateUserConnectionResponse ) | ( UserResponse );
+  ResponsePayload: ( CreateHighlightResponse ) | ( LikeHighlightResponse ) | ( MediaUploadResponse ) | ( RequestUploadUrlResponse ) | ( SignInResponse ) | ( UpdateUserConnectionResponse ) | ( UserResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -526,6 +549,9 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   PostState: PostState;
   Query: ResolverTypeWrapper<{}>;
+  RequestUploadUrlFileDetailsInput: RequestUploadUrlFileDetailsInput;
+  RequestUploadUrlInput: RequestUploadUrlInput;
+  RequestUploadUrlResponse: ResolverTypeWrapper<RequestUploadUrlResponse>;
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
   RestParamsInput: ResolverTypeWrapper<RestParamsInput>;
   SignInInput: SignInInput;
@@ -568,6 +594,9 @@ export type ResolversParentTypes = {
   MediaUploadResponse: MediaUploadResponse;
   Mutation: {};
   Query: {};
+  RequestUploadUrlFileDetailsInput: RequestUploadUrlFileDetailsInput;
+  RequestUploadUrlInput: RequestUploadUrlInput;
+  RequestUploadUrlResponse: RequestUploadUrlResponse;
   ResponsePayload: ResolversInterfaceTypes<ResolversParentTypes>['ResponsePayload'];
   RestParamsInput: RestParamsInput;
   SignInInput: SignInInput;
@@ -678,12 +707,20 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   checkDuplicateUsername?: Resolver<ResolversTypes['CheckDuplicateUserResponse'], ParentType, ContextType, RequireFields<QueryCheckDuplicateUsernameArgs, 'input'>>;
+  requestUploadUrl?: Resolver<ResolversTypes['RequestUploadUrlResponse'], ParentType, ContextType, RequireFields<QueryRequestUploadUrlArgs, 'input'>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserArgs>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
 };
 
+export type RequestUploadUrlResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestUploadUrlResponse'] = ResolversParentTypes['RequestUploadUrlResponse']> = {
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  uploadUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'CreateHighlightResponse' | 'LikeHighlightResponse' | 'MediaUploadResponse' | 'SignInResponse' | 'UpdateUserConnectionResponse' | 'UserResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CreateHighlightResponse' | 'LikeHighlightResponse' | 'MediaUploadResponse' | 'RequestUploadUrlResponse' | 'SignInResponse' | 'UpdateUserConnectionResponse' | 'UserResponse', ParentType, ContextType>;
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -788,6 +825,7 @@ export type Resolvers<ContextType = any> = {
   MediaUploadResponse?: MediaUploadResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RequestUploadUrlResponse?: RequestUploadUrlResponseResolvers<ContextType>;
   ResponsePayload?: ResponsePayloadResolvers<ContextType>;
   RestParamsInput?: RestParamsInputResolvers<ContextType>;
   SignInResponse?: SignInResponseResolvers<ContextType>;
