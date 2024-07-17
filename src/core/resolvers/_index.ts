@@ -2,6 +2,7 @@ import {authResolver} from './auth.resolver'
 import {healthResolver} from './health.resolver'
 import {highlightResolver} from './highlight.resolver'
 import {mergeResolvers} from '@graphql-tools/merge'
+import {teamResolver} from './team.resolver'
 import {uploadUrlResolver} from './upload.request.resolver'
 import {userResolver} from './user.resolver'
 
@@ -11,5 +12,6 @@ export const resolvers: any = mergeResolvers([
     userResolver,
     highlightResolver,
     uploadUrlResolver,
-    healthResolver
+    healthResolver,
+    teamResolver
 ])
