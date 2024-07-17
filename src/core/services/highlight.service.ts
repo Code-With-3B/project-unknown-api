@@ -5,7 +5,7 @@ import {insertDataInDB} from '../db/utils'
 import {logger} from '../../config'
 import {v4 as uuid} from 'uuid'
 
-import {CreateHighlightInput, CreateHighlightResponse, Highlight} from '../../generated/graphql'
+import {CreateHighlightInput, CreateHighlightResponse, Highlight} from '../../generated/highlight'
 
 export async function createHighlight(
     context: ResolverContext,

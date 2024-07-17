@@ -3,7 +3,7 @@ import {ResolverContext} from '../../@types/context'
 import {logger} from '../../config'
 import {verifyToken} from '../../constants/auth/utils'
 
-import {HealthCheckInput, HealthCheckResponse} from '../../generated/graphql'
+import {HealthCheckInput, HealthCheckResponse} from '../../generated/health'
 
 export async function getHealthCheck(context: ResolverContext, input: HealthCheckInput): Promise<HealthCheckResponse> {
     logger.info('Attempting health check')

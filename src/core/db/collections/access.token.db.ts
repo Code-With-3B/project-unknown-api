@@ -4,7 +4,7 @@ import {MongoCollection} from '../../../@types/collections'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
-import {AccessToken, TokenPayloadInput, TokenStatus} from '../../../generated/graphql'
+import {AccessToken, TokenPayloadInput} from '../../../generated/sign-in'
 import {fetchDocumentByField, insertDataInDB} from '../utils'
 
 /**
@@ -28,7 +28,6 @@ export async function createOrUpdateAccessToken(db: Db, token: string, document:
                 id: uuid(),
                 userId: document.id ?? '',
                 token,
-                status: TokenStatus.Active,
                 createdAt: new Date().toISOString()
             }
 
@@ -39,7 +38,6 @@ export async function createOrUpdateAccessToken(db: Db, token: string, document:
             const updatedTokenData: AccessTokensCollection = {
                 ...existingToken,
                 token,
-                status: TokenStatus.Active,
                 createdAt: new Date().toISOString().toLowerCase()
             }
 

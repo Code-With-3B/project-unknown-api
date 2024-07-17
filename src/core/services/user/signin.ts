@@ -7,7 +7,7 @@ import {createOrUpdateAccessToken} from '../../db/collections/access.token.db'
 import {generateToken} from '../../../constants/auth/utils'
 import {logger} from '../../../config'
 
-import {AuthMode, SignInInput, SignInResponse, TokenPayloadInput} from '../../../generated/graphql'
+import {AuthMode, SignInInput, SignInResponse, TokenPayloadInput} from '../../../generated/sign-in'
 import {
     fetchDocumentForValidEmail,
     fetchDocumentForValidPhone,

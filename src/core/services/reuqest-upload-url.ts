@@ -5,7 +5,7 @@ import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
 import {storageController} from '../storage/utils'
 import {v4 as uuidv4} from 'uuid'
 
-import {RequestUploadUrlInput, RequestUploadUrlResponse} from '../../generated/graphql'
+import {RequestUploadUrlInput, RequestUploadUrlResponse} from '../../generated/upload-media'
 import {logger, serverConfig} from '../../config'
 
 export async function requestUploadUrl(

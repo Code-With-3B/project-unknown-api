@@ -1,4 +1,5 @@
 import {ResolverContext} from '../../@types/context'
+import {signup} from '../services/user/signup'
 import {updateUser} from '../services/user/update-profile'
 import {updateUserConnection} from '../services/user/update-connection'
 
@@ -8,7 +9,7 @@ import {
     UpdateUserConnectionResponse,
     User,
     UserResponse
-} from '../../generated/graphql'
+} from '../../generated/user'
 import {checkUsernameIsDuplicate, getUsers} from '../services/user'
 
 export const userResolver: Resolvers = {
@@ -21,6 +22,9 @@ export const userResolver: Resolvers = {
         }
     },
     Mutation: {
+        signUp: (_, {input}, context: ResolverContext): Promise<UserResponse> => {
+            return signup(context, input)
+        },
         updateUser: (_, {input}, context: ResolverContext): Promise<UserResponse> => {
             return updateUser(context, input)
         },

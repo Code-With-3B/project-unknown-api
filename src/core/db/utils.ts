@@ -1,4 +1,4 @@
-import {AuthMode} from '../../generated/graphql'
+import {AuthMode} from '../../generated/sign-in'
 import {MongoCollection} from '../../@types/collections'
 import {logger} from '../../config'
 import {pipelines} from './pipelines'

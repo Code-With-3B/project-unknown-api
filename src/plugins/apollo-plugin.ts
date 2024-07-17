@@ -1,6 +1,6 @@
 import {ApolloServer} from '@apollo/server'
 import {ErrorCode} from '../constants/error-codes'
-import {GraphQlRequestBody} from '../generated/graphql'
+import {GraphQlRequestBody} from '../generated/sign-in'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/services/access.token.service'
 import fastifyApollo from '@as-integrations/fastify'
@@ -14,7 +14,13 @@ import {FieldNode, OperationDefinitionNode, parse} from 'graphql'
 import fp, {PluginMetadata} from 'fastify-plugin'
 import {logger, serverConfig} from '../config'
 
-const typeDefs = readFileSync('./schema.graphql', 'utf8')
+const typeDefs = [
+    readFileSync('src/schemas/health.graphql', 'utf8'),
+    readFileSync('src/schemas/highlight.graphql', 'utf8'),
+    readFileSync('src/schemas/sign-in.graphql', 'utf8'),
+    readFileSync('src/schemas/upload-media.graphql', 'utf8'),
+    readFileSync('src/schemas/user.graphql', 'utf8')
+].join('\n')
 /**
  * Create Apollo Server instance, MongoDB connection, and integrate with Fastify
  * @param {FastifyInstance} fastify - The Fastify instance to integrate with

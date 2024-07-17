@@ -15,7 +15,7 @@ import {
     SignUpInput,
     UserResponse,
     VerificationStatusType
-} from '../../../generated/graphql'
+} from '../../../generated/user'
 import {doesDocumentExistByField, insertDataInDBWithoutData} from '../../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
 
