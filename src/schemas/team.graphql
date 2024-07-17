@@ -1,0 +1,40 @@
+scalar DateTime
+scalar JSON
+
+interface ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+enum TeamStatus {
+  PRIVATE
+  SUSPENDED
+  DEACTIVATED
+  OPEN_TO_CONNECT
+}
+
+type Team {
+  id: ID!
+  name: String!
+  description: String!
+  game: String!
+  status: TeamStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CreateTeamResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+  team: Team
+}
+
+input CreateTeamInput {
+  name: String!
+  description: String!
+  game: String!
+  ownerId: ID!
+}
+
+type Mutation {
+  createTeam(input: CreateTeamInput!): CreateTeamResponse!
+}

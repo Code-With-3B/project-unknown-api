@@ -9,6 +9,7 @@ export interface DatabaseSchema {
   user?: UsersCollection;
   accessToken?: AccessTokensCollection;
   userInteraction?: UserInteractionCollection;
+  teams?: TeamsCollection;
   [k: string]: unknown;
 }
 export interface UsersCollection {
@@ -162,5 +163,36 @@ export interface UserInteractionCollection {
    * The timestamp or date string indicating when the access token was created
    */
   updatedAt: string;
+  [k: string]: unknown;
+}
+export interface TeamsCollection {
+  /**
+   * The unique identifier of the Team
+   */
+  id: string;
+  /**
+   * The name of the team
+   */
+  name?: string;
+  /**
+   * Optional description of the team
+   */
+  description?: string;
+  /**
+   * Name of the game associated with the team
+   */
+  game?: string;
+  /**
+   * The status of the team, which can be either PRIVATE, OPEN_TO_CONNECT, DEACTIVATED, or SUSPENDED
+   */
+  status?: "PRIVATE" | "OPEN_TO_CONNECT" | "DEACTIVATED" | "SUSPENDED";
+  /**
+   * The timestamp or date string indicating when the team was created
+   */
+  createdAt?: string;
+  /**
+   * The timestamp or date string indicating when the team was last updated
+   */
+  updatedAt?: string;
   [k: string]: unknown;
 }

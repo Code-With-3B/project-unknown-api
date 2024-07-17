@@ -3,5 +3,6 @@ export enum MongoCollection {
     ACCESS_TOKEN = 'access-tokens',
     MEDIA = 'media',
     USER_INTERACTION = 'user-connection-interactions',
-    HIGHLIGHT = 'highlights'
+    HIGHLIGHT = 'highlights',
+    TEAM = 'teams'
 }

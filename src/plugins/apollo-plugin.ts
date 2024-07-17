@@ -19,7 +19,8 @@ const typeDefs = [
     readFileSync('src/schemas/highlight.graphql', 'utf8'),
     readFileSync('src/schemas/sign-in.graphql', 'utf8'),
     readFileSync('src/schemas/upload-media.graphql', 'utf8'),
-    readFileSync('src/schemas/user.graphql', 'utf8')
+    readFileSync('src/schemas/user.graphql', 'utf8'),
+    readFileSync('src/schemas/team.graphql', 'utf8')
 ].join('\n')
 /**
  * Create Apollo Server instance, MongoDB connection, and integrate with Fastify
