@@ -1,3 +1,4 @@
+import {AuthMode} from '../../../generated/sign-in'
 import {ErrorCode} from '../../../constants/error-codes'
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
@@ -6,7 +7,7 @@ import {bcryptConfig} from '../../../constants/auth/utils'
 import {hash} from 'bcrypt'
 import {logger} from '../../../config'
 
-import {AuthMode, UpdateUserInput, User, UserResponse} from '../../../generated/graphql'
+import {UpdateUserInput, User, UserResponse} from '../../../generated/user'
 import {doesDocumentExistByField, fetchDocumentByField, updateDataInDBWithoutReturn} from '../../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
 

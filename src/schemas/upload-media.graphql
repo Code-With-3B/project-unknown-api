@@ -1,0 +1,34 @@
+enum MediaType {
+  PROFILE_PICTURE
+  PROFILE_BANNER
+  HIGHLIGHT_IMAGE
+  HIGHLIGHT_VIDEO
+}
+
+interface ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
+input RequestUploadUrlFileDetailsInput {
+  fileName: String!
+  fileType: String!
+  fileSize: String!
+}
+
+input RequestUploadUrlInput {
+  mediaType: MediaType!
+  userId: ID!
+  file: RequestUploadUrlFileDetailsInput!
+  
+}
+
+type RequestUploadUrlResponse implements ResponsePayload {
+  uploadUrl: String
+  success: Boolean!
+  code: [String!]
+}
+
+type Query {
+  requestUploadUrl(input: RequestUploadUrlInput!): RequestUploadUrlResponse!
+}

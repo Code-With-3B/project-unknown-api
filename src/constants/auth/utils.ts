@@ -1,5 +1,5 @@
 import {Db} from 'mongodb'
-import {TokenPayloadInput} from '../../generated/graphql'
+import {TokenPayloadInput} from '../../generated/sign-in'
 import {checkAccessTokenIsValid} from '../../core/services/access.token.service'
 import {createOrUpdateAccessToken} from '../../core/db/collections/access.token.db'
 import jwt from 'jsonwebtoken'

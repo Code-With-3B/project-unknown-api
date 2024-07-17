@@ -1,0 +1,11 @@
+input HealthCheckInput {
+  token: String
+}
+
+type HealthCheckResponse {
+  code: String!
+}
+
+type Query {
+  healthCheck(input: HealthCheckInput!): HealthCheckResponse!
+}

@@ -1,0 +1,73 @@
+interface ResponsePayload {
+    success: Boolean!
+    code: [String!]
+}
+
+enum MediaType {
+  PROFILE_PICTURE
+  PROFILE_BANNER
+  HIGHLIGHT_IMAGE
+  HIGHLIGHT_VIDEO
+}
+
+type Highlight {
+  id: ID!
+  userId: ID!
+  content: String!
+  media: [String!]!
+  state: PostState!
+  likes: [ID!]!
+  comments: [Comment!]!
+  shareCount: Int!
+  createdAt: String!
+  updatedAt: String
+}
+
+input CreateHighlightInput {
+  userId: ID!
+  content: String!
+  media: [String!]!
+  state: PostState!
+}
+
+type Media {
+  fileId: String!
+  type: MediaType!
+}
+
+type Comment {
+  id: ID!
+  postId: ID!
+  userId: ID!
+  text: String!
+  createdAt: String!
+  likes: [ID!]!
+}
+
+enum PostState {
+  PUBLIC
+  PRIVATE
+  ARCHIVED
+}
+
+type CreateHighlightResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+  highlight: Highlight
+}
+
+type LikeHighlightResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
+input LikeHighlightInput {
+  postId: ID!, 
+  userId: ID!
+  liked: Boolean
+}
+
+type Mutation {
+  createHighlight(input: CreateHighlightInput!): CreateHighlightResponse!
+  likeHighlight(input: LikeHighlightInput!): LikeHighlightResponse!
+}

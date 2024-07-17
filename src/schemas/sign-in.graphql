@@ -1,0 +1,51 @@
+scalar JSON
+
+input GraphQLRequestBody {
+  operationName: String
+  query: String
+  variables: JSON
+}
+
+enum AuthMode {
+  EMAIL_PASS
+  PHONE_PASS
+  GOOGLE
+  FACEBOOK
+  APPLE
+}
+
+interface ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
+input SignInInput {
+  email: String
+  phone: String
+  password: String!
+  authMode: AuthMode!
+  fbToken: String!
+}
+
+type TokenPayloadInput {
+  id: String!
+  createdAt: String!
+}
+
+type AccessToken {
+  id: ID! # Unique identifier for the access token.
+  userId: ID! # ID of the user associated with the token.
+  token: String! # The token string.
+  createdAt: String! # Timestamp when the token was created.
+  expiresAt: String! # Timestamp when the token expires.
+}
+
+type SignInResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+  token: String
+}
+
+type Mutation {
+  signIn(input: SignInInput!): SignInResponse
+}

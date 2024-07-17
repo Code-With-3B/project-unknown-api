@@ -2,7 +2,7 @@ import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {logger} from '../../../config'
 
-import {CheckDuplicateUserInput, CheckDuplicateUserResponse, User} from '../../../generated/graphql'
+import {CheckDuplicateUserInput, CheckDuplicateUserResponse, User} from '../../../generated/user'
 import {doesDocumentExistByField, fetchRelationalData} from '../../db/utils'
 
 /**

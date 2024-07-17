@@ -10,7 +10,7 @@ import {
     UpdateUserConnectionInput,
     UpdateUserConnectionResponse,
     UserInteraction
-} from '../../../generated/graphql'
+} from '../../../generated/user'
 import {fetchRelationalData, insertDataInDB, updateDataInDB} from '../../db/utils'
 
 export async function updateUserConnection(

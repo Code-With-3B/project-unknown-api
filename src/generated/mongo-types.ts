@@ -128,10 +128,6 @@ export interface AccessTokensCollection {
    */
   token?: string;
   /**
-   * The status of the access token, which can be either ACTIVE or EXPIRED
-   */
-  status: "ACTIVE" | "EXPIRED";
-  /**
    * The timestamp or date string indicating when the access token was created
    */
   createdAt: string;

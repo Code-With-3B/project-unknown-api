@@ -1,7 +1,7 @@
 import {ResolverContext} from '../../@types/context'
 import {getHealthCheck} from '../services/health-check'
 
-import {HealthCheckResponse, Resolvers} from '../../generated/graphql'
+import {HealthCheckResponse, Resolvers} from '../../generated/health'
 
 export const healthResolver: Resolvers = {
     Query: {
