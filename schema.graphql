@@ -351,6 +351,14 @@ type RequestUploadUrlResponse implements ResponsePayload {
   code: [String!]
 }
 
+input HealthCheckInput {
+  token: String
+}
+
+type HealthCheckResponse {
+  code: String!
+}
+
 """
 """
 
@@ -374,6 +382,8 @@ type Query {
   checkDuplicateUsername(input: CheckDuplicateUserInput!): CheckDuplicateUserResponse!
 
   requestUploadUrl(input: RequestUploadUrlInput!): RequestUploadUrlResponse!
+
+  healthCheck(input: HealthCheckInput!): HealthCheckResponse!
 }
 
 # Mutations

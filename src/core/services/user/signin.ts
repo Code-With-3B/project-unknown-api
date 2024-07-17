@@ -3,6 +3,7 @@ import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {UsersCollection} from '../../../generated/mongo-types'
 import {compare} from 'bcrypt'
+import {createOrUpdateAccessToken} from '../../db/collections/access.token.db'
 import {generateToken} from '../../../constants/auth/utils'
 import {logger} from '../../../config'
 
@@ -51,6 +52,7 @@ async function withEmailPass(context: ResolverContext, input: SignInInput): Prom
     updateFields.fbToken = input.fbToken ?? ''
     updateFields.updatedAt = new Date().toISOString()
     await updateDataInDBWithoutReturn<UsersCollection>(context.mongodb, MongoCollection.USER, user.id, updateFields)
+    await createOrUpdateAccessToken(context.mongodb, token, {id: user.id, createdAt: user.createdAt ?? ''})
     logger.info(`Added firebase notification token added`)
     return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
 }
