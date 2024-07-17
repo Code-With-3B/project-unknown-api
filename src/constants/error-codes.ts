@@ -44,7 +44,8 @@ export enum ErrorCode {
 
     // Token and authentication errors
     NOT_AUTHENTICATED = 'NOT_AUTHENTICATED',
-    INVALID_TOKEN = 'INVALID_TOKEN',
+    ACTIVE_TOKEN = 'ACTIVE_TOKEN',
+    EXPIRED_TOKEN = 'EXPIRED_TOKEN',
     TOKEN_GRANTED = 'TOKEN_GRANTED',
     TOKEN_DENIED = 'TOKEN_DENIED',
 
@@ -66,7 +67,9 @@ export enum ErrorCode {
     // Upload Url Request
     UPLOAD_URL_GRANTED = 'UPLOAD_URL_GRANTED',
     UPLOAD_URL_DENIED = 'UPLOAD_URL_DENIED',
-    FILE_TOO_LARGE = 'FILE_TOO_LARGE'
+    FILE_TOO_LARGE = 'FILE_TOO_LARGE',
+
+    SERVER_ACTIVE = 'SERVER_ACTIVE'
 }
 
 export const ErrorMessage: Record<ErrorCode, string> = {
@@ -115,7 +118,8 @@ export const ErrorMessage: Record<ErrorCode, string> = {
 
     // Token and authentication errors
     [ErrorCode.NOT_AUTHENTICATED]: 'Not authenticated',
-    [ErrorCode.INVALID_TOKEN]: 'Invalid token',
+    [ErrorCode.ACTIVE_TOKEN]: 'Token is active',
+    [ErrorCode.EXPIRED_TOKEN]: 'Token expired',
     [ErrorCode.TOKEN_GRANTED]: 'Token created for user',
     [ErrorCode.TOKEN_DENIED]: 'Token not created for user',
 
@@ -137,5 +141,7 @@ export const ErrorMessage: Record<ErrorCode, string> = {
     // Upload Url Request
     [ErrorCode.UPLOAD_URL_GRANTED]: 'Upload url is created',
     [ErrorCode.UPLOAD_URL_DENIED]: 'Upload url is not created',
-    [ErrorCode.FILE_TOO_LARGE]: 'File is too large'
+    [ErrorCode.FILE_TOO_LARGE]: 'File is too large',
+
+    [ErrorCode.SERVER_ACTIVE]: 'Server is active'
 }

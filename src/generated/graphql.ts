@@ -116,6 +116,15 @@ export type GraphQlRequestBody = {
   variables?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+export type HealthCheckInput = {
+  token?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type HealthCheckResponse = {
+  __typename?: 'HealthCheckResponse';
+  code: Scalars['String']['output'];
+};
+
 /** Represents a highlight (e.g., screenshot, gameplay clip) in a user's profile. */
 export type Highlight = {
   __typename?: 'Highlight';
@@ -243,6 +252,7 @@ export type Query = {
    * - `input`: Input containing the username to check for duplication.
    */
   checkDuplicateUsername: CheckDuplicateUserResponse;
+  healthCheck: HealthCheckResponse;
   requestUploadUrl: RequestUploadUrlResponse;
   /**
    * Retrieve a user by their username.
@@ -256,6 +266,11 @@ export type Query = {
 
 export type QueryCheckDuplicateUsernameArgs = {
   input: CheckDuplicateUserInput;
+};
+
+
+export type QueryHealthCheckArgs = {
+  input: HealthCheckInput;
 };
 
 
@@ -537,6 +552,8 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   GenderType: GenderType;
   GraphQLRequestBody: GraphQlRequestBody;
+  HealthCheckInput: HealthCheckInput;
+  HealthCheckResponse: ResolverTypeWrapper<HealthCheckResponse>;
   Highlight: ResolverTypeWrapper<Highlight>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -584,6 +601,8 @@ export type ResolversParentTypes = {
   DateTime: Scalars['DateTime']['output'];
   Float: Scalars['Float']['output'];
   GraphQLRequestBody: GraphQlRequestBody;
+  HealthCheckInput: HealthCheckInput;
+  HealthCheckResponse: HealthCheckResponse;
   Highlight: Highlight;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -659,6 +678,11 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type HealthCheckResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['HealthCheckResponse'] = ResolversParentTypes['HealthCheckResponse']> = {
+  code?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type HighlightResolvers<ContextType = any, ParentType extends ResolversParentTypes['Highlight'] = ResolversParentTypes['Highlight']> = {
   comments?: Resolver<Array<ResolversTypes['Comment']>, ParentType, ContextType>;
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -707,6 +731,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   checkDuplicateUsername?: Resolver<ResolversTypes['CheckDuplicateUserResponse'], ParentType, ContextType, RequireFields<QueryCheckDuplicateUsernameArgs, 'input'>>;
+  healthCheck?: Resolver<ResolversTypes['HealthCheckResponse'], ParentType, ContextType, RequireFields<QueryHealthCheckArgs, 'input'>>;
   requestUploadUrl?: Resolver<ResolversTypes['RequestUploadUrlResponse'], ParentType, ContextType, RequireFields<QueryRequestUploadUrlArgs, 'input'>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, Partial<QueryUserArgs>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
@@ -818,6 +843,7 @@ export type Resolvers<ContextType = any> = {
   Comment?: CommentResolvers<ContextType>;
   CreateHighlightResponse?: CreateHighlightResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  HealthCheckResponse?: HealthCheckResponseResolvers<ContextType>;
   Highlight?: HighlightResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   LikeHighlightResponse?: LikeHighlightResponseResolvers<ContextType>;
