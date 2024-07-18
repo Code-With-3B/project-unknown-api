@@ -1,7 +1,6 @@
 import {ApolloServer} from '@apollo/server'
 import {ErrorCode} from '../constants/error-codes'
 import {GraphQlRequestBody} from '../generated/sign-in'
-import {PubSub} from 'graphql-subscriptions'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/services/access.token.service'
 import fastifyApollo from '@as-integrations/fastify'
@@ -40,7 +39,6 @@ export const fastifyApolloPlugin = fp(
         await apolloServer.start()
         await fastify.register(fastifyApollo(apolloServer), {
             context: async (req: FastifyRequest) => {
-                const pubsub = new PubSub()
                 const mongodb = fastify.mongo.db
                 if (mongodb) {
                     const body = req.body as GraphQlRequestBody
@@ -69,7 +67,7 @@ export const fastifyApolloPlugin = fp(
                     const publicOperations = ['__schema', 'signUp', 'signIn', 'checkDuplicateUsername', 'healthCheck']
                     if (publicOperations.includes(actualFieldName)) {
                         logger.info('Public operation, no authentication required.')
-                        return {pubsub, mongodb}
+                        return {mongodb}
                     }
 
                     if (mongodb) {
@@ -83,14 +81,14 @@ export const fastifyApolloPlugin = fp(
                         if (isActive) {
                             jwt.verify(token, serverConfig.jwt.jwtSecreteKey)
                             logger.info('Authorization token is valid.')
-                            return {pubsub, mongodb}
+                            return {mongodb}
                         } else {
                             logger.error('Invalid authorization token provided.')
                             throw new Error(ErrorCode.NOT_AUTHENTICATED)
                         }
                     }
                 } else throw Error('Unable to connect to database!!')
-                return {pubsub, mongodb}
+                return {mongodb}
             }
         })
     },
