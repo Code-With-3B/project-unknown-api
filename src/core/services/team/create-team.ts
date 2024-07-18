@@ -1,11 +1,21 @@
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {TeamResponseCode} from '../../../constants/auth/response-codes/team'
-import {TeamsCollection} from '../../../generated/mongo-types'
+import {generateTokenForInvitation} from '../../../constants/auth/utils'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
-import {CreateTeamInput, CreateTeamResponse, Team, TeamStatus} from '../../../generated/team'
+import {
+    CreateTeamInput,
+    CreateTeamResponse,
+    Team,
+    TeamInvitationInput,
+    TeamInvitationResponse,
+    TeamRole,
+    TeamStatus
+} from '../../../generated/team'
+import {TeamInvitation, TeamInvitationStatus} from './../../../generated/team'
+import {TeamInvitationsCollection, TeamsCollection} from '../../../generated/mongo-types'
 import {doesDocumentExistByField, insertDataInDB} from '../../db/utils'
 
 export async function createTeam(context: ResolverContext, input: CreateTeamInput): Promise<CreateTeamResponse> {
@@ -50,6 +60,69 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
         }
     } catch (error) {
         logger.error(error, 'Error creating team')
+        logger.error(error)
+        throw error
+    }
+}
+
+export async function invitePlayer(
+    context: ResolverContext,
+    input: TeamInvitationInput
+): Promise<TeamInvitationResponse> {
+    logger.info(input, 'Inviting player to team')
+    logger.error(`${context.mongodb.databaseName}`)
+    const errorCode = []
+    try {
+        if (input.teamId) {
+            if (!(await doesDocumentExistByField(context.mongodb, MongoCollection.TEAM, {id: input.teamId}))) {
+                errorCode.push(TeamResponseCode.INVALID_TEAM_ID)
+            }
+        } else errorCode.push(TeamResponseCode.INVALID_TEAM_ID)
+        if (input.sendBy) {
+            if (!(await doesDocumentExistByField(context.mongodb, MongoCollection.USER, {id: input.sendBy}))) {
+                errorCode.push(TeamResponseCode.INVALID_SENDER_ID)
+            }
+        } else errorCode.push(TeamResponseCode.INVALID_SENDER_ID)
+        if (input.sendTo) {
+            if (!(await doesDocumentExistByField(context.mongodb, MongoCollection.USER, {id: input.sendTo}))) {
+                errorCode.push(TeamResponseCode.INVALID_RECEIVER_ID)
+            }
+        } else errorCode.push(TeamResponseCode.INVALID_RECEIVER_ID)
+        if (!input.expiration) {
+            errorCode.push(TeamResponseCode.INVALID_RECEIVER_ID)
+        }
+        const validRoles = Object.values(TeamRole)
+        if (input.roles && Array.isArray(input.roles)) {
+            const invalidRoles = input.roles.filter(role => !validRoles.includes(role))
+            if (invalidRoles.length > 0) {
+                errorCode.push(TeamResponseCode.INVALID_ROLE)
+            }
+        } else {
+            errorCode.push(TeamResponseCode.INVALID_ROLE)
+        }
+
+        if (errorCode.length > 0) {
+            logger.error(errorCode, 'Error inviting player to team')
+            return {success: false, code: errorCode}
+        }
+
+        const document: TeamInvitationsCollection = {
+            ...input,
+            id: uuid(),
+            status: TeamInvitationStatus.Sent,
+            expiration: generateTokenForInvitation(input.expiration),
+            createdAt: new Date().toISOString()
+        }
+
+        const result = await insertDataInDB<TeamInvitationsCollection, TeamInvitation>(
+            context.mongodb,
+            MongoCollection.TEAM_INVITATION,
+            document
+        )
+
+        return {success: !!result, code: [], invitation: result}
+    } catch (error) {
+        logger.error(error, 'Error inviting player to team')
         logger.error(error)
         throw error
     }

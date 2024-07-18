@@ -13,5 +13,6 @@ export const pipelines = {
     'access-tokens': [{$match: {}}],
     'user-connection-interactions': [{$match: {}}],
     'highlights': [{$match: {}}],
-    'teams': [{$match: {}}]
+    'teams': [{$match: {}}],
+    'team-invitations': [{$match: {}}]
 }

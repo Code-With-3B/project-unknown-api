@@ -10,6 +10,7 @@ export interface DatabaseSchema {
   accessToken?: AccessTokensCollection;
   userInteraction?: UserInteractionCollection;
   teams?: TeamsCollection;
+  "team-invitation"?: TeamInvitationsCollection;
   [k: string]: unknown;
 }
 export interface UsersCollection {
@@ -192,6 +193,57 @@ export interface TeamsCollection {
   createdAt?: string;
   /**
    * The timestamp or date string indicating when the team was last updated
+   */
+  updatedAt?: string;
+  [k: string]: unknown;
+}
+export interface TeamInvitationsCollection {
+  /**
+   * The unique identifier of the Team Invitation
+   */
+  id: string;
+  /**
+   * The unique identifier of the team
+   */
+  team?: string;
+  /**
+   * The unique identifier of the user who sent the invitation
+   */
+  sendBy?: string;
+  /**
+   * The unique identifier of the user who received the invitation
+   */
+  sendTo?: string;
+  /**
+   * Roles assigned to the user being invited
+   */
+  roles?: (
+    | "OWNER"
+    | "COACH"
+    | "MANAGER"
+    | "ANALYST"
+    | "IGL"
+    | "SUPPORT"
+    | "SNIPER"
+    | "ASSAULTER"
+    | "SUBSTITUTE"
+    | "ANY"
+    | "NOT_MENTIONED"
+  )[];
+  /**
+   * The status of the invitation
+   */
+  status?: "SENT" | "WITHDRAWN" | "EXPIRED" | "ACCEPTED" | "PENDING" | "DENIED";
+  /**
+   * The timestamp or date string indicating when the invitation will expire
+   */
+  expiration?: string;
+  /**
+   * The timestamp or date string indicating when the invitation was created
+   */
+  createdAt?: string;
+  /**
+   * The timestamp or date string indicating when the invitation was last updated
    */
   updatedAt?: string;
   [k: string]: unknown;

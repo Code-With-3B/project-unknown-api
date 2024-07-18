@@ -40,3 +40,19 @@ export async function verifyToken(db: Db, token: string): Promise<boolean> {
 export const bcryptConfig = {
     saltRounds: 12 // Increase the number of salt rounds for stronger hashing
 }
+
+export function generateTokenForInvitation(expiresIn: string): string {
+    const token = jwt.sign({id: 'test'}, serverConfig.invitation.team.jwtSecreteKey, {
+        expiresIn
+    })
+    return token
+}
+
+export function verifyInvitationToken(token: string): boolean {
+    try {
+        jwt.verify(token, serverConfig.invitation.team.jwtSecreteKey)
+        return false
+    } catch (error) {
+        return false
+    }
+}

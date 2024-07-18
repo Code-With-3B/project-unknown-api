@@ -36,6 +36,11 @@ export const serverConfig = {
             accessKeyId: parseEnv(process.env.CLOUDFLARE_ACCESS_KEY_ID, '', stringParser),
             secretAccessKey: parseEnv(process.env.CLOUDFLARE_SECRETE_ACCESS_KEY, '', stringParser)
         }
+    },
+    invitation: {
+        team: {
+            jwtSecreteKey: 'root'
+        }
     }
 }
 

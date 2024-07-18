@@ -1,0 +1,51 @@
+{
+  "type": "object",
+  "title": "TeamInvitations Collection",
+  "required": ["id"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The unique identifier of the Team Invitation"
+    },
+    "team": {
+      "type": "string",
+      "description": "The unique identifier of the team"
+    },
+    "sendBy": {
+      "type": "string",
+      "description": "The unique identifier of the user who sent the invitation"
+    },
+    "sendTo": {
+      "type": "string",
+      "description": "The unique identifier of the user who received the invitation"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["OWNER", "COACH", "MANAGER", "ANALYST", "IGL", "SUPPORT", "SNIPER", "ASSAULTER", "SUBSTITUTE", "ANY", "NOT_MENTIONED"]
+      },
+      "description": "Roles assigned to the user being invited"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["SENT", "WITHDRAWN", "EXPIRED", "ACCEPTED", "PENDING", "DENIED"],
+      "description": "The status of the invitation"
+    },
+    "expiration": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp or date string indicating when the invitation will expire"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp or date string indicating when the invitation was created"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp or date string indicating when the invitation was last updated"
+    }
+  }
+}

@@ -38,11 +38,17 @@ export type CreateTeamResponse = ResponsePayload & {
 export type Mutation = {
   __typename?: 'Mutation';
   createTeam: CreateTeamResponse;
+  invitePlayer: TeamInvitationResponse;
 };
 
 
 export type MutationCreateTeamArgs = {
   input: CreateTeamInput;
+};
+
+
+export type MutationInvitePlayerArgs = {
+  input: TeamInvitationInput;
 };
 
 export type ResponsePayload = {
@@ -60,6 +66,57 @@ export type Team = {
   status: TeamStatus;
   updatedAt: Scalars['DateTime']['output'];
 };
+
+export type TeamInvitation = {
+  __typename?: 'TeamInvitation';
+  createdAt: Scalars['DateTime']['output'];
+  expiration: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  roles: Array<TeamRole>;
+  sendBy: Scalars['ID']['output'];
+  sendTo: Scalars['ID']['output'];
+  status: TeamInvitationStatus;
+  team: Team;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type TeamInvitationInput = {
+  expiration: Scalars['DateTime']['input'];
+  roles: Array<TeamRole>;
+  sendBy: Scalars['ID']['input'];
+  sendTo: Scalars['ID']['input'];
+  teamId: Scalars['ID']['input'];
+};
+
+export type TeamInvitationResponse = ResponsePayload & {
+  __typename?: 'TeamInvitationResponse';
+  code?: Maybe<Array<Scalars['String']['output']>>;
+  invitation?: Maybe<TeamInvitation>;
+  success: Scalars['Boolean']['output'];
+};
+
+export enum TeamInvitationStatus {
+  Accepted = 'ACCEPTED',
+  Denied = 'DENIED',
+  Expired = 'EXPIRED',
+  Pending = 'PENDING',
+  Sent = 'SENT',
+  Withdrawn = 'WITHDRAWN'
+}
+
+export enum TeamRole {
+  Analyst = 'ANALYST',
+  Any = 'ANY',
+  Assaulter = 'ASSAULTER',
+  Coach = 'COACH',
+  Igl = 'IGL',
+  Manager = 'MANAGER',
+  NotMentioned = 'NOT_MENTIONED',
+  Owner = 'OWNER',
+  Sniper = 'SNIPER',
+  Substitute = 'SUBSTITUTE',
+  Support = 'SUPPORT'
+}
 
 export enum TeamStatus {
   Deactivated = 'DEACTIVATED',
@@ -138,7 +195,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( CreateTeamResponse );
+  ResponsePayload: ( CreateTeamResponse ) | ( TeamInvitationResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -153,6 +210,11 @@ export type ResolversTypes = {
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Team: ResolverTypeWrapper<Team>;
+  TeamInvitation: ResolverTypeWrapper<TeamInvitation>;
+  TeamInvitationInput: TeamInvitationInput;
+  TeamInvitationResponse: ResolverTypeWrapper<TeamInvitationResponse>;
+  TeamInvitationStatus: TeamInvitationStatus;
+  TeamRole: TeamRole;
   TeamStatus: TeamStatus;
 };
 
@@ -168,6 +230,9 @@ export type ResolversParentTypes = {
   ResponsePayload: ResolversInterfaceTypes<ResolversParentTypes>['ResponsePayload'];
   String: Scalars['String']['output'];
   Team: Team;
+  TeamInvitation: TeamInvitation;
+  TeamInvitationInput: TeamInvitationInput;
+  TeamInvitationResponse: TeamInvitationResponse;
 };
 
 export type CreateTeamResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateTeamResponse'] = ResolversParentTypes['CreateTeamResponse']> = {
@@ -187,10 +252,11 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createTeam?: Resolver<ResolversTypes['CreateTeamResponse'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
+  invitePlayer?: Resolver<ResolversTypes['TeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationInvitePlayerArgs, 'input'>>;
 };
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'CreateTeamResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'CreateTeamResponse' | 'TeamInvitationResponse', ParentType, ContextType>;
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -206,6 +272,26 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type TeamInvitationResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamInvitation'] = ResolversParentTypes['TeamInvitation']> = {
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  expiration?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  roles?: Resolver<Array<ResolversTypes['TeamRole']>, ParentType, ContextType>;
+  sendBy?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  sendTo?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['TeamInvitationStatus'], ParentType, ContextType>;
+  team?: Resolver<ResolversTypes['Team'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TeamInvitationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamInvitationResponse'] = ResolversParentTypes['TeamInvitationResponse']> = {
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  invitation?: Resolver<Maybe<ResolversTypes['TeamInvitation']>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   CreateTeamResponse?: CreateTeamResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
@@ -213,5 +299,7 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   ResponsePayload?: ResponsePayloadResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
+  TeamInvitation?: TeamInvitationResolvers<ContextType>;
+  TeamInvitationResponse?: TeamInvitationResponseResolvers<ContextType>;
 };
 
