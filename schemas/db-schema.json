@@ -13,6 +13,9 @@
     },
     "teams": {
       "$ref": "schemas/collections/team.json"
+    },
+    "team-invitation": {
+      "$ref": "schemas/collections/team-invitation.json"
     }
   }
 }

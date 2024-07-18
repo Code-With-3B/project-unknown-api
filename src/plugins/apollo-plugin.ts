@@ -1,6 +1,7 @@
 import {ApolloServer} from '@apollo/server'
 import {ErrorCode} from '../constants/error-codes'
 import {GraphQlRequestBody} from '../generated/sign-in'
+import {PubSub} from 'graphql-subscriptions'
 import {ResolverContext} from '../@types/context'
 import {checkAccessTokenIsValid} from '../core/services/access.token.service'
 import fastifyApollo from '@as-integrations/fastify'
@@ -39,8 +40,9 @@ export const fastifyApolloPlugin = fp(
         await apolloServer.start()
         await fastify.register(fastifyApollo(apolloServer), {
             context: async (req: FastifyRequest) => {
-                const db = fastify.mongo.db
-                if (db) {
+                const pubsub = new PubSub()
+                const mongodb = fastify.mongo.db
+                if (mongodb) {
                     const body = req.body as GraphQlRequestBody
                     const {query, operationName} = body
                     logger.info(`Received request for operation: ${operationName}`)
@@ -67,28 +69,28 @@ export const fastifyApolloPlugin = fp(
                     const publicOperations = ['__schema', 'signUp', 'signIn', 'checkDuplicateUsername', 'healthCheck']
                     if (publicOperations.includes(actualFieldName)) {
                         logger.info('Public operation, no authentication required.')
-                        return {mongodb: db}
+                        return {pubsub, mongodb}
                     }
 
-                    if (db) {
+                    if (mongodb) {
                         const token = req.headers.authorization ?? ''
                         if (isEmpty(token)) {
                             logger.error('Authorization token is missing.')
                             throw new Error(ErrorCode.NOT_AUTHENTICATED)
                         }
 
-                        const isActive = await checkAccessTokenIsValid(db, token)
+                        const isActive = await checkAccessTokenIsValid(mongodb, token)
                         if (isActive) {
                             jwt.verify(token, serverConfig.jwt.jwtSecreteKey)
                             logger.info('Authorization token is valid.')
-                            return {mongodb: db}
+                            return {pubsub, mongodb}
                         } else {
                             logger.error('Invalid authorization token provided.')
                             throw new Error(ErrorCode.NOT_AUTHENTICATED)
                         }
                     }
                 } else throw Error('Unable to connect to database!!')
-                return {mongodb: db}
+                return {pubsub, mongodb}
             }
         })
     },

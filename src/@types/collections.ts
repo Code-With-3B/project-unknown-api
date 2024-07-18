@@ -4,5 +4,6 @@ export enum MongoCollection {
     MEDIA = 'media',
     USER_INTERACTION = 'user-connection-interactions',
     HIGHLIGHT = 'highlights',
-    TEAM = 'teams'
+    TEAM = 'teams',
+    TEAM_INVITATION = 'team-invitations'
 }

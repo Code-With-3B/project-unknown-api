@@ -5,11 +5,35 @@ interface ResponsePayload {
   success: Boolean!
   code: [String!]
 }
+
 enum TeamStatus {
   PRIVATE
   SUSPENDED
   DEACTIVATED
   OPEN_TO_CONNECT
+}
+
+enum TeamRole {
+  OWNER
+  COACH
+  MANAGER
+  ANALYST
+  IGL
+  SUPPORT
+  SNIPER
+  ASSAULTER
+  SUBSTITUTE
+  ANY
+  NOT_MENTIONED
+}
+
+enum TeamInvitationStatus {
+  SENT
+  WITHDRAWN
+  EXPIRED
+  ACCEPTED
+  PENDING
+  DENIED
 }
 
 type Team {
@@ -22,10 +46,16 @@ type Team {
   updatedAt: DateTime!
 }
 
-type CreateTeamResponse implements ResponsePayload {
-  success: Boolean!
-  code: [String!]
-  team: Team
+type TeamInvitation {
+  id: ID!
+  team: Team!
+  sendBy: ID!
+  sendTo: ID!
+  roles: [TeamRole!]!
+  status: TeamInvitationStatus!
+  expiration: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 input CreateTeamInput {
@@ -35,6 +65,27 @@ input CreateTeamInput {
   ownerId: ID!
 }
 
+input TeamInvitationInput {
+  teamId: ID!
+  sendBy: ID!
+  sendTo: ID!
+  expiration: DateTime!
+  roles: [TeamRole!]!
+}
+
+type CreateTeamResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+  team: Team
+}
+
+type TeamInvitationResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+  invitation: TeamInvitation
+}
+
 type Mutation {
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
+  invitePlayer(input: TeamInvitationInput!): TeamInvitationResponse!
 }
