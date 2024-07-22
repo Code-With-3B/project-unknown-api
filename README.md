@@ -20,7 +20,7 @@
       <img src="https://aleen42.github.io/badges/src/eslint.svg"/>
    </a>
 </p>
-
+ 
 # Description
 
 Project Unknown is a unique platform designed for gamers, combining the best elements of a social media app and a professional networking site like LinkedIn. Gamers can showcase their achievements, skills, and other gaming-related activities. Teams and organizations can discover talented players and recruit them to kickstart their gaming careers.
