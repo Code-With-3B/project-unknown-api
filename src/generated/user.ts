@@ -110,11 +110,12 @@ export type SignUpInput = {
   authMode: AuthMode;
   birthday?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
-  fullName: Scalars['String']['input'];
+  fullName?: InputMaybe<Scalars['String']['input']>;
   gender?: InputMaybe<GenderType>;
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   username: Scalars['String']['input'];
+  verificationStatus: VerificationStatusType;
 };
 
 export type UpdateUserConnectionInput = {
@@ -157,7 +158,7 @@ export type User = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fbToken: Scalars['String']['output'];
-  fullName: Scalars['String']['output'];
+  fullName?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<GenderType>;
   highlights?: Maybe<Array<Scalars['ID']['output']>>;
   id: Scalars['ID']['output'];
@@ -194,9 +195,11 @@ export enum VerificationStatusType {
   UnverifiedCoach = 'UNVERIFIED_COACH',
   UnverifiedEsportsProfessional = 'UNVERIFIED_ESPORTS_PROFESSIONAL',
   UnverifiedPlayer = 'UNVERIFIED_PLAYER',
+  UnverifiedUser = 'UNVERIFIED_USER',
   VerifiedCoach = 'VERIFIED_COACH',
   VerifiedEsportsProfessional = 'VERIFIED_ESPORTS_PROFESSIONAL',
-  VerifiedPlayer = 'VERIFIED_PLAYER'
+  VerifiedPlayer = 'VERIFIED_PLAYER',
+  VerifiedUser = 'VERIFIED_USER'
 }
 
 
@@ -367,7 +370,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fbToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  fullName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  fullName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['GenderType']>, ParentType, ContextType>;
   highlights?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

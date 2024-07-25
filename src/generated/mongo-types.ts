@@ -77,6 +77,8 @@ export interface UsersCollection {
   verificationStatus?:
     | "VERIFIED_PLAYER"
     | "VERIFIED_COACH"
+    | "VERIFIED_USER"
+    | "UNVERIFIED_USER"
     | "VERIFIED_ESPORTS_PROFESSIONAL"
     | "UNVERIFIED_PLAYER"
     | "UNVERIFIED_COACH"

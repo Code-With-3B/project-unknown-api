@@ -2,6 +2,7 @@ import {ErrorCode} from '../../../constants/error-codes'
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {UsersCollection} from '../../../generated/mongo-types'
+import {VerificationStatusType} from './../../../generated/user'
 import {bcryptConfig} from '../../../constants/auth/utils'
 import {hash} from 'bcrypt'
 import {logger} from '../../../config'
@@ -13,8 +14,7 @@ import {
     AuthMode,
     GenderType,
     SignUpInput,
-    UserResponse,
-    VerificationStatusType
+    UserResponse
 } from '../../../generated/user'
 import {doesDocumentExistByField, insertDataInDBWithoutData} from '../../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
@@ -53,7 +53,6 @@ async function validateCommonFields(context: ResolverContext, input: SignUpInput
         logger.info(`Username already exists ${input.username}`)
         errors.push(ErrorCode.USERNAME_UNAVAILABLE)
     }
-
     return errors
 }
 
@@ -62,13 +61,14 @@ async function createUserDocument(
     input: SignUpInput,
     email: string,
     phone: string,
-    passwordHash: string
+    passwordHash: string,
+    verificationStatus: VerificationStatusType = VerificationStatusType.VerifiedUser
 ): Promise<UserResponse> {
     const id = uuid()
     const userDocument: UsersCollection = {
         id,
         authMode: input.authMode,
-        fullName: input.fullName,
+        fullName: input.fullName ?? input.username,
         username: input.username,
         email,
         phone,
@@ -78,7 +78,7 @@ async function createUserDocument(
         gender: input?.gender ?? GenderType.PreferNotSay,
         accountState: AccountStateType.Active,
         accountVisibility: AccountVisibilityType.Public,
-        verificationStatus: VerificationStatusType.UnverifiedPlayer,
+        verificationStatus: verificationStatus,
         fbToken: '',
         preferredGames: [],
         achievements: [],
@@ -105,7 +105,6 @@ export async function withEmailPass(context: ResolverContext, input: SignUpInput
     if (!isEmail(input.email)) return {success: false, code: [ErrorCode.INVALID_EMAIL_FORMAT]}
     if (!input.password) return {success: false, code: [ErrorCode.MISSING_PASSWORD]}
     if (!isStrongPassword(input.password)) return {success: false, code: [ErrorCode.WEAK_PASSWORD]}
-
     if (
         await doesDocumentExistByField(context.mongodb, MongoCollection.USER, {
             email: input.email,
@@ -120,7 +119,7 @@ export async function withEmailPass(context: ResolverContext, input: SignUpInput
     if (errors.length > 0) return {success: false, code: errors}
 
     const passwordHash = await hash(input.password, bcryptConfig.saltRounds)
-    return createUserDocument(context, input, input.email, '', passwordHash)
+    return createUserDocument(context, input, input.email, '', passwordHash, input.verificationStatus)
 }
 
 export async function withPhonePass(context: ResolverContext, input: SignUpInput): Promise<UserResponse> {
