@@ -10,6 +10,8 @@ enum GenderType {
 enum VerificationStatusType { # Player will be marked as verified when he or she adds any game to profile
   UNVERIFIED_PLAYER # User or professional is not yet verified.
   VERIFIED_PLAYER # User is verified as a player. 
+  VERIFIED_USER
+  UNVERIFIED_USER
   VERIFIED_COACH
   UNVERIFIED_COACH
   VERIFIED_ESPORTS_PROFESSIONAL
@@ -54,7 +56,7 @@ interface ResponsePayload {
 type User {
   id: ID! # Unique identifier for the user.
   username: String! # Username of the user.
-  fullName: String! # Full name of the user.
+  fullName: String # Full name of the user.
   accountState: AccountStateType!
   accountVisibility: AccountVisibilityType!
   profilePicture: String
@@ -86,13 +88,14 @@ type CheckDuplicateUserResponse {
 }
 
 input SignUpInput {
-  fullName: String! # Full name for the new user.
+  fullName: String # Full name for the new user.
   username: String! # Username for the new user.
   phone: String # Phone number for the new user (optional).
   email: String # Email address for the new user (optional).
   password: String # Password for the new user.
   gender: GenderType
   birthday: String
+  verificationStatus: VerificationStatusType!
   authMode: AuthMode! # Authmode for creating or signing-up the new user.
 }
 
