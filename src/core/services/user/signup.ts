@@ -68,22 +68,14 @@ async function createUserDocument(
     const userDocument: UsersCollection = {
         id,
         authMode: input.authMode,
-        fullName: input.fullName ?? input.username,
         username: input.username,
         email,
         phone,
-        bio: '',
-        birthday: input.birthday ?? '',
         password: passwordHash,
-        gender: input?.gender ?? GenderType.PreferNotSay,
+        gender: GenderType.NotMentioned,
         accountState: AccountStateType.Active,
         accountVisibility: AccountVisibilityType.Public,
         verificationStatus: verificationStatus,
-        fbToken: '',
-        preferredGames: [],
-        achievements: [],
-        skills: [],
-        highlights: [],
         createdAt: new Date().toISOString()
     }
 

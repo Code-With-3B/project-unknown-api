@@ -43,6 +43,7 @@ export interface UsersCollection {
    */
   profileBanner?: string;
   birthday?: string;
+  location?: string;
   /**
    * 'phone' must be a string in E.164 format including a country code (e.g., +1234567890).
    */
@@ -66,7 +67,7 @@ export interface UsersCollection {
   /**
    * 'gender' must be a string indicating the user's gender.
    */
-  gender?: "MALE" | "FEMALE" | "PREFER_NOT_SAY";
+  gender?: "MALE" | "FEMALE" | "PREFER_NOT_SAY" | "NOT_MENTIONED";
   /**
    * 'following' must be an array of achievement IDs.
    */

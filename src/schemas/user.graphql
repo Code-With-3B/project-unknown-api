@@ -5,6 +5,7 @@ enum GenderType {
   MALE
   FEMALE
   PREFER_NOT_SAY
+  NOT_MENTIONED
 }
 
 enum VerificationStatusType { # Player will be marked as verified when he or she adds any game to profile
@@ -62,6 +63,7 @@ type User {
   profilePicture: String
   profileBanner: String
   birthday: String
+  location: String
   phone: String # Phone number of the user (optional).
   email: String # Email address of the user (optional).
   password: String! # Password for the user account.
@@ -88,13 +90,10 @@ type CheckDuplicateUserResponse {
 }
 
 input SignUpInput {
-  fullName: String # Full name for the new user.
   username: String! # Username for the new user.
   phone: String # Phone number for the new user (optional).
   email: String # Email address for the new user (optional).
   password: String # Password for the new user.
-  gender: GenderType
-  birthday: String
   verificationStatus: VerificationStatusType!
   authMode: AuthMode! # Authmode for creating or signing-up the new user.
 }
@@ -131,6 +130,7 @@ input UpdateUserInput {
   email: String # Updated email address for the user (optional).
   password: String # Updated password for the user (optional).
   birthday: String
+  location: String
   bio: String # Updated biography or profile description for the user (optional).
   profilePictureUri: String # Updated URI for the profile picture (optional).
   profileBannerUri: String # Updated URI for the profile banner (optional).
