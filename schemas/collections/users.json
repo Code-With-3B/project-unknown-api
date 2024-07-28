@@ -37,6 +37,10 @@
       "type": "string",
       "description": ""
     },
+    "location": {
+      "type": "string",
+      "description": ""
+    },
     "phone": {
       "type": "string",
       "description": "'phone' must be a string in E.164 format including a country code (e.g., +1234567890)."
@@ -59,7 +63,7 @@
     },
     "gender": {
       "type": "string",
-      "enum": ["MALE", "FEMALE", "PREFER_NOT_SAY"],
+      "enum": ["MALE", "FEMALE", "PREFER_NOT_SAY", "NOT_MENTIONED"],
       "description": "'gender' must be a string indicating the user's gender."
     },
     "following": {

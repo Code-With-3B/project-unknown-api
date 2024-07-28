@@ -103,6 +103,7 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
             updateFields.profilePicture = input.profilePictureUri
         if (input.profileBannerUri && input.profilePictureUri != user.profileBanner)
             updateFields.profileBanner = input.profileBannerUri
+        if (input.location && input.location != user.location) updateFields.location = input.location
 
         if (Object.keys(updateFields).length > 0) {
             updateFields.updatedAt = new Date().toISOString()

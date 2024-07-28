@@ -59,6 +59,7 @@ export type CheckDuplicateUserResponse = {
 export enum GenderType {
   Female = 'FEMALE',
   Male = 'MALE',
+  NotMentioned = 'NOT_MENTIONED',
   PreferNotSay = 'PREFER_NOT_SAY'
 }
 
@@ -108,10 +109,7 @@ export type ResponsePayload = {
 
 export type SignUpInput = {
   authMode: AuthMode;
-  birthday?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
-  fullName?: InputMaybe<Scalars['String']['input']>;
-  gender?: InputMaybe<GenderType>;
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   username: Scalars['String']['input'];
@@ -139,6 +137,7 @@ export type UpdateUserInput = {
   fullName?: InputMaybe<Scalars['String']['input']>;
   gender?: InputMaybe<GenderType>;
   id: Scalars['String']['input'];
+  location?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   profileBannerUri?: InputMaybe<Scalars['String']['input']>;
@@ -162,6 +161,7 @@ export type User = {
   gender?: Maybe<GenderType>;
   highlights?: Maybe<Array<Scalars['ID']['output']>>;
   id: Scalars['ID']['output'];
+  location?: Maybe<Scalars['String']['output']>;
   password: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
   preferredGames?: Maybe<Array<Scalars['ID']['output']>>;
@@ -374,6 +374,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   gender?: Resolver<Maybe<ResolversTypes['GenderType']>, ParentType, ContextType>;
   highlights?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   preferredGames?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
