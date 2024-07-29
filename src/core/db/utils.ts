@@ -93,6 +93,25 @@ export async function fetchDocumentForValidEmail<T>(
     }
 }
 
+export async function fetchDocumentForValidUsername<T>(
+    db: Db,
+    collectionName: MongoCollection,
+    username: string
+): Promise<T | null> {
+    try {
+        const collection = db.collection(collectionName)
+        const result = await collection.findOne({
+            username,
+            $or: [{authMode: AuthMode.EmailPass}, {authMode: AuthMode.PhonePass}]
+        })
+        return result as T
+    } catch (error) {
+        logger.error('Error while fetching document with filters')
+        logger.error(error)
+        throw error
+    }
+}
+
 export async function fetchDocumentForValidPhone<T>(
     db: Db,
     collectionName: MongoCollection,

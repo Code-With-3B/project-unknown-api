@@ -11,6 +11,7 @@ import {
     fetchDocumentForValidEmail,
     fetchDocumentForValidPhone,
     fetchDocumentForValidSocial,
+    fetchDocumentForValidUsername,
     updateDataInDBWithoutReturn
 } from '../../db/utils'
 
@@ -21,6 +22,8 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
 
     if (input.authMode && Object.values(AuthMode).includes(input.authMode)) {
         switch (input.authMode) {
+            case AuthMode.UsernamePass:
+                return withUsernamePass(context, input)
             case AuthMode.EmailPass:
                 return withEmailPass(context, input)
             case AuthMode.PhonePass:
@@ -32,6 +35,31 @@ export async function signIn(context: ResolverContext, input: SignInInput): Prom
         }
     }
     return {success: false, code: [ErrorCode.INVALID_USER_AUTH_MODE]}
+}
+
+async function withUsernamePass(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {
+    if (!input.username) return {success: false, code: [ErrorCode.MISSING_USERNAME]}
+    if (!input.password) return {success: false, code: [ErrorCode.MISSING_PASSWORD]}
+
+    const user = await fetchDocumentForValidUsername<UsersCollection>(
+        context.mongodb,
+        MongoCollection.USER,
+        input.username
+    )
+    if (!user) return {success: false, code: [ErrorCode.NO_USER_FOUND]}
+    const isValid = await compare(input.password, user.password)
+    if (!isValid) return {success: false, code: [ErrorCode.INCORRECT_PASSWORD]}
+    const payload: TokenPayloadInput = {
+        id: user.id,
+        createdAt: user.createdAt ?? `${user.createdAt}`
+    }
+    const token = await generateToken(context.mongodb, payload)
+    const updateFields: Partial<UsersCollection> = {}
+    updateFields.fbToken = input.fbToken ?? ''
+    updateFields.updatedAt = new Date().toISOString()
+    await updateDataInDBWithoutReturn<UsersCollection>(context.mongodb, MongoCollection.USER, user.id, updateFields)
+    logger.info(`Added firebase notification token added`)
+    return {success: !!token, code: [token ? ErrorCode.TOKEN_GRANTED : ErrorCode.TOKEN_DENIED], token: token}
 }
 
 async function withEmailPass(context: ResolverContext, input: SignInInput): Promise<SignInResponse> {

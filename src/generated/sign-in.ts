@@ -34,7 +34,8 @@ export enum AuthMode {
   EmailPass = 'EMAIL_PASS',
   Facebook = 'FACEBOOK',
   Google = 'GOOGLE',
-  PhonePass = 'PHONE_PASS'
+  PhonePass = 'PHONE_PASS',
+  UsernamePass = 'USERNAME_PASS'
 }
 
 export type GraphQlRequestBody = {
@@ -64,6 +65,7 @@ export type SignInInput = {
   fbToken: Scalars['String']['input'];
   password: Scalars['String']['input'];
   phone?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SignInResponse = ResponsePayload & {

@@ -7,6 +7,7 @@ input GraphQLRequestBody {
 }
 
 enum AuthMode {
+  USERNAME_PASS # Only for sign-in purpose
   EMAIL_PASS
   PHONE_PASS
   GOOGLE
@@ -20,6 +21,7 @@ interface ResponsePayload {
 }
 
 input SignInInput {
+  username: String
   email: String
   phone: String
   password: String!
