@@ -12,7 +12,8 @@ import {fetchDocumentByField, insertDataInDB} from '../utils'
  * @param db The MongoDB database instance.
  * @param token The access token string.
  * @param document The token payload input.
- * @returns A promise that resolves when the token is created or updated.
+ * @returns {Promise<void>} A promise that resolves when the token is created or updated.
+ * @throws {Error} Throws an error if failed to create or update the token
  */
 export async function createOrUpdateAccessToken(db: Db, token: string, document: TokenPayloadInput): Promise<void> {
     try {

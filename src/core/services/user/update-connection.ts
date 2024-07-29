@@ -13,16 +13,24 @@ import {
 } from '../../../generated/user'
 import {fetchRelationalData, insertDataInDB, updateDataInDB} from '../../db/utils'
 
+/**
+ * Updates or creates a user interaction record based on the provided input.
+ * @param context The resolver context containing the MongoDB database instance.
+ * @param input The input data for updating or creating a user interaction.
+ * @returns A Promise that resolves to an UpdateUserConnectionResponse indicating success or failure.
+ */
 export async function updateUserConnection(
     context: ResolverContext,
     input: UpdateUserConnectionInput
 ): Promise<UpdateUserConnectionResponse> {
     logger.info(`Received request from ${input.actor} to ${input.actionType} ${input.target}`)
+
     const actionSuccessMessages = {
         [AccountInteractionType.Follow]: ErrorCode.FOLLOW_USER_SUCCESS,
         [AccountInteractionType.Unfollow]: ErrorCode.UNFOLLOW_USER_SUCCESS,
         [AccountInteractionType.Block]: ErrorCode.BLOCK_USER_SUCCESS
     }
+
     const actionFailureMessages = {
         [AccountInteractionType.Follow]: ErrorCode.FOLLOW_USER_FAILED,
         [AccountInteractionType.Unfollow]: ErrorCode.UNFOLLOW_USER_FAILED,
@@ -32,30 +40,41 @@ export async function updateUserConnection(
     try {
         const actionType = input.actionType
         const query = {actor: input.actor, target: input.target}
+
+        // Check if there is an existing record for the interaction
         const existingRecord = await fetchRelationalData<UserInteraction>(
             context.mongodb,
             MongoCollection.USER_INTERACTION,
             query
         )
+
         if (existingRecord[0]) {
+            // Update existing record
             const updateFields: Partial<UserInteractionCollection> = {}
-            if (input.actionType != existingRecord[0].actionType) updateFields.actionType = input.actionType
+
+            if (input.actionType !== existingRecord[0].actionType) {
+                updateFields.actionType = input.actionType
+            }
             updateFields.updatedAt = new Date().toISOString()
+
             const updatedRecord = await updateDataInDB<UserInteractionCollection, UserInteraction>(
                 context.mongodb,
                 MongoCollection.USER_INTERACTION,
                 existingRecord[0].id,
                 updateFields
             )
+
             if (updatedRecord) {
                 logger.info(`Updating record successful for recordId: ${existingRecord[0].id}`)
                 return {success: true, code: [actionSuccessMessages[actionType]]}
             } else {
-                logger.info(`Updating record failed for recordId: ${existingRecord[0].id}`)
+                logger.error(`Updating record failed for recordId: ${existingRecord[0].id}`)
                 return {success: false, code: [actionFailureMessages[actionType]]}
             }
         } else {
-            logger.info(`No existing record found, creating new one`)
+            // Create a new record if none exists
+            logger.info(`No existing record found, creating a new one`)
+
             const document: UserInteractionCollection = {
                 id: uuid(),
                 ...input,
@@ -73,13 +92,12 @@ export async function updateUserConnection(
                 logger.info(`Request completed successfully: ${input.actor} ${actionType} ${input.target}`)
                 return {success: true, code: [actionSuccessMessages[actionType]]}
             } else {
-                logger.info(`Request failed: ${input.actor} ${actionType} ${input.target}`)
+                logger.error(`Request failed: ${input.actor} ${actionType} ${input.target}`)
                 return {success: false, code: [actionFailureMessages[actionType]]}
             }
         }
     } catch (error) {
         logger.error(`Error during ${input.actionType} ${input.target} for ${input.actor}`, error)
-        logger.error(error)
         return {success: false, code: [ErrorCode.GENERIC_ERROR]}
     }
 }

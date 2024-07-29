@@ -1,0 +1,11 @@
+
+type Skill {
+  id: ID! # Unique identifier for the skill.
+  game: String! # Name of the game for which the skill is recorded.
+  skillType: String! # Type or category of the skill.
+  value: Float! # Numeric value representing the skill level.
+}
+
+type Query {
+  placeholder: String
+}
