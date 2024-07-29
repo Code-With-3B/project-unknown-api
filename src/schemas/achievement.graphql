@@ -1,0 +1,11 @@
+type Achievement {
+  id: ID! # Unique identifier for the achievement.
+  game: String! # Name of the game in which the achievement was earned.
+  title: String! # Title of the achievement.
+  description: String! # Description of the achievement.
+  dateAchieved: DateTime! # Date and time when the achievement was earned.
+}
+
+type Query {
+  placeholder: String
+}

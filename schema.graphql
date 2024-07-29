@@ -1,6 +1,3 @@
-"""
-Represents an achievement in a particular game.
-"""
 type Achievement {
   id: ID! # Unique identifier for the achievement.
   game: String! # Name of the game in which the achievement was earned.
@@ -9,94 +6,12 @@ type Achievement {
   dateAchieved: DateTime! # Date and time when the achievement was earned.
 }
 
-"""
-Represents a skill in a particular game.
-"""
 type Skill {
   id: ID! # Unique identifier for the skill.
   game: String! # Name of the game for which the skill is recorded.
   skillType: String! # Type or category of the skill.
   value: Float! # Numeric value representing the skill level.
 }
-
-
-"""
-Represents a team in the esports community.
-"""
-type Team {
-  id: ID! # Unique identifier for the team.
-  name: String! # Name of the team.
-  description: String # Description of the team (optional).
-  members: [User!]! # List of members belonging to the team.
-  createdAt: DateTime! # Date and time when the team was created.
-  updatedAt: DateTime! # Date and time when the team was last updated.
-}
-
-"""
-Represents a user in the esports community.
-"""
-
-
-"""
-Represents an access token for authentication.
-"""
-
-
-"""
-Payload returned by user-related mutations.
-"""
-
-"""
-Response for checking if a username is duplicate.
-"""
-
-
-
-
-type RestParamsInput {
-  userId: String!
-  mediaType: MediaType!
-}
-
-
-
-"""
-Payload returned by sign-in mutation.
-"""
-
-
-# Inputs
-"""
-Input for creating a new user.
-"""
-
-
-"""
-Input for updating an existing user.
-"""
-
-
-"""
-Input for checking if a username is duplicate.
-"""
-
-
-
-
-"""
-Represents a highlight (e.g., screenshot, gameplay clip) in a user's profile.
-"""
-
-
-
-
-
-
-"""
-"""
-
-# Queries
-
 
 # Mutations
 type Mutation {
