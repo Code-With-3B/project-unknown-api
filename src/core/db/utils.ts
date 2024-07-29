@@ -252,12 +252,8 @@ export async function doesDocumentExistByField(
     query: any
 ): Promise<boolean> {
     try {
-        logger.info(
-            `Checking existence of document in collection ${collectionName} with query ${JSON.stringify(query)}`
-        )
         const collection = db.collection(collectionName)
         const count = await collection.countDocuments(query)
-        logger.debug(`Document count for query ${JSON.stringify(query)}: ${count}`)
         return count > 0
     } catch (error) {
         logger.error(`Error checking if ${collectionName} exists by ${JSON.stringify(query)}: ${error}`)

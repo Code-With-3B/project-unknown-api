@@ -99,7 +99,6 @@ export enum TeamInvitationStatus {
   Accepted = 'ACCEPTED',
   Denied = 'DENIED',
   Expired = 'EXPIRED',
-  Pending = 'PENDING',
   Sent = 'SENT',
   Withdrawn = 'WITHDRAWN'
 }

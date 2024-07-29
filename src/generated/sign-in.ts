@@ -63,7 +63,7 @@ export type SignInInput = {
   authMode: AuthMode;
   email?: InputMaybe<Scalars['String']['input']>;
   fbToken: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
 };
