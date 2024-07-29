@@ -3,7 +3,8 @@ import {TokenPayloadInput} from '../../generated/sign-in'
 import {checkAccessTokenIsValid} from '../../core/services/access.token.service'
 import {createOrUpdateAccessToken} from '../../core/db/collections/access.token.db'
 import jwt from 'jsonwebtoken'
-import {serverConfig} from '../../config'
+
+import {logger, serverConfig} from '../../config'
 
 /**
  * Generate a JWT token with the provided payload.
@@ -51,8 +52,10 @@ export function generateTokenForInvitation(expiresIn: string): string {
 export function verifyInvitationToken(token: string): boolean {
     try {
         jwt.verify(token, serverConfig.invitation.team.jwtSecreteKey)
-        return false
+        logger.error('Invitation is active')
+        return true
     } catch (error) {
+        logger.error('Invitation is expired')
         return false
     }
 }

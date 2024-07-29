@@ -16,7 +16,12 @@ export enum TeamResponseCode {
     INVALID_SENDER_ID = 'INVALID_SENDER_ID',
     INVALID_RECEIVER_ID = 'INVALID_RECEIVER_ID',
     INVALID_ROLE = 'INVALID_ROLE',
-    INVALID_EXPIRATION = 'INVALID_EXPIRATION'
+    INVALID_EXPIRATION = 'INVALID_EXPIRATION',
+
+    INVITATION_SENT = 'INVITATION_SENT',
+    INVITATION_FAILED = 'INVITATION_FAILED',
+
+    DUPLICATE_INVITATION = 'DUPLICATE_INVITATION'
 }
 
 export const ErrorMessage: Record<TeamResponseCode, string> = {
@@ -36,5 +41,10 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
     [TeamResponseCode.INVALID_SENDER_ID]: 'Invalid sender id',
     [TeamResponseCode.INVALID_RECEIVER_ID]: 'Invalid receiver id',
     [TeamResponseCode.INVALID_ROLE]: 'Invalid team role',
-    [TeamResponseCode.INVALID_EXPIRATION]: 'Invalid expiry'
+    [TeamResponseCode.INVALID_EXPIRATION]: 'Invalid expiry',
+
+    [TeamResponseCode.INVITATION_SENT]: 'Invitation sent successfully',
+    [TeamResponseCode.INVITATION_FAILED]: 'Invitation failed',
+
+    [TeamResponseCode.DUPLICATE_INVITATION]: 'Invitation already in exists'
 }

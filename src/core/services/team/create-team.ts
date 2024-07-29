@@ -1,7 +1,7 @@
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {TeamResponseCode} from '../../../constants/auth/response-codes/team'
-import {generateTokenForInvitation} from '../../../constants/auth/utils'
+import {fetchLatestTeamInvitation} from '../../db/collections/team-invitation'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
@@ -17,6 +17,7 @@ import {
 import {TeamInvitation, TeamInvitationStatus} from './../../../generated/team'
 import {TeamInvitationsCollection, TeamsCollection} from '../../../generated/mongo-types'
 import {doesDocumentExistByField, insertDataInDB} from '../../db/utils'
+import {generateTokenForInvitation, verifyInvitationToken} from '../../../constants/auth/utils'
 
 export async function createTeam(context: ResolverContext, input: CreateTeamInput): Promise<CreateTeamResponse> {
     try {
@@ -70,7 +71,6 @@ export async function invitePlayer(
     input: TeamInvitationInput
 ): Promise<TeamInvitationResponse> {
     logger.info(input, 'Inviting player to team')
-    logger.error(`${context.mongodb.databaseName}`)
     const errorCode = []
     try {
         if (input.teamId) {
@@ -106,6 +106,18 @@ export async function invitePlayer(
             return {success: false, code: errorCode}
         }
 
+        const invitation = await fetchLatestTeamInvitation(context.mongodb, input.teamId, input.sendTo, input.roles)
+
+        logger.info(`Invitation : ${JSON.stringify(invitation)}`)
+
+        if (invitation) {
+            const isLive = verifyInvitationToken(invitation.expiration)
+            if (isLive) {
+                logger.error('Duplicate invitation detected')
+                return {success: false, code: [TeamResponseCode.DUPLICATE_INVITATION]}
+            }
+        }
+
         const document: TeamInvitationsCollection = {
             ...input,
             id: uuid(),
@@ -120,7 +132,11 @@ export async function invitePlayer(
             document
         )
 
-        return {success: !!result, code: [], invitation: result}
+        return {
+            success: !!result,
+            code: [result ? TeamResponseCode.INVITATION_SENT : TeamResponseCode.INVITATION_FAILED],
+            invitation: result
+        }
     } catch (error) {
         logger.error(error, 'Error inviting player to team')
         logger.error(error)

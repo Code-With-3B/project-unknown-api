@@ -32,7 +32,6 @@ enum TeamInvitationStatus {
   WITHDRAWN
   EXPIRED
   ACCEPTED
-  PENDING
   DENIED
 }
 
