@@ -29,6 +29,7 @@ export enum ErrorCode {
 
     // Authentication errors
     MISSING_EMAIL = 'MISSING_EMAIL',
+    MISSING_USERNAME = 'MISSING_USERNAME',
     INCORRECT_EMAIL = 'INCORRECT_EMAIL',
     INCORRECT_PHONE = 'INCORRECT_PHONE',
     MISSING_PHONE = 'MISSING_PHONE',
@@ -101,6 +102,7 @@ export const ErrorMessage: Record<ErrorCode, string> = {
 
     // Authentication errors
     [ErrorCode.MISSING_EMAIL]: 'Email is missing',
+    [ErrorCode.MISSING_USERNAME]: 'Username is missing',
     [ErrorCode.INCORRECT_EMAIL]: 'No user found with email',
     [ErrorCode.INCORRECT_PHONE]: 'No user found with phone',
     [ErrorCode.MISSING_NOTIFICATION_TOKEN]: 'Firebase notification token is required',
