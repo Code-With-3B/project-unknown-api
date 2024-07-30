@@ -203,7 +203,14 @@ export async function acceptTeamInvitation(
                     logger.error(`Team id for new member already exists ${invitation.team}`)
                     await updateTeamMemberInTeam(context.mongodb, invitation.teamId, newMember)
                     await deleteDocumentByField(context.mongodb, MongoCollection.TEAM_INVITATION, 'id', invitation.id)
-                    return {success: !!newMember}
+                    return {
+                        success: !!newMember,
+                        code: [
+                            newMember
+                                ? TeamResponseCode.INVITATION_ACCEPTED
+                                : TeamResponseCode.FAILED_TO_ACCEPT_INVITATION
+                        ]
+                    }
                 }
             }
         } else {
@@ -214,7 +221,10 @@ export async function acceptTeamInvitation(
                 updateFields
             )
             await deleteDocumentByField(context.mongodb, MongoCollection.TEAM_INVITATION, 'id', invitation.id)
-            return {success: isValidUpdate}
+            const code = []
+            if (input.status === TeamInvitationStatus.Denied) code.push(TeamResponseCode.INVITATION_DENIED)
+            if (input.status === TeamInvitationStatus.Withdrawn) code.push(TeamResponseCode.INVITATION_WITHDRAWN)
+            return {success: isValidUpdate, code}
         }
         return {success: false}
     } catch (error) {

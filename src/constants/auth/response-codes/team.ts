@@ -34,7 +34,11 @@ export enum TeamResponseCode {
 
     INVITATION_ID_MISSING = 'INVITATION_ID_MISSING',
     INVITATION_NOT_FOUND = 'INVITATION_NOT_FOUND',
-    INVITATION_EXPIRED = 'INVITATION_EXPIRED'
+    INVITATION_EXPIRED = 'INVITATION_EXPIRED',
+    INVITATION_ACCEPTED = 'INVITATION_ACCEPTED',
+    INVITATION_WITHDRAWN = 'INVITATION_WITHDRAWN',
+    INVITATION_DENIED = 'INVITATION_DENIED',
+    FAILED_TO_ACCEPT_INVITATION = 'FAILED_TO_ACCEPT_INVITATION'
 }
 
 export const ErrorMessage: Record<TeamResponseCode, string> = {
@@ -72,5 +76,10 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
 
     [TeamResponseCode.INVITATION_ID_MISSING]: 'Invitation id is missing',
     [TeamResponseCode.INVITATION_NOT_FOUND]: 'Invitation not found',
-    [TeamResponseCode.INVITATION_EXPIRED]: 'Invitation has been expired'
+    [TeamResponseCode.INVITATION_EXPIRED]: 'Invitation has been expired',
+
+    [TeamResponseCode.INVITATION_ACCEPTED]: 'Invitation has been accepted',
+    [TeamResponseCode.INVITATION_WITHDRAWN]: 'Invitation has been withdrawn',
+    [TeamResponseCode.INVITATION_DENIED]: 'Invitation has been rejected',
+    [TeamResponseCode.FAILED_TO_ACCEPT_INVITATION]: 'Failed to accept Invitation'
 }
