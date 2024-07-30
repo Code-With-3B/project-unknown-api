@@ -14,5 +14,6 @@ export const pipelines = {
     'user-connection-interactions': [{$match: {}}],
     'highlights': [{$match: {}}],
     'teams': [{$match: {}}],
-    'team-invitations': [{$match: {}}]
+    'team-invitations': [{$match: {}}],
+    'team-members': [{$match: {}}]
 }

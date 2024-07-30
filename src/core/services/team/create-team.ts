@@ -1,23 +1,19 @@
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {TeamResponseCode} from '../../../constants/auth/response-codes/team'
-import {fetchLatestTeamInvitation} from '../../db/collections/team-invitation'
+import {TeamsCollection} from '../../../generated/mongo-types'
 import {logger} from '../../../config'
 import {v4 as uuid} from 'uuid'
 
 import {
     CreateTeamInput,
     CreateTeamResponse,
+    DeleteTeamInput,
+    DeleteTeamResponse,
     Team,
-    TeamInvitationInput,
-    TeamInvitationResponse,
-    TeamRole,
     TeamStatus
 } from '../../../generated/team'
-import {TeamInvitation, TeamInvitationStatus} from './../../../generated/team'
-import {TeamInvitationsCollection, TeamsCollection} from '../../../generated/mongo-types'
-import {doesDocumentExistByField, insertDataInDB} from '../../db/utils'
-import {generateTokenForInvitation, verifyInvitationToken} from '../../../constants/auth/utils'
+import {doesDocumentExistByField, fetchDocumentByField, insertDataInDB} from '../../db/utils'
 
 export async function createTeam(context: ResolverContext, input: CreateTeamInput): Promise<CreateTeamResponse> {
     try {
@@ -66,79 +62,40 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
     }
 }
 
-export async function invitePlayer(
-    context: ResolverContext,
-    input: TeamInvitationInput
-): Promise<TeamInvitationResponse> {
-    logger.info(input, 'Inviting player to team')
-    const errorCode = []
+// TODO: Update team deletion part
+export async function deleteTeam(context: ResolverContext, input: DeleteTeamInput): Promise<DeleteTeamResponse> {
     try {
+        const errorCodes = []
+        logger.info(`Initiating team delete request`)
         if (input.teamId) {
-            if (!(await doesDocumentExistByField(context.mongodb, MongoCollection.TEAM, {id: input.teamId}))) {
-                errorCode.push(TeamResponseCode.INVALID_TEAM_ID)
-            }
-        } else errorCode.push(TeamResponseCode.INVALID_TEAM_ID)
-        if (input.sendBy) {
-            if (!(await doesDocumentExistByField(context.mongodb, MongoCollection.USER, {id: input.sendBy}))) {
-                errorCode.push(TeamResponseCode.INVALID_SENDER_ID)
-            }
-        } else errorCode.push(TeamResponseCode.INVALID_SENDER_ID)
-        if (input.sendTo) {
-            if (!(await doesDocumentExistByField(context.mongodb, MongoCollection.USER, {id: input.sendTo}))) {
-                errorCode.push(TeamResponseCode.INVALID_RECEIVER_ID)
-            }
-        } else errorCode.push(TeamResponseCode.INVALID_RECEIVER_ID)
-        if (!input.expiration) {
-            errorCode.push(TeamResponseCode.INVALID_RECEIVER_ID)
+            logger.error('Team id is not provided')
+            errorCodes.push(TeamResponseCode.TEAM_ID_MISSING)
         }
-        const validRoles = Object.values(TeamRole)
-        if (input.roles && Array.isArray(input.roles)) {
-            const invalidRoles = input.roles.filter(role => !validRoles.includes(role))
-            if (invalidRoles.length > 0) {
-                errorCode.push(TeamResponseCode.INVALID_ROLE)
-            }
-        } else {
-            errorCode.push(TeamResponseCode.INVALID_ROLE)
+        if (!input.whoIsDeleting) {
+            logger.error('Deleter id is not provided')
+            errorCodes.push(TeamResponseCode.DELETER_ID_MISSING)
+        }
+        // Add access check
+        if (!input.reason && input.reason.length == 0) {
+            logger.error('Reason to delete team is not provided')
+            errorCodes.push(TeamResponseCode.REASON_MISSING)
         }
 
-        if (errorCode.length > 0) {
-            logger.error(errorCode, 'Error inviting player to team')
-            return {success: false, code: errorCode}
-        }
-
-        const invitation = await fetchLatestTeamInvitation(context.mongodb, input.teamId, input.sendTo, input.roles)
-
-        logger.info(`Invitation : ${JSON.stringify(invitation)}`)
-
-        if (invitation) {
-            const isLive = verifyInvitationToken(invitation.expiration)
-            if (isLive) {
-                logger.error('Duplicate invitation detected')
-                return {success: false, code: [TeamResponseCode.DUPLICATE_INVITATION]}
-            }
-        }
-
-        const document: TeamInvitationsCollection = {
-            ...input,
-            id: uuid(),
-            status: TeamInvitationStatus.Sent,
-            expiration: generateTokenForInvitation(input.expiration),
-            createdAt: new Date().toISOString()
-        }
-
-        const result = await insertDataInDB<TeamInvitationsCollection, TeamInvitation>(
+        const team = await fetchDocumentByField<TeamsCollection>(
             context.mongodb,
-            MongoCollection.TEAM_INVITATION,
-            document
+            MongoCollection.TEAM,
+            'id',
+            input.teamId
         )
 
-        return {
-            success: !!result,
-            code: [result ? TeamResponseCode.INVITATION_SENT : TeamResponseCode.INVITATION_FAILED],
-            invitation: result
+        if (!team) {
+            logger.error(`No team found with id ${input.teamId}`)
+            return {success: false, code: [TeamResponseCode.INVALID_TEAM_ID]}
         }
+
+        return {success: true}
     } catch (error) {
-        logger.error(error, 'Error inviting player to team')
+        logger.error(error, 'Error deleting team')
         logger.error(error)
         throw error
     }

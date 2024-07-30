@@ -21,7 +21,20 @@ export enum TeamResponseCode {
     INVITATION_SENT = 'INVITATION_SENT',
     INVITATION_FAILED = 'INVITATION_FAILED',
 
-    DUPLICATE_INVITATION = 'DUPLICATE_INVITATION'
+    DUPLICATE_INVITATION = 'DUPLICATE_INVITATION',
+
+    TEAM_ID_MISSING = 'TEAM_ID_MISSING',
+    DELETER_ID_MISSING = 'OWNER_ID_MISSING',
+    REASON_MISSING = 'REASON_MISSING',
+
+    INVITED_USER_ID_MISSING = 'INVITED_USER_ID_MISSING',
+
+    INVITATIONS_FETCHED = 'INVITATIONS_FETCHED',
+    INVITATIONS_FETCHING_FAILED = 'INVITATIONS_FETCHING_FAILED',
+
+    INVITATION_ID_MISSING = 'INVITATION_ID_MISSING',
+    INVITATION_NOT_FOUND = 'INVITATION_NOT_FOUND',
+    INVITATION_EXPIRED = 'INVITATION_EXPIRED'
 }
 
 export const ErrorMessage: Record<TeamResponseCode, string> = {
@@ -46,5 +59,18 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
     [TeamResponseCode.INVITATION_SENT]: 'Invitation sent successfully',
     [TeamResponseCode.INVITATION_FAILED]: 'Invitation failed',
 
-    [TeamResponseCode.DUPLICATE_INVITATION]: 'Invitation already in exists'
+    [TeamResponseCode.DUPLICATE_INVITATION]: 'Invitation already in exists',
+
+    [TeamResponseCode.TEAM_ID_MISSING]: 'Team id is missing',
+    [TeamResponseCode.DELETER_ID_MISSING]: 'Team owner id is missing',
+    [TeamResponseCode.REASON_MISSING]: 'Reason to delete is missing',
+
+    [TeamResponseCode.INVITED_USER_ID_MISSING]: 'Invited user id is missing',
+
+    [TeamResponseCode.INVITATIONS_FETCHED]: 'All invitations have been fetched',
+    [TeamResponseCode.INVITATIONS_FETCHING_FAILED]: 'Fetching invitations failed',
+
+    [TeamResponseCode.INVITATION_ID_MISSING]: 'Invitation id is missing',
+    [TeamResponseCode.INVITATION_NOT_FOUND]: 'Invitation not found',
+    [TeamResponseCode.INVITATION_EXPIRED]: 'Invitation has been expired'
 }

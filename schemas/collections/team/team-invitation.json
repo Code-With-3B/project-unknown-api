@@ -1,13 +1,13 @@
 {
   "type": "object",
   "title": "TeamInvitations Collection",
-  "required": ["id"],
+  "required": ["id", "teamId"],
   "properties": {
     "id": {
       "type": "string",
       "description": "The unique identifier of the Team Invitation"
     },
-    "team": {
+    "teamId": {
       "type": "string",
       "description": "The unique identifier of the team"
     },
@@ -29,7 +29,7 @@
     },
     "status": {
       "type": "string",
-      "enum": ["SENT", "WITHDRAWN", "EXPIRED", "ACCEPTED", "PENDING", "DENIED"],
+      "enum": ["SENT", "WITHDRAWN", "EXPIRED", "ACCEPTED", "DENIED"],
       "description": "The status of the invitation"
     },
     "expiration": {
