@@ -58,8 +58,8 @@ export async function withdrawTeamInvitation(
         })
 
         if (members) {
-            const hasOwnerOrManager = members.role.some(member => {
-                return member === TeamRole.Owner || member === TeamRole.Manager
+            const hasOwnerOrManager = members.roles.some(role => {
+                return role === TeamRole.Owner || role === TeamRole.Manager
             })
             if (!hasOwnerOrManager) {
                 logger.error('Other user is trying to withdraw this invitation')

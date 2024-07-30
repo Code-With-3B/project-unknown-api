@@ -63,7 +63,16 @@ export enum TeamResponseCode {
     USER_REMOVED_FAILED = 'USER_REMOVED_FAILED',
     CANT_REMOVE_TEAM_OWNER = 'CANT_REMOVE_TEAM_OWNER',
 
-    REMOVE_USER_ACCESS_DENIED = 'REMOVE_USER_ACCESS_DENIED'
+    REMOVE_USER_ACCESS_DENIED = 'REMOVE_USER_ACCESS_DENIED',
+
+    CURRENT_OWNER_ID_MISSING = 'CURRENT_OWNER_ID_MISSING',
+    NEW_OWNER_ID_MISSING = 'NEW_OWNER_ID_MISSING',
+    CURRENT_OWNER_ID_INVALID = 'CURRENT_OWNER_ID_INVALID',
+    NEW_OWNER_ID_INVALID = 'NEW_OWNER_ID_INVALID',
+    NEW_OWNER_SHOULD_BE_IN_TEAM = 'NEW_OWNER_SHOULD_BE_IN_TEAM',
+    USER_SHOULD_BE_OWNER_TO_TRANSFER_OWNERSHIP = 'USER_SHOULD_BE_OWNER_TO_TRANSFER_OWNERSHIP',
+    OWNERSHIP_TRANSFER_SUCCESS = 'OWNERSHIP_TRANSFER_SUCCESS',
+    OWNERSHIP_TRANSFER_FAILED = 'OWNERSHIP_TRANSFER_FAILED'
 }
 
 export const ErrorMessage: Record<TeamResponseCode, string> = {
@@ -132,5 +141,15 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
     [TeamResponseCode.USER_REMOVED_SUCCESS]: 'User was successfully removed',
     [TeamResponseCode.CANT_REMOVE_TEAM_OWNER]: 'Can not kick team owner from team',
 
-    [TeamResponseCode.REMOVE_USER_ACCESS_DENIED]: 'Remover access denied'
+    [TeamResponseCode.REMOVE_USER_ACCESS_DENIED]: 'Remover access denied',
+
+    [TeamResponseCode.CURRENT_OWNER_ID_MISSING]: 'Current owner id is missing',
+    [TeamResponseCode.NEW_OWNER_ID_MISSING]: 'New owner id is missing',
+    [TeamResponseCode.CURRENT_OWNER_ID_INVALID]: 'Current owner id is invalid',
+    [TeamResponseCode.NEW_OWNER_ID_INVALID]: 'New owner id is invalid',
+    [TeamResponseCode.NEW_OWNER_SHOULD_BE_IN_TEAM]: 'New owner should be in the team',
+    [TeamResponseCode.USER_SHOULD_BE_OWNER_TO_TRANSFER_OWNERSHIP]: 'User should be owner of the team',
+
+    [TeamResponseCode.OWNERSHIP_TRANSFER_SUCCESS]: 'Owner transfer successful',
+    [TeamResponseCode.OWNERSHIP_TRANSFER_FAILED]: 'Owner transfer failed'
 }

@@ -37,8 +37,12 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
         }
 
         const document: TeamsCollection = {
-            ...input,
             id: uuid(),
+            name: input.name,
+            game: input.game,
+            teamProfilePicture: input.teamProfilePicture ?? '',
+            teamBannerPicture: input.teamBannerPicture ?? '',
+            description: input.description,
             status: TeamStatus.Public,
             createdAt: new Date().toISOString()
         }
@@ -48,7 +52,7 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
             id: uuid(),
             teamId: result.id,
             userId: input.ownerId,
-            role: ['OWNER']
+            roles: ['OWNER']
         }
 
         const newMember = await upsertTeamMember(
@@ -63,7 +67,8 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
             await updateTeamMemberInTeam(context.mongodb, result.id, newMember)
             return {
                 success: true,
-                code: [TeamResponseCode.TEAM_CREATION_SUCCESS]
+                code: [TeamResponseCode.TEAM_CREATION_SUCCESS],
+                team: result
             }
         }
         logger.info(`Team creation ${result ? 'Success' : 'Failed'}`)

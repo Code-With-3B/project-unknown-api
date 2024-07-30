@@ -5,6 +5,7 @@ import {getAllInvitation} from '../services/team/list-users'
 import {rejectTeamInvitation} from '../services/team/invitation/reject-invitation'
 import {removeUser} from '../services/team/remove-user'
 import {sendTeamInvitation} from '../services/team/invitation/send-invitation'
+import {transferOwnership} from '../services/team/transfer-ownership'
 import {updateTeam} from '../services/team/update-team'
 import {withdrawTeamInvitation} from '../services/team/invitation/withdraw-invitation'
 
@@ -16,6 +17,7 @@ import {
     RemoveUserResponse,
     Resolvers,
     SendTeamInvitationResponse,
+    TransferTeamOwnershipResponse,
     UpdateTeamResponse,
     WithdrawTeamInvitationResponse
 } from '../../generated/team'
@@ -47,6 +49,9 @@ export const teamResolver: Resolvers = {
         },
         removeUser: (_, {input}, context: ResolverContext): Promise<RemoveUserResponse> => {
             return removeUser(context, input)
+        },
+        transferTeamOwnership: (_, {input}, context: ResolverContext): Promise<TransferTeamOwnershipResponse> => {
+            return transferOwnership(context, input)
         }
     }
 }

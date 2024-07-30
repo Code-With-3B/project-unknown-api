@@ -48,6 +48,8 @@ export type CreateTeamInput = {
   game: Scalars['String']['input'];
   name: Scalars['String']['input'];
   ownerId: Scalars['ID']['input'];
+  teamBannerPicture?: InputMaybe<Scalars['String']['input']>;
+  teamProfilePicture?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateTeamResponse = ResponsePayload & {
@@ -64,6 +66,7 @@ export type Mutation = {
   rejectTeamInvitation: RejectTeamInvitationResponse;
   removeUser: RemoveUserResponse;
   sendTeamInvitation: SendTeamInvitationResponse;
+  transferTeamOwnership: TransferTeamOwnershipResponse;
   updateTeam: UpdateTeamResponse;
   withdrawTeamInvitation: WithdrawTeamInvitationResponse;
 };
@@ -91,6 +94,11 @@ export type MutationRemoveUserArgs = {
 
 export type MutationSendTeamInvitationArgs = {
   input: SendTeamInvitationInput;
+};
+
+
+export type MutationTransferTeamOwnershipArgs = {
+  input: TransferTeamOwnershipInput;
 };
 
 
@@ -195,7 +203,7 @@ export type TeamMember = {
   __typename?: 'TeamMember';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  role: Array<TeamRole>;
+  roles: Array<TeamRole>;
   teamId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['ID']['output'];
@@ -223,6 +231,18 @@ export enum TeamStatus {
   Public = 'PUBLIC',
   Suspended = 'SUSPENDED'
 }
+
+export type TransferTeamOwnershipInput = {
+  newOwnerId: Scalars['ID']['input'];
+  oldOwnerId: Scalars['ID']['input'];
+  teamId: Scalars['ID']['input'];
+};
+
+export type TransferTeamOwnershipResponse = ResponsePayload & {
+  __typename?: 'TransferTeamOwnershipResponse';
+  code?: Maybe<Array<Scalars['String']['output']>>;
+  success: Scalars['Boolean']['output'];
+};
 
 export type UpdateTeamInput = {
   description?: InputMaybe<Scalars['String']['input']>;
@@ -321,7 +341,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( RejectTeamInvitationResponse ) | ( RemoveUserResponse ) | ( SendTeamInvitationResponse ) | ( UpdateTeamResponse ) | ( WithdrawTeamInvitationResponse );
+  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( RejectTeamInvitationResponse ) | ( RemoveUserResponse ) | ( SendTeamInvitationResponse ) | ( TransferTeamOwnershipResponse ) | ( UpdateTeamResponse ) | ( WithdrawTeamInvitationResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -352,6 +372,8 @@ export type ResolversTypes = {
   TeamMember: ResolverTypeWrapper<TeamMember>;
   TeamRole: TeamRole;
   TeamStatus: TeamStatus;
+  TransferTeamOwnershipInput: TransferTeamOwnershipInput;
+  TransferTeamOwnershipResponse: ResolverTypeWrapper<TransferTeamOwnershipResponse>;
   UpdateTeamInput: UpdateTeamInput;
   UpdateTeamResponse: ResolverTypeWrapper<UpdateTeamResponse>;
   WithdrawTeamInvitationInput: WithdrawTeamInvitationInput;
@@ -383,6 +405,8 @@ export type ResolversParentTypes = {
   Team: Team;
   TeamInvitation: TeamInvitation;
   TeamMember: TeamMember;
+  TransferTeamOwnershipInput: TransferTeamOwnershipInput;
+  TransferTeamOwnershipResponse: TransferTeamOwnershipResponse;
   UpdateTeamInput: UpdateTeamInput;
   UpdateTeamResponse: UpdateTeamResponse;
   WithdrawTeamInvitationInput: WithdrawTeamInvitationInput;
@@ -423,6 +447,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   rejectTeamInvitation?: Resolver<ResolversTypes['RejectTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationRejectTeamInvitationArgs, 'input'>>;
   removeUser?: Resolver<ResolversTypes['RemoveUserResponse'], ParentType, ContextType, RequireFields<MutationRemoveUserArgs, 'input'>>;
   sendTeamInvitation?: Resolver<ResolversTypes['SendTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationSendTeamInvitationArgs, 'input'>>;
+  transferTeamOwnership?: Resolver<ResolversTypes['TransferTeamOwnershipResponse'], ParentType, ContextType, RequireFields<MutationTransferTeamOwnershipArgs, 'input'>>;
   updateTeam?: Resolver<ResolversTypes['UpdateTeamResponse'], ParentType, ContextType, RequireFields<MutationUpdateTeamArgs, 'input'>>;
   withdrawTeamInvitation?: Resolver<ResolversTypes['WithdrawTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationWithdrawTeamInvitationArgs, 'input'>>;
 };
@@ -444,7 +469,7 @@ export type RemoveUserResponseResolvers<ContextType = any, ParentType extends Re
 };
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'RejectTeamInvitationResponse' | 'RemoveUserResponse' | 'SendTeamInvitationResponse' | 'UpdateTeamResponse' | 'WithdrawTeamInvitationResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'RejectTeamInvitationResponse' | 'RemoveUserResponse' | 'SendTeamInvitationResponse' | 'TransferTeamOwnershipResponse' | 'UpdateTeamResponse' | 'WithdrawTeamInvitationResponse', ParentType, ContextType>;
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -486,10 +511,16 @@ export type TeamInvitationResolvers<ContextType = any, ParentType extends Resolv
 export type TeamMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMember'] = ResolversParentTypes['TeamMember']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  role?: Resolver<Array<ResolversTypes['TeamRole']>, ParentType, ContextType>;
+  roles?: Resolver<Array<ResolversTypes['TeamRole']>, ParentType, ContextType>;
   teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type TransferTeamOwnershipResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['TransferTeamOwnershipResponse'] = ResolversParentTypes['TransferTeamOwnershipResponse']> = {
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -520,6 +551,7 @@ export type Resolvers<ContextType = any> = {
   Team?: TeamResolvers<ContextType>;
   TeamInvitation?: TeamInvitationResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  TransferTeamOwnershipResponse?: TransferTeamOwnershipResponseResolvers<ContextType>;
   UpdateTeamResponse?: UpdateTeamResponseResolvers<ContextType>;
   WithdrawTeamInvitationResponse?: WithdrawTeamInvitationResponseResolvers<ContextType>;
 };

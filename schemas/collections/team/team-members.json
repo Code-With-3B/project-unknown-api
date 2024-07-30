@@ -1,7 +1,7 @@
 {
   "type": "object",
   "title": "TeamMembers Collection",
-  "required": ["id","teamId","userId","role"],
+  "required": ["id","teamId","userId","roles"],
   "properties": {
     "id": {
       "type": "string",
@@ -15,7 +15,7 @@
       "type": "string",
       "description": "The unique identifier of the team"
     },
-   "role": {
+   "roles": {
       "type": "array",
       "items": {
         "type": "string",
