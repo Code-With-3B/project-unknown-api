@@ -11,6 +11,7 @@ export interface DatabaseSchema {
   userInteraction?: UserInteractionCollection;
   teams?: TeamsCollection;
   "team-invitation"?: TeamInvitationsCollection;
+  "team-member"?: TeamMembersCollection;
   [k: string]: unknown;
 }
 export interface UsersCollection {
@@ -187,9 +188,13 @@ export interface TeamsCollection {
    */
   game?: string;
   /**
+   * 'following' must be an array of achievement IDs.
+   */
+  members?: string[];
+  /**
    * The status of the team, which can be either PRIVATE, OPEN_TO_CONNECT, DEACTIVATED, or SUSPENDED
    */
-  status?: "PRIVATE" | "OPEN_TO_CONNECT" | "DEACTIVATED" | "SUSPENDED";
+  status?: "PRIVATE" | "OPEN_TO_CONNECT" | "DEACTIVATED" | "SUSPENDED" | "DELETED";
   /**
    * The timestamp or date string indicating when the team was created
    */
@@ -208,7 +213,7 @@ export interface TeamInvitationsCollection {
   /**
    * The unique identifier of the team
    */
-  team?: string;
+  teamId: string;
   /**
    * The unique identifier of the user who sent the invitation
    */
@@ -236,11 +241,50 @@ export interface TeamInvitationsCollection {
   /**
    * The status of the invitation
    */
-  status?: "SENT" | "WITHDRAWN" | "EXPIRED" | "ACCEPTED" | "PENDING" | "DENIED";
+  status?: "SENT" | "WITHDRAWN" | "EXPIRED" | "ACCEPTED" | "DENIED";
   /**
    * The timestamp or date string indicating when the invitation will expire
    */
   expiration?: string;
+  /**
+   * The timestamp or date string indicating when the invitation was created
+   */
+  createdAt?: string;
+  /**
+   * The timestamp or date string indicating when the invitation was last updated
+   */
+  updatedAt?: string;
+  [k: string]: unknown;
+}
+export interface TeamMembersCollection {
+  /**
+   * The unique identifier of the Team Invitation
+   */
+  id: string;
+  /**
+   * The unique identifier of the team
+   */
+  teamId?: string;
+  /**
+   * The unique identifier of the team
+   */
+  userId?: string;
+  /**
+   * The roles assigned to the team member
+   */
+  role?: (
+    | "OWNER"
+    | "COACH"
+    | "MANAGER"
+    | "ANALYST"
+    | "IGL"
+    | "SUPPORT"
+    | "SNIPER"
+    | "ASSAULTER"
+    | "SUBSTITUTE"
+    | "ANY"
+    | "NOT_MENTIONED"
+  )[];
   /**
    * The timestamp or date string indicating when the invitation was created
    */

@@ -22,18 +22,13 @@ export async function fetchRelationalData<T>(
     query?: any
 ): Promise<T[]> {
     try {
-        logger.info(`Fetching data from collection ${collectionName} with query ${JSON.stringify(query)}`)
         const collection = db.collection(collectionName)
         const finalQuery = JSON.parse(JSON.stringify(pipelines[collectionName]))
         if (query) finalQuery[0] = {$match: query}
-        logger.debug(`Final query for collection ${collectionName}: ${JSON.stringify(finalQuery)}`)
         const result: T[] = (await collection.aggregate(finalQuery).toArray()) as T[]
-        if (result && result.length)
-            logger.info(`Fetched ${result.length} documents from ${collectionName}s collection`)
-        else logger.error(`Failed to fetch documents from ${collectionName}`)
         return result
     } catch (error) {
-        logger.error(`Error fetching ${collectionName}s: ${error}`)
+        logger.error(error, `Error fetching data from collection ${collectionName}`)
         throw error
     }
 }
@@ -48,11 +43,9 @@ export async function fetchRelationalData<T>(
  */
 export async function insertDataInDB<T, U>(db: Db, collectionName: PipelineCollectionNames, document: T): Promise<U> {
     try {
-        logger.info(`Inserting data into collection ${collectionName}`)
         const collection = db.collection(collectionName)
         const insertedResult = await collection.insertOne(document as Document, {})
         if (insertedResult && insertedResult.acknowledged && insertedResult.insertedId) {
-            logger.info(`Data inserted successfully with ID: ${insertedResult.insertedId}`)
             const result: U[] = await fetchRelationalData<U>(db, collectionName, {
                 _id: insertedResult.insertedId
             })
@@ -60,7 +53,7 @@ export async function insertDataInDB<T, U>(db: Db, collectionName: PipelineColle
         }
         throw new Error('Unable to insert data')
     } catch (error) {
-        logger.error(`Error fetching data into ${collectionName}s collection: ${error}`)
+        logger.error(error, `Error fetching data from collection ${collectionName}`)
         throw error
     }
 }
@@ -79,16 +72,12 @@ export async function insertDataInDBWithoutData<T>(
     document: T
 ): Promise<boolean> {
     try {
-        logger.info(`Inserting data into collection ${collectionName}`)
         const collection = db.collection(collectionName)
         const insertedResult = await collection.insertOne(document as Document, {})
-        if (insertedResult && insertedResult.acknowledged && insertedResult.insertedId) {
-            logger.info(`Data inserted successfully with ID: ${insertedResult.insertedId}`)
-            return true
-        }
+        if (insertedResult && insertedResult.acknowledged && insertedResult.insertedId) return true
         return false
     } catch (error) {
-        logger.error(`Error fetching data into ${collectionName}s collection: ${error}`)
+        logger.error(error, `Error fetching data from ${collectionName}`)
         throw error
     }
 }
@@ -110,13 +99,11 @@ export async function fetchDocumentByField<T>(
     fieldValue: any
 ): Promise<T | null> {
     try {
-        logger.info(`Fetching document from collection ${collectionName} where ${String(fieldName)} = ${fieldValue}`)
         const collection = db.collection(collectionName)
         const result = await collection.findOne({[fieldName]: fieldValue})
-        logger.debug(`Fetched document: ${JSON.stringify(result)}`)
         return result as T
     } catch (error) {
-        logger.error(`Error fetching ${collectionName}s data by ${String(fieldName)}: ${error}`)
+        logger.error(error, `Error fetching data from ${collectionName} with filter ${String(fieldName)}`)
         throw error
     }
 }
@@ -135,16 +122,12 @@ export async function fetchDocumentForValidEmail<T>(
     email: string
 ): Promise<T | null> {
     try {
-        logger.info(
-            `Fetching document from collection ${collectionName} where email = ${email} and authMode = EmailPass`
-        )
         const collection = db.collection(collectionName)
         const result = await collection.findOne({email, authMode: AuthMode.EmailPass})
         logger.debug(`Fetched document: ${JSON.stringify(result)}`)
         return result as T
     } catch (error) {
-        logger.error('Error while fetching document with filters')
-        logger.error(error)
+        logger.error(error, `Error while fetching email ${email}`)
         throw error
     }
 }
@@ -163,19 +146,14 @@ export async function fetchDocumentForValidUsername<T>(
     username: string
 ): Promise<T | null> {
     try {
-        logger.info(
-            `Fetching document from collection ${collectionName} where username = ${username} and authMode = EmailPass or PhonePass`
-        )
         const collection = db.collection(collectionName)
         const result = await collection.findOne({
             username,
             $or: [{authMode: AuthMode.EmailPass}, {authMode: AuthMode.PhonePass}]
         })
-        logger.debug(`Fetched document: ${JSON.stringify(result)}`)
         return result as T
     } catch (error) {
-        logger.error('Error while fetching document with filters')
-        logger.error(error)
+        logger.error(error, 'Error while fetching document with filters')
         throw error
     }
 }
@@ -194,15 +172,11 @@ export async function fetchDocumentForValidPhone<T>(
     phone: string
 ): Promise<T | null> {
     try {
-        logger.info(
-            `Fetching document from collection ${collectionName} where phone = ${phone} and authMode = PhonePass`
-        )
         const collection = db.collection(collectionName)
         const result = await collection.findOne({phone, authMode: AuthMode.PhonePass})
-        logger.debug(`Fetched document: ${JSON.stringify(result)}`)
         return result as T
     } catch (error) {
-        logger.error(error)
+        logger.error(error, 'Error while fetching document with filters')
         throw error
     }
 }
@@ -223,16 +197,11 @@ export async function fetchDocumentForValidSocial<T>(
     authMode: AuthMode
 ): Promise<T | null> {
     try {
-        logger.info(
-            `Fetching document from collection ${collectionName} where email = ${email} and authMode = ${authMode}`
-        )
         const collection = db.collection(collectionName)
         const result = await collection.findOne({email, authMode})
-        logger.debug(`Fetched document: ${JSON.stringify(result)}`)
         return result as T
     } catch (error) {
-        logger.error('Error while fetching document with filters')
-        logger.error(error)
+        logger.error(error, 'Error while fetching document with filters')
         throw error
     }
 }
@@ -256,7 +225,7 @@ export async function doesDocumentExistByField(
         const count = await collection.countDocuments(query)
         return count > 0
     } catch (error) {
-        logger.error(`Error checking if ${collectionName} exists by ${JSON.stringify(query)}: ${error}`)
+        logger.error(error, `Error checking if ${collectionName} exists by ${JSON.stringify(query)}`)
         throw error
     }
 }
@@ -278,31 +247,25 @@ export async function updateDataInDB<T, U>(
     updateFields: Partial<T>
 ): Promise<U> {
     try {
-        logger.info(`Updating document in collection ${collectionName} with ID ${id}`)
         const collection = db.collection(collectionName)
 
         // Ensure the document exists
         const existingDocument = await collection.findOne({id})
         if (!existingDocument) {
-            logger.error(`No document found with ID ${id}`)
             throw new Error(`No document found with ID ${id}`)
         }
 
-        logger.debug(`Existing document: ${JSON.stringify(existingDocument)}`)
-        // Perform the update
         const updateResult = await collection.updateOne({id}, {$set: updateFields as Document})
 
         if (updateResult.modifiedCount === 0) {
-            logger.error('Failed to update document')
             throw new Error('Failed to update document')
         }
 
-        logger.info(`Document with ID ${id} updated successfully`)
         // Fetch the updated document
         const updatedDocuments = await fetchRelationalData<U>(db, collectionName, {id})
         return updatedDocuments[0]
     } catch (error) {
-        logger.error(`Error updating ${collectionName}s data: ${error}`)
+        logger.error(error, `Error updating ${collectionName}s data: ${error}`)
         throw error
     }
 }
@@ -324,17 +287,14 @@ export async function updateDataInDBWithoutReturn<T>(
     updateFields: Partial<T>
 ): Promise<boolean> {
     try {
-        logger.info(`Updating document in collection ${collectionName} with ID ${id}`)
         const collection = db.collection(collectionName)
 
         // Ensure the document exists
         const existingDocument = await collection.findOne({id})
         if (!existingDocument) {
-            logger.error(`No document found with ID ${id}`)
             throw new Error(`No document found with ID ${id}`)
         }
 
-        logger.debug(`Existing document: ${JSON.stringify(existingDocument)}`)
         // Perform the update
         const updateResult = await collection.updateOne({id}, {$set: updateFields as Document})
 
@@ -343,10 +303,40 @@ export async function updateDataInDBWithoutReturn<T>(
             return false
         }
 
-        logger.info(`Document with ID ${id} updated successfully`)
         return true
     } catch (error) {
-        logger.error(`Error updating ${collectionName}s data: ${error}`)
+        logger.error(error, `Error updating ${collectionName}s data`)
+        throw error
+    }
+}
+
+/**
+ * Deletes a document from the specified collection based on the provided field name and value.
+ * @param db The MongoDB database instance.
+ * @param collectionName The name of the collection to delete the document from.
+ * @param fieldName The name of the field to filter the documents by.
+ * @param fieldValue The value of the field to filter the documents by.
+ * @returns {Promise<boolean>} A promise that resolves to true if the document was successfully deleted, otherwise false.
+ * @throws {Error} Throws an error if failed to delete the document.
+ */
+export async function deleteDocumentByField<T>(
+    db: Db,
+    collectionName: MongoCollection,
+    fieldName: keyof T,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fieldValue: any
+): Promise<boolean> {
+    try {
+        const collection = db.collection(collectionName)
+        const deleteResult = await collection.deleteOne({[fieldName]: fieldValue} as Document)
+
+        if (deleteResult.deletedCount === 1) {
+            return true
+        } else {
+            return false
+        }
+    } catch (error) {
+        logger.error(error, `Error deleting document from ${collectionName} where ${String(fieldName)} = ${fieldValue}`)
         throw error
     }
 }

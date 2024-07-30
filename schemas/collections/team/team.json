@@ -19,9 +19,16 @@
       "type": "string",
       "description": "Name of the game associated with the team"
     },
+    "members": {
+      "type": "array",
+      "description": "'following' must be an array of achievement IDs.",
+      "items": {
+        "type": "string"
+      }
+    },
     "status": {
       "type": "string",
-      "enum": ["PRIVATE", "OPEN_TO_CONNECT", "DEACTIVATED", "SUSPENDED"],
+      "enum": ["PRIVATE", "OPEN_TO_CONNECT", "DEACTIVATED", "SUSPENDED", "DELETED"],
       "description": "The status of the team, which can be either PRIVATE, OPEN_TO_CONNECT, DEACTIVATED, or SUSPENDED"
     },
     "createdAt": {
