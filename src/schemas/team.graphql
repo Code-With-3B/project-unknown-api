@@ -138,6 +138,21 @@ type AllTeamInvitationsResponse implements ResponsePayload {
   invitations: [TeamInvitation!]
 }
 
+input UpdateTeamInput {
+  id: ID!
+  name: String
+  description: String
+  game: String
+  teamProfilePicture: String
+  teamBannerPicture: String
+  status: TeamStatus
+}
+
+type UpdateTeamResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
 type Query {
   # team(id: ID!): Team
   # teamByOwner(ownerId: ID!): Team
@@ -148,6 +163,7 @@ type Query {
 
 type Mutation {
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
+  updateTeam(input: UpdateTeamInput!): UpdateTeamResponse!
 
   # Tried putting all accept, reject and withdraw invitation in single mutation, 
   # but it becomes so complicated so creating separate mutations for same

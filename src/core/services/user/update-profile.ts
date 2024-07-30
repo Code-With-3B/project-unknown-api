@@ -7,7 +7,7 @@ import {bcryptConfig} from '../../../constants/auth/utils'
 import {hash} from 'bcrypt'
 import {logger} from '../../../config'
 
-import {UpdateUserInput, User, UserResponse} from '../../../generated/user'
+import {UpdateUserInput, UserResponse} from '../../../generated/user'
 import {doesDocumentExistByField, fetchDocumentByField, updateDataInDBWithoutReturn} from '../../db/utils'
 import {isEmail, isMobilePhone, isStrongPassword} from 'class-validator'
 
@@ -22,7 +22,7 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
 
     try {
         // Fetch existing user document
-        const user = await fetchDocumentByField<User>(context.mongodb, MongoCollection.USER, 'id', input.id)
+        const user = await fetchDocumentByField<UsersCollection>(context.mongodb, MongoCollection.USER, 'id', input.id)
         if (!user) {
             logger.error(`User not found with id: ${input.id}`)
             return {success: false, code: [ErrorCode.USER_NOT_FOUND]}
