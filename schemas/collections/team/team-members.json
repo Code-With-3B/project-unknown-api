@@ -1,7 +1,7 @@
 {
   "type": "object",
   "title": "TeamMembers Collection",
-  "required": ["id"],
+  "required": ["id","teamId","userId","role"],
   "properties": {
     "id": {
       "type": "string",

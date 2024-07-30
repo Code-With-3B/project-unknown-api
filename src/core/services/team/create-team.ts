@@ -1,19 +1,13 @@
 import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {TeamResponseCode} from '../../../constants/auth/response-codes/team'
-import {TeamsCollection} from '../../../generated/mongo-types'
 import {logger} from '../../../config'
+import {upsertTeamMember} from '../../db/collections/team-invitation'
 import {v4 as uuid} from 'uuid'
 
-import {
-    CreateTeamInput,
-    CreateTeamResponse,
-    DeleteTeamInput,
-    DeleteTeamResponse,
-    Team,
-    TeamStatus
-} from '../../../generated/team'
-import {doesDocumentExistByField, fetchDocumentByField, insertDataInDB} from '../../db/utils'
+import {CreateTeamInput, CreateTeamResponse, Team, TeamStatus} from '../../../generated/team'
+import {TeamMembersCollection, TeamsCollection} from '../../../generated/mongo-types'
+import {doesDocumentExistByField, insertDataInDB} from '../../db/utils'
 
 export async function createTeam(context: ResolverContext, input: CreateTeamInput): Promise<CreateTeamResponse> {
     try {
@@ -44,11 +38,26 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
         const document: TeamsCollection = {
             ...input,
             id: uuid(),
-            status: TeamStatus.Private,
+            status: TeamStatus.Public,
             createdAt: new Date().toISOString()
         }
 
         const result = await insertDataInDB<TeamsCollection, Team>(context.mongodb, MongoCollection.TEAM, document)
+        const teamMember: TeamMembersCollection = {
+            id: uuid(),
+            teamId: result.id,
+            userId: input.ownerId,
+            role: ['OWNER']
+        }
+
+        await upsertTeamMember(
+            context.mongodb,
+            {
+                userId: teamMember.userId,
+                teamId: result.id
+            },
+            teamMember
+        )
         logger.info(`Team creation ${result ? 'Success' : 'Failed'}`)
         return {
             success: !!result,
@@ -57,45 +66,6 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
         }
     } catch (error) {
         logger.error(error, 'Error creating team')
-        logger.error(error)
-        throw error
-    }
-}
-
-// TODO: Update team deletion part
-export async function deleteTeam(context: ResolverContext, input: DeleteTeamInput): Promise<DeleteTeamResponse> {
-    try {
-        const errorCodes = []
-        logger.info(`Initiating team delete request`)
-        if (input.teamId) {
-            logger.error('Team id is not provided')
-            errorCodes.push(TeamResponseCode.TEAM_ID_MISSING)
-        }
-        if (!input.whoIsDeleting) {
-            logger.error('Deleter id is not provided')
-            errorCodes.push(TeamResponseCode.DELETER_ID_MISSING)
-        }
-        // Add access check
-        if (!input.reason && input.reason.length == 0) {
-            logger.error('Reason to delete team is not provided')
-            errorCodes.push(TeamResponseCode.REASON_MISSING)
-        }
-
-        const team = await fetchDocumentByField<TeamsCollection>(
-            context.mongodb,
-            MongoCollection.TEAM,
-            'id',
-            input.teamId
-        )
-
-        if (!team) {
-            logger.error(`No team found with id ${input.teamId}`)
-            return {success: false, code: [TeamResponseCode.INVALID_TEAM_ID]}
-        }
-
-        return {success: true}
-    } catch (error) {
-        logger.error(error, 'Error deleting team')
         logger.error(error)
         throw error
     }

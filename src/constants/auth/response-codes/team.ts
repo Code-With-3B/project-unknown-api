@@ -25,6 +25,7 @@ export enum TeamResponseCode {
 
     TEAM_ID_MISSING = 'TEAM_ID_MISSING',
     DELETER_ID_MISSING = 'OWNER_ID_MISSING',
+    DELETER_ID_INVALID = 'DELETER_ID_INVALID',
     REASON_MISSING = 'REASON_MISSING',
 
     INVITED_USER_ID_MISSING = 'INVITED_USER_ID_MISSING',
@@ -37,8 +38,20 @@ export enum TeamResponseCode {
     INVITATION_EXPIRED = 'INVITATION_EXPIRED',
     INVITATION_ACCEPTED = 'INVITATION_ACCEPTED',
     INVITATION_WITHDRAWN = 'INVITATION_WITHDRAWN',
-    INVITATION_DENIED = 'INVITATION_DENIED',
-    FAILED_TO_ACCEPT_INVITATION = 'FAILED_TO_ACCEPT_INVITATION'
+    INVITATION_REJECTED = 'INVITATION_REJECTED',
+    INVITATION_FAILED_TO_REJECT = 'INVITATION_FAILED_TO_REJECT',
+    INVITATION_FAILED_TO_ACCEPT = 'INVITATION_FAILED_TO_ACCEPT',
+    INVITATION_FAILED_TO_WITHDRAW = 'INVITATION_FAILED_TO_WITHDRAW',
+    FAILED_TO_ACCEPT_INVITATION = 'FAILED_TO_ACCEPT_INVITATION',
+
+    REJECTOR_ID_MISSING = 'REJECTOR_ID_MISSING',
+    OTHER_USER_TRYING_TO_REJECT = 'OTHER_USER_TRYING_TO_REJECT',
+    OTHER_USER_TRYING_TO_ACCEPT = 'OTHER_USER_TRYING_TO_ACCEPT',
+    INVITATION_WITHDRAW_ACCESS_DENIED = 'INVITATION_WITHDRAW_ACCESS_DENIED',
+    TEAM_DELETE_ACCESS_DENIED = 'TEAM_DELETE_ACCESS_DENIED',
+
+    TEAM_DELETION_SUCCESS = 'TEAM_DELETION_SUCCESS',
+    TEAM_DELETION_FAILED = 'TEAM_DELETION_FAILED'
 }
 
 export const ErrorMessage: Record<TeamResponseCode, string> = {
@@ -67,6 +80,7 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
 
     [TeamResponseCode.TEAM_ID_MISSING]: 'Team id is missing',
     [TeamResponseCode.DELETER_ID_MISSING]: 'Team owner id is missing',
+    [TeamResponseCode.DELETER_ID_INVALID]: 'Team Deleter id is invalid',
     [TeamResponseCode.REASON_MISSING]: 'Reason to delete is missing',
 
     [TeamResponseCode.INVITED_USER_ID_MISSING]: 'Invited user id is missing',
@@ -80,6 +94,19 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
 
     [TeamResponseCode.INVITATION_ACCEPTED]: 'Invitation has been accepted',
     [TeamResponseCode.INVITATION_WITHDRAWN]: 'Invitation has been withdrawn',
-    [TeamResponseCode.INVITATION_DENIED]: 'Invitation has been rejected',
-    [TeamResponseCode.FAILED_TO_ACCEPT_INVITATION]: 'Failed to accept Invitation'
+    [TeamResponseCode.INVITATION_REJECTED]: 'Invitation has been rejected',
+    [TeamResponseCode.INVITATION_FAILED_TO_REJECT]: 'Invitation has been rejected',
+    [TeamResponseCode.INVITATION_FAILED_TO_ACCEPT]: 'Invitation has been rejected',
+    [TeamResponseCode.INVITATION_FAILED_TO_WITHDRAW]: 'Invitation has been rejected',
+    [TeamResponseCode.FAILED_TO_ACCEPT_INVITATION]: 'Failed to accept Invitation',
+
+    [TeamResponseCode.REJECTOR_ID_MISSING]: 'Rejector id is missing',
+
+    [TeamResponseCode.OTHER_USER_TRYING_TO_REJECT]: 'Other user is trying to reject Invitation',
+    [TeamResponseCode.OTHER_USER_TRYING_TO_ACCEPT]: 'Other user is trying to accept Invitation',
+    [TeamResponseCode.INVITATION_WITHDRAW_ACCESS_DENIED]: 'Other user is trying to reject Invitation',
+    [TeamResponseCode.TEAM_DELETE_ACCESS_DENIED]: 'User has not access to delete team',
+
+    [TeamResponseCode.TEAM_DELETION_SUCCESS]: 'Team has been deleted',
+    [TeamResponseCode.TEAM_DELETION_FAILED]: 'Team deleting failed'
 }

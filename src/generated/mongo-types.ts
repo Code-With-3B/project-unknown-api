@@ -194,7 +194,7 @@ export interface TeamsCollection {
   /**
    * The status of the team, which can be either PRIVATE, OPEN_TO_CONNECT, DEACTIVATED, or SUSPENDED
    */
-  status?: "PRIVATE" | "OPEN_TO_CONNECT" | "DEACTIVATED" | "SUSPENDED" | "DELETED";
+  status?: "PRIVATE" | "OPEN_TO_CONNECT" | "DEACTIVATED" | "SUSPENDED" | "DELETED" | "PUBLIC";
   /**
    * The timestamp or date string indicating when the team was created
    */
@@ -241,7 +241,7 @@ export interface TeamInvitationsCollection {
   /**
    * The status of the invitation
    */
-  status?: "SENT" | "WITHDRAWN" | "EXPIRED" | "ACCEPTED" | "DENIED";
+  status?: "SENT" | "WITHDRAWN" | "EXPIRED" | "ACCEPTED" | "REJECTED";
   /**
    * The timestamp or date string indicating when the invitation will expire
    */
@@ -264,15 +264,15 @@ export interface TeamMembersCollection {
   /**
    * The unique identifier of the team
    */
-  teamId?: string;
+  teamId: string;
   /**
    * The unique identifier of the team
    */
-  userId?: string;
+  userId: string;
   /**
    * The roles assigned to the team member
    */
-  role?: (
+  role: (
     | "OWNER"
     | "COACH"
     | "MANAGER"

@@ -38,7 +38,8 @@ export async function updateTeamMemberInTeam(db: Db, id: string, memberId: strin
         const updateResult = await collection.updateOne(
             {id},
             {
-                $addToSet: {['members']: memberId}
+                $addToSet: {['members']: memberId},
+                $set: {updatedAt: new Date().toISOString()}
             }
         )
 

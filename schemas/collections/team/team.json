@@ -28,7 +28,7 @@
     },
     "status": {
       "type": "string",
-      "enum": ["PRIVATE", "OPEN_TO_CONNECT", "DEACTIVATED", "SUSPENDED", "DELETED"],
+      "enum": ["PRIVATE", "OPEN_TO_CONNECT", "DEACTIVATED", "SUSPENDED", "DELETED", "PUBLIC"],
       "description": "The status of the team, which can be either PRIVATE, OPEN_TO_CONNECT, DEACTIVATED, or SUSPENDED"
     },
     "createdAt": {

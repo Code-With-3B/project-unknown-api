@@ -33,6 +33,18 @@ export async function fetchRelationalData<T>(
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function findSingleRecord<T>(db: Db, collectionName: MongoCollection, query: any): Promise<T | null> {
+    try {
+        const collection = db.collection(collectionName)
+        const result = await collection.findOne(query)
+        return result as T
+    } catch (error) {
+        logger.error(error, `Error finding document in ${collectionName} with query ${JSON.stringify(query)}`)
+        throw error
+    }
+}
+
 /**
  * Inserts a document into the specified collection and fetches the inserted document.
  * @param db The MongoDB database instance.
@@ -337,6 +349,48 @@ export async function deleteDocumentByField<T>(
         }
     } catch (error) {
         logger.error(error, `Error deleting document from ${collectionName} where ${String(fieldName)} = ${fieldValue}`)
+        throw error
+    }
+}
+
+/**
+ * Updates a single field in the specified collection based on the provided ID and field name and value.
+ * @param db The MongoDB database instance.
+ * @param collectionName The name of the collection to update the document in.
+ * @param id The ID of the document to be updated.
+ * @param fieldName The name of the field to be updated.
+ * @param fieldValue The new value of the field.
+ * @returns {Promise<boolean>} A promise that resolves to true if the document was successfully updated, otherwise false.
+ * @throws {Error} Throws an error if failed to update the document.
+ */
+export async function updateSingleFieldInDB<T>(
+    db: Db,
+    collectionName: PipelineCollectionNames,
+    id: string,
+    fieldName: keyof T,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fieldValue: any
+): Promise<boolean> {
+    try {
+        const collection = db.collection(collectionName)
+
+        // Ensure the document exists
+        const existingDocument = await collection.findOne({id})
+        if (!existingDocument) {
+            throw new Error(`No document found with ID ${id}`)
+        }
+
+        // Perform the update
+        const updateResult = await collection.updateOne({id}, {$set: {[fieldName]: fieldValue}})
+
+        if (updateResult.modifiedCount === 0) {
+            logger.error('Failed to update document')
+            return false
+        }
+
+        return true
+    } catch (error) {
+        logger.error(error, `Error updating ${collectionName}s data`)
         throw error
     }
 }
