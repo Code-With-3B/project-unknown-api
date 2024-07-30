@@ -272,7 +272,7 @@ export interface TeamMembersCollection {
   /**
    * The roles assigned to the team member
    */
-  role: (
+  roles: (
     | "OWNER"
     | "COACH"
     | "MANAGER"

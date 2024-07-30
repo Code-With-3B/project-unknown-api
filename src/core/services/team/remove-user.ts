@@ -46,7 +46,7 @@ export async function removeUser(context: ResolverContext, input: RemoveUserInpu
             return {success: false, code: [TeamResponseCode.REMOVE_USER_ACCESS_DENIED]}
         }
 
-        const removerHasOwnerOrManagerRole = remover.role.some(
+        const removerHasOwnerOrManagerRole = remover.roles.some(
             role => role === TeamRole.Owner || role === TeamRole.Manager
         )
         if (!removerHasOwnerOrManagerRole) {
@@ -68,7 +68,7 @@ export async function removeUser(context: ResolverContext, input: RemoveUserInpu
             return {success: false, code: [TeamResponseCode.USER_TO_REMOVE_NOT_IN_TEAM]}
         }
 
-        const userToRemoveIsOwner = userToRemove.role.some(role => role === TeamRole.Owner)
+        const userToRemoveIsOwner = userToRemove.roles.some(role => role === TeamRole.Owner)
         if (userToRemoveIsOwner) {
             logger.error('Cannot remove the team owner from the team')
             return {success: false, code: [TeamResponseCode.CANT_REMOVE_TEAM_OWNER]}

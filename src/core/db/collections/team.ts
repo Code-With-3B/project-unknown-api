@@ -1,7 +1,8 @@
 import {Db} from 'mongodb'
 import {MongoCollection} from '../../../@types/collections'
-import {TeamsCollection} from '../../../generated/mongo-types'
 import {logger} from '../../../config'
+
+import {TeamMembersCollection, TeamsCollection} from '../../../generated/mongo-types'
 
 /**
  * Updates a document in the specified collection by adding new data to an array field.
@@ -94,6 +95,58 @@ export async function removeTeamMemberFromTeam(db: Db, teamId: string, memberId:
         }
 
         logger.info(`Document with ID ${teamId} updated successfully`)
+        return true
+    } catch (error) {
+        logger.error(`Error updating data: ${error}`)
+        throw error
+    }
+}
+
+export async function removeOwnerRoleFromTeamMember(db: Db, id: string): Promise<boolean> {
+    try {
+        const collectionName = MongoCollection.TEAM_MEMBER
+        const collection = db.collection(collectionName)
+
+        // Ensure the document exists
+        const existingDocument = (await collection.findOne({id})) as TeamMembersCollection | null
+        if (!existingDocument) {
+            logger.error(`No document found with ID ${id}`)
+            throw new Error(`No document found with ID ${id}`)
+        }
+
+        // Check if the memberId has OWNER role
+        const existingRoles = existingDocument.roles
+        const hasOwnerRole = existingRoles.includes('OWNER')
+        if (!hasOwnerRole) {
+            logger.info(`User does not have OWNER role, skipping update`)
+            return true
+        }
+
+        // Remove OWNER role from the array
+        const newRoles = existingRoles.filter(role => role !== 'OWNER')
+
+        // If the array is empty, add NOT_MENTIONED
+        if (newRoles.length === 0) {
+            newRoles.push('NOT_MENTIONED')
+        }
+
+        // Perform the update
+        const updateResult = await collection.updateOne(
+            {id},
+            {
+                $set: {
+                    roles: newRoles,
+                    updatedAt: new Date().toISOString()
+                }
+            }
+        )
+
+        if (updateResult.modifiedCount === 0) {
+            logger.error('Failed to update team member in team')
+            return false
+        }
+
+        logger.info(`Document with ID ${id} updated successfully`)
         return true
     } catch (error) {
         logger.error(`Error updating data: ${error}`)

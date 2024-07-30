@@ -33,7 +33,7 @@ type TeamMember {
   id: ID!
   userId: ID!
   teamId: ID!
-  role: [TeamRole!]!
+  roles: [TeamRole!]!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -76,6 +76,8 @@ input CreateTeamInput {
   description: String!
   game: String!
   ownerId: ID!
+  teamProfilePicture: String
+  teamBannerPicture: String
 }
 
 input SendTeamInvitationInput {
@@ -164,33 +166,35 @@ type RemoveUserResponse implements ResponsePayload {
   code: [String!]
 }
 
+input TransferTeamOwnershipInput {
+  teamId: ID!
+  newOwnerId: ID!
+  oldOwnerId: ID!
+}
+
+type TransferTeamOwnershipResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
 type Query {
   # team(id: ID!): Team
   # teamByOwner(ownerId: ID!): Team
   # teamInvitationsByTeam(teamId: ID!): [TeamInvitation!]
 
-  getAllTeamInvitations(
-    input: AllTeamInvitationsInput!
-  ): AllTeamInvitationsResponse
+  getAllTeamInvitations(input: AllTeamInvitationsInput!): AllTeamInvitationsResponse
 }
 
 type Mutation {
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
   updateTeam(input: UpdateTeamInput!): UpdateTeamResponse!
   removeUser(input: RemoveUserInput!): RemoveUserResponse!
+  transferTeamOwnership(input: TransferTeamOwnershipInput!): TransferTeamOwnershipResponse!
 
   # Tried putting all accept, reject and withdraw invitation in single mutation,
   # but it becomes so complicated so creating separate mutations for same
-  sendTeamInvitation(
-    input: SendTeamInvitationInput!
-  ): SendTeamInvitationResponse!
-  acceptTeamInvitation(
-    input: AcceptTeamInvitationInput!
-  ): AcceptTeamInvitationResponse!
-  rejectTeamInvitation(
-    input: RejectTeamInvitationInput!
-  ): RejectTeamInvitationResponse!
-  withdrawTeamInvitation(
-    input: WithdrawTeamInvitationInput!
-  ): WithdrawTeamInvitationResponse!
+  sendTeamInvitation(input: SendTeamInvitationInput!): SendTeamInvitationResponse!
+  acceptTeamInvitation(input: AcceptTeamInvitationInput!): AcceptTeamInvitationResponse!
+  rejectTeamInvitation(input: RejectTeamInvitationInput!): RejectTeamInvitationResponse!
+  withdrawTeamInvitation(input: WithdrawTeamInvitationInput!): WithdrawTeamInvitationResponse!
 }
