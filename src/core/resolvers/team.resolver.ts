@@ -4,6 +4,7 @@ import {createTeam} from '../services/team/create-team'
 import {getAllInvitation} from '../services/team/list-users'
 import {rejectTeamInvitation} from '../services/team/invitation/reject-invitation'
 import {sendTeamInvitation} from '../services/team/invitation/send-invitation'
+import {updateTeam} from '../services/team/update-team'
 import {withdrawTeamInvitation} from '../services/team/invitation/withdraw-invitation'
 
 import {
@@ -13,6 +14,7 @@ import {
     RejectTeamInvitationResponse,
     Resolvers,
     SendTeamInvitationResponse,
+    UpdateTeamResponse,
     WithdrawTeamInvitationResponse
 } from '../../generated/team'
 
@@ -25,6 +27,9 @@ export const teamResolver: Resolvers = {
     Mutation: {
         createTeam: (_, {input}, context: ResolverContext): Promise<CreateTeamResponse> => {
             return createTeam(context, input)
+        },
+        updateTeam: (_, {input}, context: ResolverContext): Promise<UpdateTeamResponse> => {
+            return updateTeam(context, input)
         },
         sendTeamInvitation: (_, {input}, context: ResolverContext): Promise<SendTeamInvitationResponse> => {
             return sendTeamInvitation(context, input)

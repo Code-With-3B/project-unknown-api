@@ -63,6 +63,7 @@ export type Mutation = {
   createTeam: CreateTeamResponse;
   rejectTeamInvitation: RejectTeamInvitationResponse;
   sendTeamInvitation: SendTeamInvitationResponse;
+  updateTeam: UpdateTeamResponse;
   withdrawTeamInvitation: WithdrawTeamInvitationResponse;
 };
 
@@ -84,6 +85,11 @@ export type MutationRejectTeamInvitationArgs = {
 
 export type MutationSendTeamInvitationArgs = {
   input: SendTeamInvitationInput;
+};
+
+
+export type MutationUpdateTeamArgs = {
+  input: UpdateTeamInput;
 };
 
 
@@ -200,6 +206,22 @@ export enum TeamStatus {
   Suspended = 'SUSPENDED'
 }
 
+export type UpdateTeamInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  game?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<TeamStatus>;
+  teamBannerPicture?: InputMaybe<Scalars['String']['input']>;
+  teamProfilePicture?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateTeamResponse = ResponsePayload & {
+  __typename?: 'UpdateTeamResponse';
+  code?: Maybe<Array<Scalars['String']['output']>>;
+  success: Scalars['Boolean']['output'];
+};
+
 export type WithdrawTeamInvitationInput = {
   invitationId: Scalars['ID']['input'];
   whoIsWithdrawing: Scalars['ID']['input'];
@@ -281,7 +303,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( RejectTeamInvitationResponse ) | ( SendTeamInvitationResponse ) | ( WithdrawTeamInvitationResponse );
+  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( RejectTeamInvitationResponse ) | ( SendTeamInvitationResponse ) | ( UpdateTeamResponse ) | ( WithdrawTeamInvitationResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -310,6 +332,8 @@ export type ResolversTypes = {
   TeamMember: ResolverTypeWrapper<TeamMember>;
   TeamRole: TeamRole;
   TeamStatus: TeamStatus;
+  UpdateTeamInput: UpdateTeamInput;
+  UpdateTeamResponse: ResolverTypeWrapper<UpdateTeamResponse>;
   WithdrawTeamInvitationInput: WithdrawTeamInvitationInput;
   WithdrawTeamInvitationResponse: ResolverTypeWrapper<WithdrawTeamInvitationResponse>;
 };
@@ -337,6 +361,8 @@ export type ResolversParentTypes = {
   Team: Team;
   TeamInvitation: TeamInvitation;
   TeamMember: TeamMember;
+  UpdateTeamInput: UpdateTeamInput;
+  UpdateTeamResponse: UpdateTeamResponse;
   WithdrawTeamInvitationInput: WithdrawTeamInvitationInput;
   WithdrawTeamInvitationResponse: WithdrawTeamInvitationResponse;
 };
@@ -374,6 +400,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createTeam?: Resolver<ResolversTypes['CreateTeamResponse'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
   rejectTeamInvitation?: Resolver<ResolversTypes['RejectTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationRejectTeamInvitationArgs, 'input'>>;
   sendTeamInvitation?: Resolver<ResolversTypes['SendTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationSendTeamInvitationArgs, 'input'>>;
+  updateTeam?: Resolver<ResolversTypes['UpdateTeamResponse'], ParentType, ContextType, RequireFields<MutationUpdateTeamArgs, 'input'>>;
   withdrawTeamInvitation?: Resolver<ResolversTypes['WithdrawTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationWithdrawTeamInvitationArgs, 'input'>>;
 };
 
@@ -388,7 +415,7 @@ export type RejectTeamInvitationResponseResolvers<ContextType = any, ParentType 
 };
 
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'RejectTeamInvitationResponse' | 'SendTeamInvitationResponse' | 'WithdrawTeamInvitationResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'RejectTeamInvitationResponse' | 'SendTeamInvitationResponse' | 'UpdateTeamResponse' | 'WithdrawTeamInvitationResponse', ParentType, ContextType>;
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -437,6 +464,12 @@ export type TeamMemberResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UpdateTeamResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateTeamResponse'] = ResolversParentTypes['UpdateTeamResponse']> = {
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type WithdrawTeamInvitationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['WithdrawTeamInvitationResponse'] = ResolversParentTypes['WithdrawTeamInvitationResponse']> = {
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -457,6 +490,7 @@ export type Resolvers<ContextType = any> = {
   Team?: TeamResolvers<ContextType>;
   TeamInvitation?: TeamInvitationResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  UpdateTeamResponse?: UpdateTeamResponseResolvers<ContextType>;
   WithdrawTeamInvitationResponse?: WithdrawTeamInvitationResponseResolvers<ContextType>;
 };
 

@@ -8,8 +8,11 @@ export enum TeamResponseCode {
     DUPLICATE_TEAM_NAME = 'DUPLICATE_TEAM_NAME',
     INVALID_TEAM_NAME_FORMAT = 'INVALID_TEAM_NAME_FORMAT',
     TEAM_CREATION_FAILED = 'TEAM_CREATION_FAILED',
-
     TEAM_CREATION_SUCCESS = 'TEAM_CREATION_SUCCESS',
+    TEAM_UPDATING_FAILED = 'TEAM_UPDATING_FAILED',
+    TEAM_UPDATING_SUCCESS = 'TEAM_UPDATING_SUCCESS',
+
+    NO_FIELDS_TO_UPDATE = 'NO_FIELDS_TO_UPDATE',
 
     // Invitation
     INVALID_TEAM_ID = 'INVALID_TEAM_ID',
@@ -64,8 +67,11 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
     [TeamResponseCode.DUPLICATE_TEAM_NAME]: 'Team name is already taken',
     [TeamResponseCode.INVALID_TEAM_NAME_FORMAT]: 'Team name format is incorrect',
     [TeamResponseCode.TEAM_CREATION_FAILED]: 'Team creation failed',
-
     [TeamResponseCode.TEAM_CREATION_SUCCESS]: 'Team has been created successfully',
+    [TeamResponseCode.TEAM_UPDATING_FAILED]: 'Team updating failed',
+    [TeamResponseCode.TEAM_UPDATING_SUCCESS]: 'Team has been updated successfully',
+
+    [TeamResponseCode.NO_FIELDS_TO_UPDATE]: 'No Fields to update',
 
     [TeamResponseCode.INVALID_TEAM_ID]: 'No Team found with this id',
     [TeamResponseCode.INVALID_SENDER_ID]: 'Invalid sender id',
