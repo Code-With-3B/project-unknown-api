@@ -54,7 +54,16 @@ export enum TeamResponseCode {
     TEAM_DELETE_ACCESS_DENIED = 'TEAM_DELETE_ACCESS_DENIED',
 
     TEAM_DELETION_SUCCESS = 'TEAM_DELETION_SUCCESS',
-    TEAM_DELETION_FAILED = 'TEAM_DELETION_FAILED'
+    TEAM_DELETION_FAILED = 'TEAM_DELETION_FAILED',
+
+    REMOVER_ID_MISSING = 'REMOVER_ID_MISSING',
+    USER_TO_REMOVE_ID_MISSING = 'USER_TO_REMOVE_ID_MISSING',
+    USER_TO_REMOVE_NOT_IN_TEAM = 'USER_TO_REMOVE_NOT_IN_TEAM',
+    USER_REMOVED_SUCCESS = 'USER_REMOVED_SUCCESS',
+    USER_REMOVED_FAILED = 'USER_REMOVED_FAILED',
+    CANT_REMOVE_TEAM_OWNER = 'CANT_REMOVE_TEAM_OWNER',
+
+    REMOVE_USER_ACCESS_DENIED = 'REMOVE_USER_ACCESS_DENIED'
 }
 
 export const ErrorMessage: Record<TeamResponseCode, string> = {
@@ -114,5 +123,14 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
     [TeamResponseCode.TEAM_DELETE_ACCESS_DENIED]: 'User has not access to delete team',
 
     [TeamResponseCode.TEAM_DELETION_SUCCESS]: 'Team has been deleted',
-    [TeamResponseCode.TEAM_DELETION_FAILED]: 'Team deleting failed'
+    [TeamResponseCode.TEAM_DELETION_FAILED]: 'Team deleting failed',
+
+    [TeamResponseCode.REMOVER_ID_MISSING]: 'Remover id is missing',
+    [TeamResponseCode.USER_TO_REMOVE_ID_MISSING]: 'User to id is missing',
+    [TeamResponseCode.USER_TO_REMOVE_NOT_IN_TEAM]: 'User to remove is not in team',
+    [TeamResponseCode.USER_REMOVED_FAILED]: 'Failed to remove user from team',
+    [TeamResponseCode.USER_REMOVED_SUCCESS]: 'User was successfully removed',
+    [TeamResponseCode.CANT_REMOVE_TEAM_OWNER]: 'Can not kick team owner from team',
+
+    [TeamResponseCode.REMOVE_USER_ACCESS_DENIED]: 'Remover access denied'
 }
