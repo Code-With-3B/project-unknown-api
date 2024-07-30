@@ -23,7 +23,7 @@ export type Scalars = {
 
 export type AcceptTeamInvitationInput = {
   invitationId: Scalars['ID']['input'];
-  status: TeamInvitationStatus;
+  whoIsAccepting: Scalars['ID']['input'];
 };
 
 export type AcceptTeamInvitationResponse = ResponsePayload & {
@@ -57,24 +57,13 @@ export type CreateTeamResponse = ResponsePayload & {
   team?: Maybe<Team>;
 };
 
-export type DeleteTeamInput = {
-  reason: Scalars['String']['input'];
-  teamId: Scalars['ID']['input'];
-  whoIsDeleting: Scalars['ID']['input'];
-};
-
-export type DeleteTeamResponse = ResponsePayload & {
-  __typename?: 'DeleteTeamResponse';
-  code?: Maybe<Array<Scalars['String']['output']>>;
-  success: Scalars['Boolean']['output'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   acceptTeamInvitation: AcceptTeamInvitationResponse;
   createTeam: CreateTeamResponse;
-  deleteTeam: DeleteTeamResponse;
+  rejectTeamInvitation: RejectTeamInvitationResponse;
   sendTeamInvitation: SendTeamInvitationResponse;
+  withdrawTeamInvitation: WithdrawTeamInvitationResponse;
 };
 
 
@@ -88,13 +77,18 @@ export type MutationCreateTeamArgs = {
 };
 
 
-export type MutationDeleteTeamArgs = {
-  input: DeleteTeamInput;
+export type MutationRejectTeamInvitationArgs = {
+  input: RejectTeamInvitationInput;
 };
 
 
 export type MutationSendTeamInvitationArgs = {
   input: SendTeamInvitationInput;
+};
+
+
+export type MutationWithdrawTeamInvitationArgs = {
+  input: WithdrawTeamInvitationInput;
 };
 
 export type Query = {
@@ -105,6 +99,17 @@ export type Query = {
 
 export type QueryGetAllTeamInvitationsArgs = {
   input: AllTeamInvitationsInput;
+};
+
+export type RejectTeamInvitationInput = {
+  invitationId: Scalars['ID']['input'];
+  whoIsRejecting: Scalars['ID']['input'];
+};
+
+export type RejectTeamInvitationResponse = ResponsePayload & {
+  __typename?: 'RejectTeamInvitationResponse';
+  code?: Maybe<Array<Scalars['String']['output']>>;
+  success: Scalars['Boolean']['output'];
 };
 
 export type ResponsePayload = {
@@ -156,8 +161,8 @@ export type TeamInvitation = {
 
 export enum TeamInvitationStatus {
   Accepted = 'ACCEPTED',
-  Denied = 'DENIED',
   Expired = 'EXPIRED',
+  Rejected = 'REJECTED',
   Sent = 'SENT',
   Withdrawn = 'WITHDRAWN'
 }
@@ -166,7 +171,7 @@ export type TeamMember = {
   __typename?: 'TeamMember';
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  role?: Maybe<Array<TeamRole>>;
+  role: Array<TeamRole>;
   teamId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['ID']['output'];
@@ -191,8 +196,20 @@ export enum TeamStatus {
   Deleted = 'DELETED',
   OpenToConnect = 'OPEN_TO_CONNECT',
   Private = 'PRIVATE',
+  Public = 'PUBLIC',
   Suspended = 'SUSPENDED'
 }
+
+export type WithdrawTeamInvitationInput = {
+  invitationId: Scalars['ID']['input'];
+  whoIsWithdrawing: Scalars['ID']['input'];
+};
+
+export type WithdrawTeamInvitationResponse = ResponsePayload & {
+  __typename?: 'WithdrawTeamInvitationResponse';
+  code?: Maybe<Array<Scalars['String']['output']>>;
+  success: Scalars['Boolean']['output'];
+};
 
 
 
@@ -264,7 +281,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( DeleteTeamResponse ) | ( SendTeamInvitationResponse );
+  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( RejectTeamInvitationResponse ) | ( SendTeamInvitationResponse ) | ( WithdrawTeamInvitationResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -277,12 +294,12 @@ export type ResolversTypes = {
   CreateTeamInput: CreateTeamInput;
   CreateTeamResponse: ResolverTypeWrapper<CreateTeamResponse>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
-  DeleteTeamInput: DeleteTeamInput;
-  DeleteTeamResponse: ResolverTypeWrapper<DeleteTeamResponse>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
+  RejectTeamInvitationInput: RejectTeamInvitationInput;
+  RejectTeamInvitationResponse: ResolverTypeWrapper<RejectTeamInvitationResponse>;
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
   SendTeamInvitationInput: SendTeamInvitationInput;
   SendTeamInvitationResponse: ResolverTypeWrapper<SendTeamInvitationResponse>;
@@ -293,6 +310,8 @@ export type ResolversTypes = {
   TeamMember: ResolverTypeWrapper<TeamMember>;
   TeamRole: TeamRole;
   TeamStatus: TeamStatus;
+  WithdrawTeamInvitationInput: WithdrawTeamInvitationInput;
+  WithdrawTeamInvitationResponse: ResolverTypeWrapper<WithdrawTeamInvitationResponse>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -305,12 +324,12 @@ export type ResolversParentTypes = {
   CreateTeamInput: CreateTeamInput;
   CreateTeamResponse: CreateTeamResponse;
   DateTime: Scalars['DateTime']['output'];
-  DeleteTeamInput: DeleteTeamInput;
-  DeleteTeamResponse: DeleteTeamResponse;
   ID: Scalars['ID']['output'];
   JSON: Scalars['JSON']['output'];
   Mutation: {};
   Query: {};
+  RejectTeamInvitationInput: RejectTeamInvitationInput;
+  RejectTeamInvitationResponse: RejectTeamInvitationResponse;
   ResponsePayload: ResolversInterfaceTypes<ResolversParentTypes>['ResponsePayload'];
   SendTeamInvitationInput: SendTeamInvitationInput;
   SendTeamInvitationResponse: SendTeamInvitationResponse;
@@ -318,6 +337,8 @@ export type ResolversParentTypes = {
   Team: Team;
   TeamInvitation: TeamInvitation;
   TeamMember: TeamMember;
+  WithdrawTeamInvitationInput: WithdrawTeamInvitationInput;
+  WithdrawTeamInvitationResponse: WithdrawTeamInvitationResponse;
 };
 
 export type AcceptTeamInvitationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['AcceptTeamInvitationResponse'] = ResolversParentTypes['AcceptTeamInvitationResponse']> = {
@@ -344,12 +365,6 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type DeleteTeamResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteTeamResponse'] = ResolversParentTypes['DeleteTeamResponse']> = {
-  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -357,16 +372,23 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   acceptTeamInvitation?: Resolver<ResolversTypes['AcceptTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationAcceptTeamInvitationArgs, 'input'>>;
   createTeam?: Resolver<ResolversTypes['CreateTeamResponse'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
-  deleteTeam?: Resolver<ResolversTypes['DeleteTeamResponse'], ParentType, ContextType, RequireFields<MutationDeleteTeamArgs, 'input'>>;
+  rejectTeamInvitation?: Resolver<ResolversTypes['RejectTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationRejectTeamInvitationArgs, 'input'>>;
   sendTeamInvitation?: Resolver<ResolversTypes['SendTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationSendTeamInvitationArgs, 'input'>>;
+  withdrawTeamInvitation?: Resolver<ResolversTypes['WithdrawTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationWithdrawTeamInvitationArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getAllTeamInvitations?: Resolver<Maybe<ResolversTypes['AllTeamInvitationsResponse']>, ParentType, ContextType, RequireFields<QueryGetAllTeamInvitationsArgs, 'input'>>;
 };
 
+export type RejectTeamInvitationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RejectTeamInvitationResponse'] = ResolversParentTypes['RejectTeamInvitationResponse']> = {
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'DeleteTeamResponse' | 'SendTeamInvitationResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'RejectTeamInvitationResponse' | 'SendTeamInvitationResponse' | 'WithdrawTeamInvitationResponse', ParentType, ContextType>;
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -408,10 +430,16 @@ export type TeamInvitationResolvers<ContextType = any, ParentType extends Resolv
 export type TeamMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['TeamMember'] = ResolversParentTypes['TeamMember']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  role?: Resolver<Maybe<Array<ResolversTypes['TeamRole']>>, ParentType, ContextType>;
+  role?: Resolver<Array<ResolversTypes['TeamRole']>, ParentType, ContextType>;
   teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WithdrawTeamInvitationResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['WithdrawTeamInvitationResponse'] = ResolversParentTypes['WithdrawTeamInvitationResponse']> = {
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -420,14 +448,15 @@ export type Resolvers<ContextType = any> = {
   AllTeamInvitationsResponse?: AllTeamInvitationsResponseResolvers<ContextType>;
   CreateTeamResponse?: CreateTeamResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
-  DeleteTeamResponse?: DeleteTeamResponseResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RejectTeamInvitationResponse?: RejectTeamInvitationResponseResolvers<ContextType>;
   ResponsePayload?: ResponsePayloadResolvers<ContextType>;
   SendTeamInvitationResponse?: SendTeamInvitationResponseResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   TeamInvitation?: TeamInvitationResolvers<ContextType>;
   TeamMember?: TeamMemberResolvers<ContextType>;
+  WithdrawTeamInvitationResponse?: WithdrawTeamInvitationResponseResolvers<ContextType>;
 };
 

@@ -11,6 +11,7 @@ enum TeamStatus {
   SUSPENDED
   DEACTIVATED
   OPEN_TO_CONNECT
+  PUBLIC
   DELETED
 }
 
@@ -32,7 +33,7 @@ type TeamMember {
   id: ID!
   userId: ID!
   teamId: ID!
-  role: [TeamRole!]
+  role: [TeamRole!]!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -42,7 +43,7 @@ enum TeamInvitationStatus {
   WITHDRAWN
   EXPIRED
   ACCEPTED
-  DENIED
+  REJECTED
 }
 
 type Team {
@@ -87,13 +88,17 @@ input SendTeamInvitationInput {
 
 input AcceptTeamInvitationInput {
   invitationId: ID!
-  status: TeamInvitationStatus!
+  whoIsAccepting: ID!
 }
 
-input DeleteTeamInput {
-  teamId: ID!
-  whoIsDeleting: ID!
-  reason: String!
+input RejectTeamInvitationInput {
+  invitationId: ID!
+  whoIsRejecting: ID!
+}
+
+input WithdrawTeamInvitationInput {
+  invitationId: ID!
+  whoIsWithdrawing: ID!
 }
 
 type CreateTeamResponse implements ResponsePayload {
@@ -113,9 +118,14 @@ type AcceptTeamInvitationResponse implements ResponsePayload {
   code: [String!]
 }
 
-type DeleteTeamResponse implements ResponsePayload {
+type RejectTeamInvitationResponse implements ResponsePayload {
   success: Boolean!
-  code : [String!]
+  code: [String!]
+}
+
+type WithdrawTeamInvitationResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
 }
 
 input AllTeamInvitationsInput {
@@ -138,8 +148,11 @@ type Query {
 
 type Mutation {
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
-  deleteTeam(input: DeleteTeamInput!): DeleteTeamResponse!
 
+  # Tried putting all accept, reject and withdraw invitation in single mutation, 
+  # but it becomes so complicated so creating separate mutations for same
   sendTeamInvitation(input: SendTeamInvitationInput!): SendTeamInvitationResponse!
   acceptTeamInvitation(input: AcceptTeamInvitationInput!): AcceptTeamInvitationResponse!
+  rejectTeamInvitation(input: RejectTeamInvitationInput!): RejectTeamInvitationResponse!
+  withdrawTeamInvitation(input: WithdrawTeamInvitationInput!): WithdrawTeamInvitationResponse!
 }

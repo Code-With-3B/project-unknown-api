@@ -29,7 +29,7 @@
     },
     "status": {
       "type": "string",
-      "enum": ["SENT", "WITHDRAWN", "EXPIRED", "ACCEPTED", "DENIED"],
+      "enum": ["SENT", "WITHDRAWN", "EXPIRED", "ACCEPTED", "REJECTED"],
       "description": "The status of the invitation"
     },
     "expiration": {
