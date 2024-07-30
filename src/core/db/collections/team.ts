@@ -16,7 +16,7 @@ import {logger} from '../../../config'
 export async function updateTeamMemberInTeam(db: Db, id: string, memberId: string): Promise<boolean> {
     try {
         const collectionName = MongoCollection.TEAM
-        logger.info(`Adding data to array field memebers in document with ID ${id} in collection ${collectionName}`)
+        logger.info(`Adding data to array field members in document with ID ${id} in collection ${collectionName}`)
         const collection = db.collection(collectionName)
 
         // Ensure the document exists
@@ -26,7 +26,6 @@ export async function updateTeamMemberInTeam(db: Db, id: string, memberId: strin
             throw new Error(`No document found with ID ${id}`)
         }
 
-        logger.debug(`Existing document: ${JSON.stringify(existingDocument)}`)
         // Check if the newData is already present in the array
         const existingArray = existingDocument.members
         if (existingArray && existingArray.includes(memberId)) {
@@ -49,6 +48,52 @@ export async function updateTeamMemberInTeam(db: Db, id: string, memberId: strin
         }
 
         logger.info(`Document with ID ${id} updated successfully`)
+        return true
+    } catch (error) {
+        logger.error(`Error updating data: ${error}`)
+        throw error
+    }
+}
+
+export async function removeTeamMemberFromTeam(db: Db, teamId: string, memberId: string): Promise<boolean> {
+    try {
+        const collectionName = MongoCollection.TEAM
+        logger.info(
+            `Removing data from array field members in document with ID ${teamId} in collection ${collectionName}`
+        )
+        const collection = db.collection(collectionName)
+
+        // Ensure the document exists
+        const existingDocument = (await collection.findOne<TeamsCollection>({id: teamId})) as TeamsCollection | null
+        if (!existingDocument) {
+            logger.error(`No document found with ID ${teamId}`)
+            throw new Error(`No document found with ID ${teamId}`)
+        }
+
+        logger.debug(`Existing document: ${JSON.stringify(existingDocument)}`)
+        // Check if the memberId is present in the array
+        const existingArray = existingDocument.members
+        if (!existingArray || !existingArray.includes(memberId)) {
+            logger.info(`Data ${memberId} is not present in the array, skipping update`)
+            return true
+        }
+
+        // Perform the update
+        const updateResult = await collection.updateOne(
+            {id: teamId},
+            {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                $pull: {['members']: {$eq: memberId}} as any, // Corrected the $pull operator usage
+                $set: {updatedAt: new Date().toISOString()}
+            }
+        )
+
+        if (updateResult.modifiedCount === 0) {
+            logger.error('Failed to remove team member from team')
+            return false
+        }
+
+        logger.info(`Document with ID ${teamId} updated successfully`)
         return true
     } catch (error) {
         logger.error(`Error updating data: ${error}`)

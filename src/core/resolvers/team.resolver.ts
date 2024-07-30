@@ -3,6 +3,7 @@ import {acceptTeamInvitation} from '../services/team/invitation/accept-invitatio
 import {createTeam} from '../services/team/create-team'
 import {getAllInvitation} from '../services/team/list-users'
 import {rejectTeamInvitation} from '../services/team/invitation/reject-invitation'
+import {removeUser} from '../services/team/remove-user'
 import {sendTeamInvitation} from '../services/team/invitation/send-invitation'
 import {updateTeam} from '../services/team/update-team'
 import {withdrawTeamInvitation} from '../services/team/invitation/withdraw-invitation'
@@ -12,6 +13,7 @@ import {
     AllTeamInvitationsResponse,
     CreateTeamResponse,
     RejectTeamInvitationResponse,
+    RemoveUserResponse,
     Resolvers,
     SendTeamInvitationResponse,
     UpdateTeamResponse,
@@ -42,6 +44,9 @@ export const teamResolver: Resolvers = {
         },
         withdrawTeamInvitation: (_, {input}, context: ResolverContext): Promise<WithdrawTeamInvitationResponse> => {
             return withdrawTeamInvitation(context, input)
+        },
+        removeUser: (_, {input}, context: ResolverContext): Promise<RemoveUserResponse> => {
+            return removeUser(context, input)
         }
     }
 }

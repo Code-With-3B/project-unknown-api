@@ -62,6 +62,7 @@ export type Mutation = {
   acceptTeamInvitation: AcceptTeamInvitationResponse;
   createTeam: CreateTeamResponse;
   rejectTeamInvitation: RejectTeamInvitationResponse;
+  removeUser: RemoveUserResponse;
   sendTeamInvitation: SendTeamInvitationResponse;
   updateTeam: UpdateTeamResponse;
   withdrawTeamInvitation: WithdrawTeamInvitationResponse;
@@ -80,6 +81,11 @@ export type MutationCreateTeamArgs = {
 
 export type MutationRejectTeamInvitationArgs = {
   input: RejectTeamInvitationInput;
+};
+
+
+export type MutationRemoveUserArgs = {
+  input: RemoveUserInput;
 };
 
 
@@ -114,6 +120,18 @@ export type RejectTeamInvitationInput = {
 
 export type RejectTeamInvitationResponse = ResponsePayload & {
   __typename?: 'RejectTeamInvitationResponse';
+  code?: Maybe<Array<Scalars['String']['output']>>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type RemoveUserInput = {
+  teamId: Scalars['ID']['input'];
+  whoIsRemover: Scalars['ID']['input'];
+  whomToRemove: Scalars['ID']['input'];
+};
+
+export type RemoveUserResponse = ResponsePayload & {
+  __typename?: 'RemoveUserResponse';
   code?: Maybe<Array<Scalars['String']['output']>>;
   success: Scalars['Boolean']['output'];
 };
@@ -303,7 +321,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping of interface types */
 export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
-  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( RejectTeamInvitationResponse ) | ( SendTeamInvitationResponse ) | ( UpdateTeamResponse ) | ( WithdrawTeamInvitationResponse );
+  ResponsePayload: ( AcceptTeamInvitationResponse ) | ( AllTeamInvitationsResponse ) | ( CreateTeamResponse ) | ( RejectTeamInvitationResponse ) | ( RemoveUserResponse ) | ( SendTeamInvitationResponse ) | ( UpdateTeamResponse ) | ( WithdrawTeamInvitationResponse );
 };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -322,6 +340,8 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   RejectTeamInvitationInput: RejectTeamInvitationInput;
   RejectTeamInvitationResponse: ResolverTypeWrapper<RejectTeamInvitationResponse>;
+  RemoveUserInput: RemoveUserInput;
+  RemoveUserResponse: ResolverTypeWrapper<RemoveUserResponse>;
   ResponsePayload: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['ResponsePayload']>;
   SendTeamInvitationInput: SendTeamInvitationInput;
   SendTeamInvitationResponse: ResolverTypeWrapper<SendTeamInvitationResponse>;
@@ -354,6 +374,8 @@ export type ResolversParentTypes = {
   Query: {};
   RejectTeamInvitationInput: RejectTeamInvitationInput;
   RejectTeamInvitationResponse: RejectTeamInvitationResponse;
+  RemoveUserInput: RemoveUserInput;
+  RemoveUserResponse: RemoveUserResponse;
   ResponsePayload: ResolversInterfaceTypes<ResolversParentTypes>['ResponsePayload'];
   SendTeamInvitationInput: SendTeamInvitationInput;
   SendTeamInvitationResponse: SendTeamInvitationResponse;
@@ -399,6 +421,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   acceptTeamInvitation?: Resolver<ResolversTypes['AcceptTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationAcceptTeamInvitationArgs, 'input'>>;
   createTeam?: Resolver<ResolversTypes['CreateTeamResponse'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
   rejectTeamInvitation?: Resolver<ResolversTypes['RejectTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationRejectTeamInvitationArgs, 'input'>>;
+  removeUser?: Resolver<ResolversTypes['RemoveUserResponse'], ParentType, ContextType, RequireFields<MutationRemoveUserArgs, 'input'>>;
   sendTeamInvitation?: Resolver<ResolversTypes['SendTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationSendTeamInvitationArgs, 'input'>>;
   updateTeam?: Resolver<ResolversTypes['UpdateTeamResponse'], ParentType, ContextType, RequireFields<MutationUpdateTeamArgs, 'input'>>;
   withdrawTeamInvitation?: Resolver<ResolversTypes['WithdrawTeamInvitationResponse'], ParentType, ContextType, RequireFields<MutationWithdrawTeamInvitationArgs, 'input'>>;
@@ -414,8 +437,14 @@ export type RejectTeamInvitationResponseResolvers<ContextType = any, ParentType 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type RemoveUserResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RemoveUserResponse'] = ResolversParentTypes['RemoveUserResponse']> = {
+  code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ResponsePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponsePayload'] = ResolversParentTypes['ResponsePayload']> = {
-  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'RejectTeamInvitationResponse' | 'SendTeamInvitationResponse' | 'UpdateTeamResponse' | 'WithdrawTeamInvitationResponse', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AcceptTeamInvitationResponse' | 'AllTeamInvitationsResponse' | 'CreateTeamResponse' | 'RejectTeamInvitationResponse' | 'RemoveUserResponse' | 'SendTeamInvitationResponse' | 'UpdateTeamResponse' | 'WithdrawTeamInvitationResponse', ParentType, ContextType>;
   code?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
@@ -485,6 +514,7 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RejectTeamInvitationResponse?: RejectTeamInvitationResponseResolvers<ContextType>;
+  RemoveUserResponse?: RemoveUserResponseResolvers<ContextType>;
   ResponsePayload?: ResponsePayloadResolvers<ContextType>;
   SendTeamInvitationResponse?: SendTeamInvitationResponseResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;

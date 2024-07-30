@@ -2,6 +2,7 @@ import {MongoCollection} from '../../../@types/collections'
 import {ResolverContext} from '../../../@types/context'
 import {TeamResponseCode} from '../../../constants/auth/response-codes/team'
 import {logger} from '../../../config'
+import {updateTeamMemberInTeam} from '../../db/collections/team'
 import {upsertTeamMember} from '../../db/collections/team-invitation'
 import {v4 as uuid} from 'uuid'
 
@@ -50,7 +51,7 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
             role: ['OWNER']
         }
 
-        await upsertTeamMember(
+        const newMember = await upsertTeamMember(
             context.mongodb,
             {
                 userId: teamMember.userId,
@@ -58,6 +59,13 @@ export async function createTeam(context: ResolverContext, input: CreateTeamInpu
             },
             teamMember
         )
+        if (newMember) {
+            await updateTeamMemberInTeam(context.mongodb, result.id, newMember)
+            return {
+                success: true,
+                code: [TeamResponseCode.TEAM_CREATION_SUCCESS]
+            }
+        }
         logger.info(`Team creation ${result ? 'Success' : 'Failed'}`)
         return {
             success: !!result,
