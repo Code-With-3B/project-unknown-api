@@ -62,6 +62,34 @@ export interface UsersCollection {
    */
   bio?: string;
   /**
+   * 'bio' must be a string.
+   */
+  instagram?: string;
+  /**
+   * 'bio' must be a string.
+   */
+  youtube?: string;
+  /**
+   * 'bio' must be a string.
+   */
+  twitch?: string;
+  /**
+   * 'bio' must be a string.
+   */
+  twitter?: string;
+  /**
+   * 'bio' must be a string.
+   */
+  discord?: string;
+  /**
+   * 'preferredGames' must be an array of game IDs.
+   */
+  followers?: string[];
+  /**
+   * 'preferredGames' must be an array of game IDs.
+   */
+  following?: string[];
+  /**
    * 'fbToken' must be a string.
    */
   fbToken?: string;
@@ -69,10 +97,6 @@ export interface UsersCollection {
    * 'gender' must be a string indicating the user's gender.
    */
   gender?: "MALE" | "FEMALE" | "PREFER_NOT_SAY" | "NOT_MENTIONED";
-  /**
-   * 'following' must be an array of achievement IDs.
-   */
-  following?: string[];
   /**
    * 'verificationStatus' must be a string.
    */

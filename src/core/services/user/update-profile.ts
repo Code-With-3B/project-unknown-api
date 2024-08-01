@@ -128,6 +128,11 @@ export async function updateUser(context: ResolverContext, input: UpdateUserInpu
         if (input.profileBannerUri && input.profileBannerUri !== user.profileBanner)
             updateFields.profileBanner = input.profileBannerUri
         if (input.location && input.location !== user.location) updateFields.location = input.location
+        if (input.instagram && input.instagram !== user.instagram) updateFields.instagram = input.instagram
+        if (input.youtube && input.youtube !== user.youtube) updateFields.youtube = input.youtube
+        if (input.twitch && input.twitch !== user.twitch) updateFields.twitch = input.twitch
+        if (input.twitter && input.twitter !== user.twitter) updateFields.twitter = input.twitter
+        if (input.discord && input.discord !== user.discord) updateFields.discord = input.discord
 
         // If there are fields to update, perform the update operation
         if (Object.keys(updateFields).length > 0) {
