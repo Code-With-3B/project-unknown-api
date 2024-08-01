@@ -133,17 +133,22 @@ export type UpdateUserInput = {
   accountVisibility?: InputMaybe<AccountVisibilityType>;
   bio?: InputMaybe<Scalars['String']['input']>;
   birthday?: InputMaybe<Scalars['String']['input']>;
+  discord?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   fullName?: InputMaybe<Scalars['String']['input']>;
   gender?: InputMaybe<GenderType>;
   id: Scalars['String']['input'];
+  instagram?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   profileBannerUri?: InputMaybe<Scalars['String']['input']>;
   profilePictureUri?: InputMaybe<Scalars['String']['input']>;
+  twitch?: InputMaybe<Scalars['String']['input']>;
+  twitter?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
   verificationStatus?: InputMaybe<VerificationStatusType>;
+  youtube?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -155,12 +160,16 @@ export type User = {
   bio?: Maybe<Scalars['String']['output']>;
   birthday?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  discord?: Maybe<Scalars['String']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   fbToken: Scalars['String']['output'];
+  followers?: Maybe<Array<Scalars['String']['output']>>;
+  following?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   fullName?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<GenderType>;
   highlights?: Maybe<Array<Scalars['ID']['output']>>;
   id: Scalars['ID']['output'];
+  instagram?: Maybe<Scalars['String']['output']>;
   location?: Maybe<Scalars['String']['output']>;
   password: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
@@ -169,9 +178,12 @@ export type User = {
   profilePicture?: Maybe<Scalars['String']['output']>;
   skills?: Maybe<Array<Scalars['ID']['output']>>;
   teams?: Maybe<Array<Scalars['ID']['output']>>;
+  twitch?: Maybe<Scalars['String']['output']>;
+  twitter?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   username: Scalars['String']['output'];
   verificationStatus: VerificationStatusType;
+  youtube?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserInteraction = {
@@ -368,12 +380,16 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   birthday?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  discord?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   fbToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  followers?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  following?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   fullName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['GenderType']>, ParentType, ContextType>;
   highlights?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  instagram?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -382,9 +398,12 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   profilePicture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   skills?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<ResolversTypes['ID']>>, ParentType, ContextType>;
+  twitch?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  twitter?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   verificationStatus?: Resolver<ResolversTypes['VerificationStatusType'], ParentType, ContextType>;
+  youtube?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

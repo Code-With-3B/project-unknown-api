@@ -54,6 +54,7 @@ export enum TeamResponseCode {
     INVITATION_FAILED_TO_WITHDRAW = 'INVITATION_FAILED_TO_WITHDRAW',
     FAILED_TO_ACCEPT_INVITATION = 'FAILED_TO_ACCEPT_INVITATION',
 
+    INVITED_USER_ID_MISSING = 'INVITED_USER_ID_MISSING',
     REJECTOR_ID_MISSING = 'REJECTOR_ID_MISSING',
     OTHER_USER_TRYING_TO_REJECT = 'OTHER_USER_TRYING_TO_REJECT',
     OTHER_USER_TRYING_TO_ACCEPT = 'OTHER_USER_TRYING_TO_ACCEPT',
@@ -141,6 +142,7 @@ export const ErrorMessage: Record<TeamResponseCode, string> = {
     [TeamResponseCode.INVITATION_FAILED_TO_WITHDRAW]: 'Failed to withdraw invitation',
     [TeamResponseCode.FAILED_TO_ACCEPT_INVITATION]: 'Failed to accept invitation',
 
+    [TeamResponseCode.INVITED_USER_ID_MISSING]: 'Invited user id is missing',
     [TeamResponseCode.REJECTOR_ID_MISSING]: 'Rejector ID is missing',
     [TeamResponseCode.OTHER_USER_TRYING_TO_REJECT]: 'Other user is trying to reject invitation',
     [TeamResponseCode.OTHER_USER_TRYING_TO_ACCEPT]: 'Other user is trying to accept invitation',

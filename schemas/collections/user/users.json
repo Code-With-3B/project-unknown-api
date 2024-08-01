@@ -57,6 +57,40 @@
       "type": "string",
       "description": "'bio' must be a string."
     },
+    "instagram": {
+      "type": "string",
+      "description": "'bio' must be a string."
+    },
+    "youtube": {
+      "type": "string",
+      "description": "'bio' must be a string."
+    },
+    "twitch": {
+      "type": "string",
+      "description": "'bio' must be a string."
+    },
+    "twitter": {
+      "type": "string",
+      "description": "'bio' must be a string."
+    },
+    "discord": {
+      "type": "string",
+      "description": "'bio' must be a string."
+    },
+    "followers": {
+      "type": "array",
+      "description": "'preferredGames' must be an array of game IDs.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "following": {
+      "type": "array",
+      "description": "'preferredGames' must be an array of game IDs.",
+      "items": {
+        "type": "string"
+      }
+    },
     "fbToken": {
       "type": "string",
       "description": "'fbToken' must be a string."
@@ -65,13 +99,6 @@
       "type": "string",
       "enum": ["MALE", "FEMALE", "PREFER_NOT_SAY", "NOT_MENTIONED"],
       "description": "'gender' must be a string indicating the user's gender."
-    },
-    "following": {
-      "type": "array",
-      "description": "'following' must be an array of achievement IDs.",
-      "items": {
-        "type": "string"
-      }
     },
     "verificationStatus": {
       "type": "string",
