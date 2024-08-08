@@ -19,6 +19,9 @@
     },
     "team-member": {
       "$ref": "schemas/collections/team/team-members.json"
+    },
+    "organizations": {
+      "$ref": "schemas/collections/org/org.json"
     }
   }
 }

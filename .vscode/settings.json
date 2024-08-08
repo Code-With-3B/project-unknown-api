@@ -1,0 +1,46 @@
+{
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "githubPullRequests.pullBranch": "never",
+    "security.workspace.trust.untrustedFiles": "open",
+    "[typescript]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "explorer.confirmDelete": false,
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "explorer.confirmDragAndDrop": false,
+    "githubPullRequests.createOnPublishBranch": "never",
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.settings.applyToAllProfiles": ["editor.fontSize"],
+    "files.autoSave": "afterDelay",
+    "[terraform]": {},
+    "git.confirmSync": false,
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[graphql]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "markdown.extension.completion.enabled": true,
+    "npm-intellisense.packageSubfoldersIntellisense": true,
+    "npm-intellisense.scanDevDependencies": true,
+    "merge-conflict.autoNavigateNextConflict.enabled": true,
+    "editor.stickyScroll.enabled": false,
+    "cSpell.userWords": [
+      "apollographql",
+      "FASTIFY",
+      "Supergraph"
+    ],
+    "github.copilot.editor.enableAutoCompletions": true,
+    "diffEditor.ignoreTrimWhitespace": false
+  }

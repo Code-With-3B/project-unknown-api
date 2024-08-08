@@ -1,0 +1,99 @@
+scalar DateTime
+scalar JSON
+
+interface ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
+type Team {
+  id: ID!
+  name: String!
+  description: String!
+  game: String!
+  teamProfilePicture: String
+  teamBannerPicture: String
+  status: TeamStatus!
+  teamMembers: [TeamMember!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum TeamStatus {
+  PRIVATE
+  SUSPENDED
+  DEACTIVATED
+  OPEN_TO_CONNECT
+  PUBLIC
+  DELETED
+}
+
+type TeamMember {
+  id: ID!
+  userId: ID!
+  teamId: ID!
+  roles: [TeamRole!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum TeamRole {
+  OWNER
+  COACH
+  MANAGER
+  ANALYST
+  IGL
+  SUPPORT
+  SNIPER
+  ASSAULTER
+  SUBSTITUTE
+  ANY
+  NOT_MENTIONED
+}
+
+input CreateOrgInput {
+  name: String!
+  description: String!
+  game: String!
+  ownerId: ID!
+  teamProfilePicture: String
+  teamBannerPicture: String
+}
+
+type CreateOrgResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+  team: Team
+}
+
+input UpdateOrgInput {
+  id: ID!
+  name: String
+  description: String
+  game: String
+  teamProfilePicture: String
+  teamBannerPicture: String
+  status: TeamStatus
+}
+
+type UpdateOrgResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
+input RemoveTeamInput {
+  teamId: ID!
+  whomToRemove: ID!
+  whoIsRemover: ID!
+}
+
+type RemoveTeamResponse implements ResponsePayload {
+  success: Boolean!
+  code: [String!]
+}
+
+type Mutation {
+  createOrg(input: CreateOrgInput!): CreateOrgResponse!
+  updateOrg(input: UpdateOrgInput!): UpdateOrgResponse!
+  removeTeam(input: RemoveTeamInput!): RemoveTeamResponse!
+}

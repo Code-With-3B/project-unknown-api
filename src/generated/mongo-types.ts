@@ -12,6 +12,7 @@ export interface DatabaseSchema {
   teams?: TeamsCollection;
   "team-invitation"?: TeamInvitationsCollection;
   "team-member"?: TeamMembersCollection;
+  organizations?: OrganizationCollection;
   [k: string]: unknown;
 }
 export interface UsersCollection {
@@ -315,6 +316,41 @@ export interface TeamMembersCollection {
   createdAt?: string;
   /**
    * The timestamp or date string indicating when the invitation was last updated
+   */
+  updatedAt?: string;
+  [k: string]: unknown;
+}
+export interface OrganizationCollection {
+  /**
+   * The unique identifier of the Team
+   */
+  id: string;
+  /**
+   * The name of the team
+   */
+  name?: string;
+  /**
+   * Optional description of the team
+   */
+  description?: string;
+  /**
+   * Name of the game associated with the team
+   */
+  game?: string;
+  /**
+   * 'following' must be an array of achievement IDs.
+   */
+  members?: string[];
+  /**
+   * The status of the team, which can be either PRIVATE, OPEN_TO_CONNECT, DEACTIVATED, or SUSPENDED
+   */
+  status?: "PRIVATE" | "OPEN_TO_CONNECT" | "DEACTIVATED" | "SUSPENDED" | "DELETED" | "PUBLIC";
+  /**
+   * The timestamp or date string indicating when the team was created
+   */
+  createdAt?: string;
+  /**
+   * The timestamp or date string indicating when the team was last updated
    */
   updatedAt?: string;
   [k: string]: unknown;
