@@ -1,0 +1,41 @@
+name: build docker image
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+env:
+    KANIKO_EXECUTOR: gcr.io/kaniko-project/executor:latest
+    ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+    AWS_REGION: ${{ secrets.AWS_REGION }}
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+    build_and_push_docker_image:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+            - name: Get ECR Registry
+              id: ecr-login
+              uses: aws-actions/amazon-ecr-login@v1
+            - name: Install Kaniko
+              run: |
+                curl -sfL https://get.kaniko.io/install.sh | sh
+                kaniko --version
+            - name: Build and push docker image with Kaniko
+              run: |
+                kaniko \
+                  --dockerfile=Dockerfile \
+                  --context=. \
+                  --destination=${ECR_REGISTRY}/my-app:${GITHUB_SHA} \
+                  --push=true
