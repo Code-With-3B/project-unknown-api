@@ -1,0 +1,44 @@
+{
+    "type": "object",
+    "title": "Organization Collection",
+    "required": ["id"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "The unique identifier of the Team"
+      },
+      "name": {
+        "type": "string",
+        "description": "The name of the team"
+      },
+      "description": {
+        "type": "string",
+        "description": "Optional description of the team"
+      },
+      "game": {
+        "type": "string",
+        "description": "Name of the game associated with the team"
+      },
+      "members": {
+        "type": "array",
+        "description": "'following' must be an array of achievement IDs.",
+        "items": {
+          "type": "string"
+        }
+      },
+      "status": {
+        "type": "string",
+        "enum": ["PRIVATE", "OPEN_TO_CONNECT", "DEACTIVATED", "SUSPENDED", "DELETED", "PUBLIC"],
+        "description": "The status of the team, which can be either PRIVATE, OPEN_TO_CONNECT, DEACTIVATED, or SUSPENDED"
+      },
+      "createdAt": {
+        "type": "string",
+        "description": "The timestamp or date string indicating when the team was created"
+      },
+      "updatedAt": {
+        "type": "string",
+        "description": "The timestamp or date string indicating when the team was last updated"
+      }
+    }
+  }
+  

@@ -71,7 +71,7 @@ export async function upsertTeamMember(
     updateData: Partial<Document>
 ): Promise<string> {
     try {
-        const collectionName = MongoCollection.TEAM_MEMBER
+        const collectionName = MongoCollection.ORG
         logger.info(`Upserting document in collection ${collectionName} with filter ${JSON.stringify(filter)}`)
         const collection = db.collection(collectionName)
 
